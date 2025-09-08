@@ -26,4 +26,11 @@
         <Folder Include="Application\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="cnes.py">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

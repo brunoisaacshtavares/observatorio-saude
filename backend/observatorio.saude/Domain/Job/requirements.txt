@@ -1,0 +1,7 @@
+pandas 
+sqlalchemy 
+mysql-connector-python
+psycopg2-binary
+polars
+numpy
+requests

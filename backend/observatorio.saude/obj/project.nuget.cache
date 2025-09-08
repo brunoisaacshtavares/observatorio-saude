@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "UQomwYZh1fI=",
+  "dgSpecHash": "ZxlYSNBF0X8=",
   "success": true,
-  "projectFilePath": "C:\\Users\\edusvx\\source\\repos\\observatorio.saude\\observatorio.saude\\observatorio.saude.csproj",
+  "projectFilePath": "C:\\Users\\edusvx\\Documents\\pessoal\\observatorio-saude\\backend\\observatorio.saude\\observatorio.saude.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\edusvx\\.nuget\\packages\\asp.versioning.abstractions\\8.1.0\\asp.versioning.abstractions.8.1.0.nupkg.sha512",
     "C:\\Users\\edusvx\\.nuget\\packages\\asp.versioning.http\\8.1.0\\asp.versioning.http.8.1.0.nupkg.sha512",

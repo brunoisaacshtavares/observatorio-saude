@@ -1,0 +1,28 @@
+# Ignore build outputs
+**/bin/
+**/obj/
+
+# User-specific files
+**/*.user
+**/*.suo
+**/*.userosscache
+**/*.sln.docstates
+
+# Rider / VS Code / Visual Studio
+.idea/
+.vscode/
+.vs/
+
+# DotNet tools
+**/.dotnet_toolstore/
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Others (optional, dependendo do seu projeto)
+.env
+*.db
