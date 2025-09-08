@@ -14,7 +14,7 @@ from datetime import date, datetime, timedelta
 import psycopg2
 from psycopg2 import OperationalError
 from psycopg2.extras import execute_values
-
+import argparse
 
 # In[2]:
 
