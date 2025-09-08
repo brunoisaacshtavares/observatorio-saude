@@ -1,0 +1,285 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>observatorio.saude</name>
+    </assembly>
+    <members>
+        <member name="T:observatorio.saude.Domain.Entities.CaracteristicaEstabelecimento">
+            <summary>
+            Representa as características principais de um estabelecimento de saúde.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.CaracteristicaEstabelecimento.CodUnidade">
+            <summary>
+            Identificador único da unidade de saúde.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.CaracteristicaEstabelecimento.NmRazaoSocial">
+            <summary>
+            Nome jurídico da unidade.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.CaracteristicaEstabelecimento.NmFantasia">
+            <summary>
+            Nome comercial da unidade.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.CaracteristicaEstabelecimento.NumCnpj">
+            <summary>
+            CNPJ da unidade de saúde.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.CaracteristicaEstabelecimento.NumCnpjEntidade">
+            <summary>
+            CNPJ da entidade responsável pela unidade.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.CaracteristicaEstabelecimento.Email">
+            <summary>
+            Endereço de e-mail para contato da unidade.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.CaracteristicaEstabelecimento.NumTelefone">
+            <summary>
+            Número de telefone para contato da unidade.
+            </summary>
+        </member>
+        <member name="T:observatorio.saude.Domain.Entities.Estabelecimento">
+            <summary>
+            Representa um estabelecimento de saúde com suas principais características, localização e serviços.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Estabelecimento.CodCnes">
+            <summary>
+            Código CNES (Cadastro Nacional de Estabelecimentos de Saúde).
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Estabelecimento.DataExtracao">
+            <summary>
+            Data da extração dos dados.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Estabelecimento.Caracteristicas">
+            <summary>
+            Características gerais do estabelecimento.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Estabelecimento.Localizacao">
+            <summary>
+            Informações de localização do estabelecimento.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Estabelecimento.Organizacao">
+            <summary>
+            Dados sobre a organização do estabelecimento.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Estabelecimento.Turno">
+            <summary>
+            Informações sobre os turnos de funcionamento.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Estabelecimento.Servico">
+            <summary>
+            Serviços prestados pelo estabelecimento.
+            </summary>
+        </member>
+        <member name="T:observatorio.saude.Domain.Entities.Localizacao">
+            <summary>
+            Representa as informações de localização geográfica e endereço de um estabelecimento de saúde.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Localizacao.CodUnidade">
+            <summary>
+            Código da unidade de saúde associado.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Localizacao.CodCep">
+            <summary>
+            Código do CEP do endereço.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Localizacao.Endereco">
+            <summary>
+            Nome da rua ou logradouro.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Localizacao.Numero">
+            <summary>
+            Número do endereço.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Localizacao.Bairro">
+            <summary>
+            Nome do bairro.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Localizacao.Latitude">
+            <summary>
+            Latitude geográfica do estabelecimento.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Localizacao.Longitude">
+            <summary>
+            Longitude geográfica do estabelecimento.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Localizacao.CodIbge">
+            <summary>
+            Código IBGE do município.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Localizacao.CodUf">
+            <summary>
+            Código da Unidade Federativa (UF).
+            </summary>
+        </member>
+        <member name="T:observatorio.saude.Domain.Entities.Organizacao">
+            <summary>
+            Representa informações organizacionais do estabelecimento de saúde, como tipo de unidade, gestão e natureza.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Organizacao.CodCnes">
+            <summary>
+            Código CNES do estabelecimento.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Organizacao.TpUnidade">
+            <summary>
+            Tipo de unidade.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Organizacao.TpGestao">
+            <summary>
+            Tipo de gestão.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Organizacao.DscrEsferaAdministrativa">
+            <summary>
+            Descrição da esfera administrativa.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Organizacao.DscrNivelHierarquia">
+            <summary>
+            Descrição do nível hierárquico.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Organizacao.DscrNaturezaOrganizacao">
+            <summary>
+            Descrição da natureza da organização.
+            </summary>
+        </member>
+        <member name="T:observatorio.saude.Domain.Entities.Servico">
+            <summary>
+            Representa os serviços oferecidos por um estabelecimento de saúde.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Servico.CodCnes">
+            <summary>
+            Código CNES do estabelecimento.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Servico.FazAtendimentoAmbulatorialSus">
+            <summary>
+            Indica se o estabelecimento realiza atendimento ambulatorial pelo SUS.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Servico.TemCentroCirurgico">
+            <summary>
+            Indica se há centro cirúrgico no estabelecimento.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Servico.TemCentroObstetrico">
+            <summary>
+            Indica se há centro obstétrico no estabelecimento.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Servico.TemCentroNeonatal">
+            <summary>
+            Indica se há centro neonatal no estabelecimento.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Servico.FazAtendimentoHospitalar">
+            <summary>
+            Indica se o estabelecimento realiza atendimento hospitalar.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Servico.TemServicoApoio">
+            <summary>
+            Indica se há serviços de apoio no estabelecimento.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Servico.FazAtendimentoAmbulatorial">
+            <summary>
+            Indica se o estabelecimento realiza qualquer atendimento ambulatorial (não necessariamente SUS).
+            </summary>
+        </member>
+        <member name="T:observatorio.saude.Domain.Entities.Turno">
+            <summary>
+            Representa o turno de atendimento de um estabelecimento de saúde.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Turno.CodTurnoAtendimento">
+            <summary>
+            Código do turno de atendimento.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Entities.Turno.DscrTurnoAtendimento">
+            <summary>
+            Descrição do turno de atendimento.
+            </summary>
+        </member>
+        <member name="T:observatorio.saude.Domain.Utils.PaginatedResult`1">
+            <summary>
+            Representa um resultado paginado contendo uma lista de itens e informações de paginação.
+            </summary>
+            <typeparam name="T">Tipo dos itens contidos no resultado.</typeparam>
+        </member>
+        <member name="M:observatorio.saude.Domain.Utils.PaginatedResult`1.#ctor(System.Collections.Generic.List{`0},System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Inicializa uma nova instância de <see cref="T:observatorio.saude.Domain.Utils.PaginatedResult`1"/>.
+            </summary>
+            <param name="items">Lista de itens da página atual.</param>
+            <param name="currentPage">Número da página atual (1-based).</param>
+            <param name="pageSize">Quantidade de itens por página.</param>
+            <param name="totalCount">Total de itens disponíveis.</param>
+        </member>
+        <member name="P:observatorio.saude.Domain.Utils.PaginatedResult`1.Items">
+            <summary>
+            Obtém ou define a lista de itens da página atual.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Utils.PaginatedResult`1.CurrentPage">
+            <summary>
+            Obtém ou define o número da página atual (1-based).
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Utils.PaginatedResult`1.PageSize">
+            <summary>
+            Obtém ou define a quantidade de itens por página.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Utils.PaginatedResult`1.TotalCount">
+            <summary>
+            Obtém ou define o total de itens disponíveis na consulta.
+            </summary>
+        </member>
+        <member name="P:observatorio.saude.Domain.Utils.PaginatedResult`1.TotalPages">
+            <summary>
+            Obtém o total de páginas calculado a partir do total de itens e do tamanho da página.
+            </summary>
+        </member>
+        <member name="T:observatorio.saude.Migrations.CriacaoInicial">
+            <inheritdoc />
+        </member>
+        <member name="M:observatorio.saude.Migrations.CriacaoInicial.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:observatorio.saude.Migrations.CriacaoInicial.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:observatorio.saude.Migrations.CriacaoInicial.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

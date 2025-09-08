@@ -1,0 +1,6 @@
+@observatorio.saude_HostAddress = http://localhost:5290
+
+GET {{observatorio.saude_HostAddress}}/
+Accept: application/json
+
+###
