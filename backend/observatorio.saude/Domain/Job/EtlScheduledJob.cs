@@ -9,10 +9,12 @@ public class EtlScheduledJob(ILogger<EtlScheduledJob> logger, IConfiguration con
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("Serviço de ETL Agendado está iniciando.");
+        
 
         var intervalInMinutes = _configuration.GetValue("EtlScheduledJobSettings:IntervalInMinutes", 60);
         using var timer = new PeriodicTimer(TimeSpan.FromMinutes(intervalInMinutes));
+
+        _logger.LogInformation($"Serviço de ETL Agendado está iniciando com o tempo de {intervalInMinutes} minutos.");
 
         while (await timer.WaitForNextTickAsync(stoppingToken))
         {
