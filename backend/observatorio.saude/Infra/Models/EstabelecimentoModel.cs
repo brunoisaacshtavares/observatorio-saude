@@ -16,7 +16,8 @@ public class EstabelecimentoModel
     [MaxLength(100)]
     public string? CodUnidade { get; set; }
 
-    [ForeignKey("CodUnidade")] public virtual CaracteristicaEstabelecimentoModel? CaracteristicaEstabelecimento { get; set; }
+    [ForeignKey("CodUnidade")]
+    public virtual CaracteristicaEstabelecimentoModel? CaracteristicaEstabelecimento { get; set; }
 
     [ForeignKey("CodUnidade")] public virtual LocalizacaoModel? Localizacao { get; set; }
 

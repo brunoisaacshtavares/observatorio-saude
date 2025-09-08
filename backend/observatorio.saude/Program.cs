@@ -3,9 +3,9 @@ using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using observatorio.saude.Application.Queries.GetEstabelecimentosPaginados;
-using observatorio.saude.Infra.Data;
 using observatorio.saude.Domain.Interface;
 using observatorio.saude.Domain.Job;
+using observatorio.saude.Infra.Data;
 using observatorio.saude.Infra.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,7 +36,7 @@ builder.Services.AddSwaggerGen(options =>
 {
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    options.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
+    options.IncludeXmlComments(xmlPath, true);
 });
 
 var app = builder.Build();
@@ -49,10 +49,8 @@ if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName.Contains(
         var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 
         foreach (var description in provider.ApiVersionDescriptions)
-        {
             options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json",
                 $"API {description.GroupName.ToUpperInvariant()}");
-        }
     });
 }
 

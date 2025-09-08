@@ -9,15 +9,12 @@ public class EtlScheduledJob(ILogger<EtlScheduledJob> logger, IConfiguration con
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        
-
         var intervalInMinutes = _configuration.GetValue("EtlScheduledJobSettings:IntervalInMinutes", 60);
         using var timer = new PeriodicTimer(TimeSpan.FromMinutes(intervalInMinutes));
 
         _logger.LogInformation($"Serviço de ETL Agendado está iniciando com o tempo de {intervalInMinutes} minutos.");
 
         while (await timer.WaitForNextTickAsync(stoppingToken))
-        {
             try
             {
                 _logger.LogInformation("Iniciando execução do script Python...");
@@ -31,15 +28,10 @@ public class EtlScheduledJob(ILogger<EtlScheduledJob> logger, IConfiguration con
 
                 var scriptPath = Path.Combine(Directory.GetCurrentDirectory(), "cnes.py");
                 var arguments = BuildPythonArguments(scriptPath, connectionString);
-                if (string.IsNullOrEmpty(arguments))
-                {
-                    continue;
-                }
-                
+                if (string.IsNullOrEmpty(arguments)) continue;
+
                 if (!File.Exists(scriptPath))
-                {
                     throw new FileNotFoundException("O script Python não foi encontrado.", scriptPath);
-                }
 
                 var startInfo = new ProcessStartInfo
                 {
@@ -54,9 +46,8 @@ public class EtlScheduledJob(ILogger<EtlScheduledJob> logger, IConfiguration con
                 using var process = Process.Start(startInfo);
 
                 if (process is null)
-                {
-                    throw new InvalidOperationException($"Não foi possível iniciar o processo para o script: {scriptPath}");
-                }
+                    throw new InvalidOperationException(
+                        $"Não foi possível iniciar o processo para o script: {scriptPath}");
 
                 var resultTask = process.StandardOutput.ReadToEndAsync(stoppingToken);
                 var errorTask = process.StandardError.ReadToEndAsync(stoppingToken);
@@ -68,7 +59,8 @@ public class EtlScheduledJob(ILogger<EtlScheduledJob> logger, IConfiguration con
 
                 if (process.ExitCode != 0)
                 {
-                    _logger.LogError("Script Python falhou (Exit Code: {ExitCode}): {ErrorOutput}", process.ExitCode, error);
+                    _logger.LogError("Script Python falhou (Exit Code: {ExitCode}): {ErrorOutput}", process.ExitCode,
+                        error);
                 }
                 else
                 {
@@ -81,7 +73,6 @@ public class EtlScheduledJob(ILogger<EtlScheduledJob> logger, IConfiguration con
             {
                 _logger.LogError(ex, "Ocorreu um erro inesperado ao executar a tarefa de ETL agendada.");
             }
-        }
     }
 
     private string? BuildPythonArguments(string scriptPath, string connectionString)
@@ -94,20 +85,23 @@ public class EtlScheduledJob(ILogger<EtlScheduledJob> logger, IConfiguration con
                     split => split[0].Trim().ToLowerInvariant(),
                     split => split[1].Trim()
                 );
-            
+
             var host = connParams.GetValueOrDefault("server") ?? connParams.GetValueOrDefault("host");
             var port = connParams.GetValueOrDefault("port");
             var dbname = connParams.GetValueOrDefault("database");
             var user = connParams.GetValueOrDefault("user id") ?? connParams.GetValueOrDefault("username");
             var password = connParams.GetValueOrDefault("password");
 
-            if (string.IsNullOrEmpty(host) || string.IsNullOrEmpty(port) || string.IsNullOrEmpty(dbname) || string.IsNullOrEmpty(user) || password is null)
+            if (string.IsNullOrEmpty(host) || string.IsNullOrEmpty(port) || string.IsNullOrEmpty(dbname) ||
+                string.IsNullOrEmpty(user) || password is null)
             {
-                _logger.LogError("A string de conexão é inválida ou está incompleta. Verifique se contém Server, Port, Database, User Id e Password.");
+                _logger.LogError(
+                    "A string de conexão é inválida ou está incompleta. Verifique se contém Server, Port, Database, User Id e Password.");
                 return null;
             }
 
-            return $"\"{scriptPath}\" --host \"{host}\" --port \"{port}\" --dbname \"{dbname}\" --user \"{user}\" --password \"{password}\"";
+            return
+                $"\"{scriptPath}\" --host \"{host}\" --port \"{port}\" --dbname \"{dbname}\" --user \"{user}\" --password \"{password}\"";
         }
         catch (Exception ex)
         {

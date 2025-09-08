@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using observatorio.saude.Infra.Data;
 using observatorio.saude.Domain.Interface;
 using observatorio.saude.Domain.Utils;
+using observatorio.saude.Infra.Data;
 using observatorio.saude.Infra.Models;
 
 namespace observatorio.saude.Infra.Repositories;
