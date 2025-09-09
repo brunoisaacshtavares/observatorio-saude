@@ -42,11 +42,11 @@ RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Copia e instala as dependências do Python
-COPY --from=build /src/observatorio.saude/Domain/Job/requirements.txt .
+COPY --from=build /src/observatorio.saude/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copia os arquivos da aplicação
-COPY --from=build /src/observatorio.saude/Domain/Job/cnes.py .
+COPY --from=build /src/observatorio.saude/cnes.py .
 COPY --from=publish /app/publish .
 
 USER $APP_UID

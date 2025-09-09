@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("observatorio.saude")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6c0e1fa23b4f36221149f9c4550120e84e9b1f39")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f15fc9e4545c499a3d827c3c056b44306579b65c")]
 [assembly: System.Reflection.AssemblyProductAttribute("observatorio.saude")]
 [assembly: System.Reflection.AssemblyTitleAttribute("observatorio.saude")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

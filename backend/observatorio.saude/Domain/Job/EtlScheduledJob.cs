@@ -31,7 +31,7 @@ public class EtlScheduledJob(ILogger<EtlScheduledJob> logger, IConfiguration con
                 if (string.IsNullOrEmpty(arguments)) continue;
 
                 if (!File.Exists(scriptPath))
-                    throw new FileNotFoundException("O script Python não foi encontrado.", scriptPath);
+                    throw new FileNotFoundException($"O script Python não foi encontrado. {scriptPath}");
 
                 var startInfo = new ProcessStartInfo
                 {

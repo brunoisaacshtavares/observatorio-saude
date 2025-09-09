@@ -3,7 +3,7 @@
     container_name: observatorio-api-migrations
     build:
       context: .
-      dockerfile: observatorio.saude/Dockerfile
+      dockerfile: Dockerfile
       target: build
     depends_on:
       db:
@@ -24,12 +24,11 @@
     container_name: observatorio-api
     build:
       context: .
-      dockerfile: observatorio.saude/Dockerfile
+      dockerfile: Dockerfile
       target: final
     ports:
       - "8080:8080"
     environment:
-      # Apontando para o banco de dados CORRETO
       - ConnectionStrings__DefaultConnection=Server=db;Port=5432;Database=observatorio_db;User Id=postgres;Password=12345;
       - ASPNETCORE_ENVIRONMENT=Docker
     depends_on:
@@ -42,14 +41,12 @@
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=12345
-      # Criando o banco de dados com o nome CORRETO
       - POSTGRES_DB=observatorio_db
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      # Verificando a saúde do banco de dados CORRETO
       test: ["CMD-SHELL", "pg_isready -U postgres -d observatorio_db"]
       interval: 10s
       timeout: 5s
