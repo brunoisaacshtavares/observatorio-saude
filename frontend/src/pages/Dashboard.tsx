@@ -41,7 +41,7 @@ export default function Dashboard() {
     <div className="space-y-4">
       <Header />
 
-      {/* KPIs */}
+      {}
       <section className="grid gap-4 md:grid-cols-4">
         <StatCard label="Total de Estabelecimentos" value={isLoading ? "…" : isError ? "Erro" : formatNumber(totalEstabs)} icon={<Building2 />} iconBgClass="bg-[#004F6D]" hint="Cadastrados no CNES" />
 
@@ -52,13 +52,13 @@ export default function Dashboard() {
         <StatCard label="Menor Cobertura" value="—" hint="Aguardando métrica de cobertura" icon={<MapPin />} iconBgClass="bg-amber-400" />
       </section>
 
-      {/* gráfico + mapa */}
+      {}
       <section className="grid gap-4 lg:grid-cols-2">
         <EstablishmentsBarChart />
         <MapPlaceHolder />
       </section>
 
-      {/* Atualizações */}
+      {}
       <section>
         <UpdatesList items={updates} />
       </section>

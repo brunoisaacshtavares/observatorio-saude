@@ -1,5 +1,4 @@
-// src/pages/Sobre.tsx
-import AboutHeader from "../components/about/AboutHeader";
+import PageHeader from "../components/common/PageHeader";
 import DataSourceCard from "../components/about/DataSourceCard";
 import FeatureCard from "../components/about/FeatureCard";
 import TeamMemberCard from "../components/about/TeamMemberCard";
@@ -13,7 +12,7 @@ export default function Sobre() {
   return (
     <div className="space-y-4">
       {}
-      <AboutHeader />
+      <PageHeader title="Sobre o Observatório" description="O Observatório de Saúde do Brasil é uma plataforma dedicada ao monitoramento e análise dos dados do sistema de saúde nacional, promovendo transparência e apoiando a tomada de decisões baseadas em evidências." />
 
       {}
       <section className="grid gap-4 md:grid-cols-2">
