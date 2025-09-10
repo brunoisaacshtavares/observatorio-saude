@@ -28,6 +28,19 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<GetEstabelecimentosPaginadosQuery>();
 builder.Services.AddScoped<IEstabelecimentoRepository, EstabelecimentoRepository>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin", policy =>
+    {
+        policy.WithOrigins("https://observatorio-saude-front.vercel.app")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials(); 
+    });
+});
+
+builder.Services.AddControllers();
+
 builder.Services.AddApiVersioning(options =>
     {
         options.ReportApiVersions = true;
