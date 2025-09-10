@@ -1,21 +1,17 @@
 # Use a versão 2.1 do motor de pipeline do CircleCI.
 version: 2.1
 
-# Orbs são pacotes de configuração reutilizáveis.
-# O orb 'win' simplifica a execução de jobs em um ambiente Windows.
+# Orb 'win' para execução em ambiente Windows.
 orbs:
   win: circleci/windows@5.0
 
-# Define os jobs a serem executados.
 jobs:
   build-and-test:
-    # Especifica o executor do Windows. A versão 'edge' usa a imagem mais recente,
-    # que inclui o SDK do .NET 8.
+    # Executor do Windows com a imagem mais recente (edge).
     executor:
       name: win/default
-      version: edge # Garante que estamos usando uma versão recente com .NET 8
+      version: edge
     
-    # Define os passos a serem executados no job.
     steps:
       # 1. Baixa o código do seu repositório.
       - checkout
@@ -23,36 +19,19 @@ jobs:
       # 2. Restaura as dependências NuGet para toda a solução.
       - run:
           name: "Restaurar dependências da solução"
-          # Executar na raiz restaura todos os projetos referenciados no arquivo .sln
           command: dotnet restore
 
-      # 3. Compila a solução em modo 'Release', que é o padrão para CI.
+      # 3. Compila a solução em modo 'Release'.
       - run:
           name: "Compilar a solução (Release)"
-          # O argumento --no-restore evita baixar os pacotes novamente.
           command: dotnet build --configuration Release --no-restore
 
       # 4. Executa todos os projetos de teste.
       - run:
-          name: "Executar testes e gerar relatório"
-          command: |
-            # Cria um diretório para armazenar os resultados dos testes.
-            mkdir test-results
-            # Executa os testes e gera um arquivo de resultado no formato JUnit,
-            # que o CircleCI pode exibir em sua interface.
-            dotnet test --configuration Release --no-build --logger "junit;LogFilePath=test-results/results.xml"
-      
-      # 5. Armazena os resultados dos testes para visualização na UI do CircleCI.
-      # O caminho aqui deve corresponder ao diretório criado no passo anterior.
-      - store_test_results:
-          path: test-results
-
-      # 6. Armazena os arquivos de resultado como artefatos do build (opcional).
-      # Isso permite que você baixe os arquivos XML após a conclusão do job.
-      - store_artifacts:
-          path: test-results
+          name: "Executar testes"
+          # Comando simplificado sem o logger JUnit. O resultado aparecerá no log.
+          command: dotnet test --configuration Release --no-build
           
-# Orquestra os jobs em um workflow.
 workflows:
   build-test-windows:
     jobs:
