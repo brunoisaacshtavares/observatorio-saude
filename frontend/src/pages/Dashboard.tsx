@@ -47,7 +47,7 @@ export default function Dashboard() {
 
         <StatCard label="Total de Leitos" value="—" hint="Aguardando endpoint de leitos" icon={<Bed />} iconBgClass="bg-[#00A67D]" />
 
-        <StatCard label="Melhor Cobertura" value="—" hint="Aguardando métrica de cobertura" icon={<TrendingUp />} iconBgClass="bg-[#00A67D]" />
+        <StatCard label="Melhor Cobertura" value="—" hint="Aguardando métrica de cobertura" icon={<TrendingUp />} iconBgClass="bg-[#22C55E]" />
 
         <StatCard label="Menor Cobertura" value="—" hint="Aguardando métrica de cobertura" icon={<MapPin />} iconBgClass="bg-amber-400" />
       </section>

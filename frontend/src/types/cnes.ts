@@ -19,7 +19,7 @@ export type EstabelecimentoItem = {
     latitude: number | null;
     longitude: number | null;
     codIbge: number | null;
-    codUf: number | null; // UF numérica do IBGE
+    codUf: number | null;
   };
   organizacao: {
     codCnes: number;

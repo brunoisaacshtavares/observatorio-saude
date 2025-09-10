@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Search } from "lucide-react";
 
 type ButtonSpec = {
@@ -6,6 +6,7 @@ type ButtonSpec = {
   onClick?: () => void;
   icon?: ReactNode;
   variant?: "ghost" | "primary";
+  className?: string;
 };
 
 type Props = {
@@ -34,17 +35,14 @@ export default function SearchBar({ value, onChange, onClear, rightButtons = [] 
 
         {}
         <div className="flex gap-2 md:justify-end">
-          {rightButtons.map((b, i) =>
-            b.variant === "primary" ? (
-              <button key={i} onClick={b.onClick} className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-white bg-[#004F6D] hover:opacity-95 transition">
+          {rightButtons.map((b, i) => {
+            const base = b.variant === "primary" ? "inline-flex items-center gap-2 px-3 py-2 rounded-lg text-white bg-[#004F6D] hover:opacity-95 transition" : "inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition";
+            return (
+              <button key={i} onClick={b.onClick} className={`${base} ${b.className ?? ""} overflow-hidden text-ellipsis whitespace-nowrap`}>
                 {b.icon} {b.label}
               </button>
-            ) : (
-              <button key={i} onClick={b.onClick} className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition">
-                {b.icon} {b.label}
-              </button>
-            )
-          )}
+            );
+          })}
         </div>
       </div>
     </section>

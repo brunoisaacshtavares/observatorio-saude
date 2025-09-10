@@ -1,7 +1,7 @@
 type Item = {
   title: string;
   description: string;
-  date: string; // ISO (ex.: "2025-09-07")
+  date: string;
   color?: "green" | "amber" | "sky";
 };
 

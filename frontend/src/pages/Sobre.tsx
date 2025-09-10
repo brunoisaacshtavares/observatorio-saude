@@ -11,10 +11,8 @@ import { Shield, Eye, Database, Globe, UserRound, Mail, Phone, MapPin } from "lu
 export default function Sobre() {
   return (
     <div className="space-y-4">
-      {}
       <PageHeader title="Sobre o Observatório" description="O Observatório de Saúde do Brasil é uma plataforma dedicada ao monitoramento e análise dos dados do sistema de saúde nacional, promovendo transparência e apoiando a tomada de decisões baseadas em evidências." />
 
-      {}
       <section className="grid gap-4 md:grid-cols-2">
         <div className="card p-5">
           <div className="flex items-center gap-3">
@@ -33,7 +31,6 @@ export default function Sobre() {
         </div>
       </section>
 
-      {}
       <section className="card p-0 overflow-hidden">
         <div className="px-5 py-4">
           <h3 className="text-lg font-semibold text-slate-900">Fontes de Dados</h3>
@@ -46,7 +43,6 @@ export default function Sobre() {
         </div>
       </section>
 
-      {}
       <section className="card p-0 overflow-hidden">
         <div className="px-5 py-4">
           <h3 className="text-lg font-semibold text-slate-900">Funcionalidades Principais</h3>
@@ -58,22 +54,20 @@ export default function Sobre() {
         </div>
       </section>
 
-      {}
       <section className="card p-0 overflow-hidden">
         <div className="px-5 py-4">
           <h3 className="text-lg font-semibold text-slate-900">Nossa Equipe</h3>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 p-4">
-          <TeamMemberCard name="Dr. Maria Silva" role="Coordenadora de Dados" expertise="Epidemiologia" icon={<UserRound />} />
-          <TeamMemberCard name="João Santos" role="Analista de Sistemas" expertise="Desenvolvimento" icon={<UserRound />} />
-          <TeamMemberCard name="Ana Costa" role="Especialista em Saúde Pública" expertise="Políticas de Saúde" icon={<UserRound />} />
-          <TeamMemberCard name="Pedro Lima" role="Designer (UX/UI)" expertise="Experiência do Usuário" icon={<UserRound />} />
-          <TeamMemberCard name="Carla Souza" role="Cientista de Dados" expertise="Modelagem" icon={<UserRound />} />
-          <TeamMemberCard name="Rafael Gomes" role="DevOps" expertise="Infraestrutura" icon={<UserRound />} />
+          <TeamMemberCard name="Bruno Isaac" role="QA/Infra" expertise="Qualidade de Software e Infraestrutura" icon={<UserRound />} />
+          <TeamMemberCard name="Eduardo Xavier" role="Dev FullStack" expertise="Desenvolvimento Full-Stack" icon={<UserRound />} />
+          <TeamMemberCard name="Enzo" role="UX/UI" expertise="Experiência do Usuário" icon={<UserRound />} />
+          <TeamMemberCard name="Otávio" role="DBA" expertise="Administração de Banco de Dados" icon={<UserRound />} />
+          <TeamMemberCard name="Murilo" role="Dev FullStack" expertise="Desenvolvimento Full-Stack" icon={<UserRound />} />
+          <TeamMemberCard name="Rafael" role="Project Manager" expertise="Gestão de Projetos" icon={<UserRound />} />
         </div>
       </section>
 
-      {}
       <section className="card p-0 overflow-hidden">
         <div className="px-5 py-4">
           <h3 className="text-lg font-semibold text-slate-900">Contato</h3>
@@ -85,7 +79,6 @@ export default function Sobre() {
         </div>
       </section>
 
-      {}
       <section className="card p-0 overflow-hidden">
         <div className="bg-gradient-to-r from-[#F9FAFB] to-[#EFF6FF]">
           <div className="px-5 py-4">

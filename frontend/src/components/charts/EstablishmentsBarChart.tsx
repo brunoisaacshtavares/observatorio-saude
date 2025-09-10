@@ -3,7 +3,6 @@ import { getTopUFByAmostra } from "../../services/establishments";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 function ufLabel(uf: number) {
-  // IBGE codUf -> sigla (parcial; adicione as demais se quiser)
   const map: Record<number, string> = {
     11: "RO",
     12: "AC",
@@ -39,7 +38,7 @@ function ufLabel(uf: number) {
 export default function EstablishmentsBarChart() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["top-uf-amostra"],
-    queryFn: () => getTopUFByAmostra(300), // amostra leve
+    queryFn: () => getTopUFByAmostra(300),
   });
 
   return (
