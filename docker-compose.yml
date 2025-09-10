@@ -1,0 +1,12 @@
+﻿services:
+  api:
+    container_name: observatorio-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: final
+    ports:
+      - "8080:8080"
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=ep-raspy-flower-a8dad44s-pooler.eastus2.azure.neon.tech;Port=5432;Database=neondb;Username=neondb_owner;Password=npg_TqBL6eu2VcQy;SslMode=Require;
+      - ASPNETCORE_ENVIRONMENT=Docker

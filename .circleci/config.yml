@@ -1,0 +1,38 @@
+# Use a versão 2.1 do motor de pipeline do CircleCI.
+version: 2.1
+
+# Orb 'win' para execução em ambiente Windows.
+orbs:
+  win: circleci/windows@5.0
+
+jobs:
+  build-and-test:
+    # Executor do Windows com a imagem mais recente (edge).
+    executor:
+      name: win/default
+      version: edge
+    
+    steps:
+      # 1. Baixa o código do seu repositório.
+      - checkout
+
+      # 2. Restaura as dependências NuGet para toda a solução.
+      - run:
+          name: "Restaurar dependências da solução"
+          command: dotnet restore
+
+      # 3. Compila a solução em modo 'Release'.
+      - run:
+          name: "Compilar a solução (Release)"
+          command: dotnet build --configuration Release --no-restore
+
+      # 4. Executa todos os projetos de teste.
+      - run:
+          name: "Executar testes"
+          # Comando simplificado sem o logger JUnit. O resultado aparecerá no log.
+          command: dotnet test --configuration Release --no-build
+          
+workflows:
+  build-test-windows:
+    jobs:
+      - build-and-test
