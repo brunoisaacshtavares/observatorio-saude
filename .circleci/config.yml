@@ -1,38 +1,45 @@
-# Use a versão 2.1 do motor de pipeline do CircleCI.
 version: 2.1
-
-# Orb 'win' para execução em ambiente Windows.
 orbs:
-  win: circleci/windows@5.0
-
+  windows: circleci/windows@5.0.0
 jobs:
   build-and-test:
-    # Executor do Windows com a imagem mais recente (edge).
     executor:
-      name: win/default
-      version: edge
-    
+      name: windows/default
     steps:
-      # 1. Baixa o código do seu repositório.
       - checkout
 
-      # 2. Restaura as dependências NuGet para toda a solução.
-      - run:
-          name: "Restaurar dependências da solução"
-          command: dotnet restore
+      - restore_cache:
+          keys:
+            - nuget-packages-{{ checksum "observatorio.saude/obj/project.assets.json" }}
+            - nuget-packages-
 
-      # 3. Compila a solução em modo 'Release'.
       - run:
-          name: "Compilar a solução (Release)"
-          command: dotnet build --configuration Release --no-restore
+          name: Restore (solution)
+          command: dotnet restore observatorio.saude.sln
 
-      # 4. Executa todos os projetos de teste.
+      - save_cache:
+          paths:
+            - ~/.nuget/packages
+          key: nuget-packages-{{ checksum "observatorio.saude/obj/project.assets.json" }}
+
       - run:
-          name: "Executar testes"
-          # Comando simplificado sem o logger JUnit. O resultado aparecerá no log.
-          command: dotnet test --configuration Release --no-build
-          
+          name: Build
+          command: dotnet build observatorio.saude.sln --configuration Release --no-restore
+
+      - run:
+          name: Run tests
+          command: 
+            (mkdir TestResults) -and (dotnet test --no-build --configuration Release --logger "trx;LogFileName=TestResults/results.trx")
+
+      - store_test_results:
+          path: TestResults
+
+      - store_artifacts:
+          path: TestResults
+          destination: test-results
+
 workflows:
-  build-test-windows:
+  version: 2
+  ci:
     jobs:
       - build-and-test
