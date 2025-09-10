@@ -24,7 +24,7 @@ jobs:
 
       - run:
           name: Build
-          command: dotnet build observatorio.saude.sln --configuration Release --no-restore
+          command: dotnet build backend/observatorio.saude.sln --configuration Release --no-restore
 
       - run:
           name: Run tests
