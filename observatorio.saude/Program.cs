@@ -62,6 +62,8 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
+app.UseCors("AllowAllOrigins");
+
 if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName.Contains("Docker"))
 {
     app.UseSwagger();
