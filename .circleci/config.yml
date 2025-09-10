@@ -5,13 +5,12 @@ jobs:
   build-and-test:
     executor:
       name: windows/default
-    working_directory: ~/backend
     steps:
       - checkout
 
       - restore_cache:
           keys:
-            - nuget-packages-{{ checksum "observatorio.saude/obj/project.assets.json" }}
+            - nuget-packages-{{ checksum "backend/observatorio.saude/obj/project.assets.json" }}
             - nuget-packages-
 
       - run:
@@ -21,7 +20,7 @@ jobs:
       - save_cache:
           paths:
             - ~/.nuget/packages
-          key: nuget-packages-{{ checksum "observatorio.saude/obj/project.assets.json" }}
+          key: nuget-packages-{{ checksum "backend/observatorio.saude/obj/project.assets.json" }}
 
       - run:
           name: Build
