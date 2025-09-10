@@ -67,9 +67,11 @@ def main(args):
 
 
     lista_float = ['NU_LATITUDE', 'NU_LONGITUDE']
-
-    for i in lista_float:
-        df[i] = df[i].astype(float)
+    for coluna in lista_float:
+        df[coluna] = df[coluna].replace({pd.NA: 0})
+        df[coluna] = df[coluna].replace({np.nan: 0})
+        df[coluna] = df[coluna].str.replace(',', '.', regex=False)
+        df[coluna] = pd.to_numeric(df[coluna], errors='coerce')
 
     condicoes_bool = [
         df['CO_AMBULATORIAL_SUS'] == "SIM",
@@ -89,7 +91,8 @@ def main(args):
     for i in lista_booleanos:
         df[i] = df[i].astype(bool)
 
-    df = df.replace({pd.NA: None})
+    df.replace({pd.NA: None}, inplace=True)
+    df.replace({np.nan: None}, inplace=True)
 
     df.NU_ENDERECO = df.NU_ENDERECO.replace({"S/N": None}).replace(" ","")
     df.NU_ENDERECO = df.NU_ENDERECO.str.replace(" ","", regex=False)
@@ -99,7 +102,8 @@ def main(args):
     # In[25]:
 
 
-    df = df.replace({pd.NA: None})
+    df.replace({pd.NA: None}, inplace=True)
+    df.replace({np.nan: None}, inplace=True)
 
 
     # In[26]:
