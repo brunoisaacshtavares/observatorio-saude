@@ -43,7 +43,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 COPY --from=build /src/observatorio.saude/Scripts ./Scripts
 
 # Instala as dependências do Python a partir do caminho correto
-RUN pip install --no-cache-dir -r ./Scripts/EtlEstabelecimentos/requirements.txt
+RUN pip install --no-cache-dir -r ./Scripts/requirements.txt
 # --- ✅ FIM DA CORREÇÃO ---
 
 # Copia os arquivos da aplicação .NET
