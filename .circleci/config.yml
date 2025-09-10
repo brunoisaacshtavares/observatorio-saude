@@ -4,7 +4,7 @@ jobs:
   build-and-test:
     docker:
       - image: mcr.microsoft.com/dotnet/sdk:8.0
-    working_directory: ~/project/backend
+    working_directory: ~/backend
     steps:
       - checkout
 
