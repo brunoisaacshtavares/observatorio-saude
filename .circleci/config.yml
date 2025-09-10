@@ -1,10 +1,11 @@
 version: 2.1
-
+orbs:
+  windows: circleci/windows@5.0.0
 jobs:
   build-and-test:
-    docker:
-      - image: mcr.microsoft.com/dotnet/sdk:8.0
-    working_directory: ~/backend
+    executor:
+      name: windows/default
+    working_directory: ~/project/backend
     steps:
       - checkout
 
