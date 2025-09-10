@@ -8,11 +8,6 @@ jobs:
     steps:
       - checkout
 
-      - restore_cache:
-          keys:
-            - nuget-packages-{{ checksum "observatorio.saude/obj/project.assets.json" }}
-            - nuget-packages-
-
       - run:
           name: Restore (solution)
           command: dotnet restore observatorio.saude.sln
