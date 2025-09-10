@@ -5,7 +5,7 @@ jobs:
   build-and-test:
     executor:
       name: windows/default
-    working_directory: ~/project/backend
+    working_directory: ~/backend
     steps:
       - checkout
 
