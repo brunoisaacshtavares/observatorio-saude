@@ -15,7 +15,7 @@ jobs:
 
       - run:
           name: Restore (solution)
-          command: dotnet restore observatorio.saude.sln
+          command: dotnet restore backend/observatorio.saude.sln
 
       - save_cache:
           paths:
