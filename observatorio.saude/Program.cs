@@ -30,28 +30,27 @@ builder.Services.AddScoped<IEstabelecimentoRepository, EstabelecimentoRepository
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigin", policy =>
+    options.AddPolicy("AllowAllOrigins", policy =>
     {
-        policy.WithOrigins("https://observatorio-saude-front.vercel.app")
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials(); 
+        policy.AllowAnyOrigin()   // Permite qualquer origem
+              .AllowAnyMethod()   // Permite qualquer método (GET, POST, etc.)
+              .AllowAnyHeader();  // Permite qualquer cabeçalho
     });
 });
 
 builder.Services.AddControllers();
 
 builder.Services.AddApiVersioning(options =>
-    {
-        options.ReportApiVersions = true;
-        options.AssumeDefaultVersionWhenUnspecified = true;
-        options.DefaultApiVersion = new ApiVersion(1, 0);
-    })
-    .AddApiExplorer(options =>
-    {
-        options.GroupNameFormat = "'v'VVV";
-        options.SubstituteApiVersionInUrl = true;
-    });
+{
+    options.ReportApiVersions = true;
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+})
+.AddApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+});
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -61,6 +60,8 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
+
+app.UseCors("AllowAllOrigins");  // Use a política liberada
 
 if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName.Contains("Docker"))
 {
@@ -75,9 +76,6 @@ if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName.Contains(
     });
 }
 
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
