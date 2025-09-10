@@ -14,16 +14,13 @@ COPY . .
 WORKDIR "/src/observatorio.saude"
 RUN dotnet build "./observatorio.saude.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# --- ✅ ADICIONE A LINHA ABAIXO ---
 # Instala a ferramenta 'dotnet-ef' no diretório /tools DENTRO deste estágio
 RUN dotnet tool install dotnet-ef --tool-path /tools
-
 
 # --- Estágio de publish do .NET ---
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./observatorio.saude.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
-
 
 # --- Estágio final (runtime) ---
 FROM base AS final
@@ -41,12 +38,15 @@ RUN apt-get update && \
 RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Copia e instala as dependências do Python
-COPY --from=build /src/observatorio.saude/Scripts/EtlEstabelecimentos/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# --- ✅ INÍCIO DA CORREÇÃO ---
+# Copia todo o diretório de scripts para o contêiner, mantendo a estrutura
+COPY --from=build /src/observatorio.saude/Scripts ./Scripts
 
-# Copia os arquivos da aplicação
-COPY --from=build /src/observatorio.saude/Scripts/EtlEstabelecimentos/cnes.py .
+# Instala as dependências do Python a partir do caminho correto
+RUN pip install --no-cache-dir -r ./Scripts/EtlEstabelecimentos/requirements.txt
+# --- ✅ FIM DA CORREÇÃO ---
+
+# Copia os arquivos da aplicação .NET
 COPY --from=publish /app/publish .
 
 USER $APP_UID
