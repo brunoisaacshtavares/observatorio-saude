@@ -14,11 +14,12 @@ public class EstabelecimentoRepository(ApplicationDbContext context) : IEstabele
     public async Task<IEnumerable<NumeroEstabelecimentoEstadoDto>> GetContagemPorEstadoAsync()
     {
         var contagemPorEstado = await _context.EstabelecimentoModel
-            .Where(e => e.Localizacao != null && e.Localizacao.CodUf != null)
+            .AsNoTracking() 
+            .Where(e => e.Localizacao.CodUf != null) 
             .GroupBy(e => e.Localizacao.CodUf)
             .Select(g => new NumeroEstabelecimentoEstadoDto
             {
-                CodUf = g.Key.Value,
+                CodUf = g.Key.Value, 
                 Total = g.Count()
             })
             .OrderByDescending(r => r.Total)

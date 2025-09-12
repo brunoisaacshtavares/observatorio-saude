@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace observatorio.saude.Infra.Models;
 
 [Table("dim_localizacao")]
+[Index(nameof(CodUf))] 
 public class LocalizacaoModel
 {
     [Key]
