@@ -127,4 +127,55 @@ public class EstabelecimentoRepositoryTest : IDisposable
         resultadoLista[1].CodUf.Should().Be(33);
         resultadoLista[1].Total.Should().Be(2);
     }
+    
+    [Fact]
+    public async Task GetPagedWithDetailsAsync_QuandoDadosExistem_DeveRetornarResultadoPaginadoCorretamente()
+    {
+        await SeedDatabaseAsync(12);
+        const int pageNumber = 2;
+        const int pageSize = 5;
+
+        var result = await _repository.GetPagedWithDetailsAsync(pageNumber, pageSize);
+
+        result.Should().NotBeNull();
+        result.Items.Should().HaveCount(pageSize);
+        result.CurrentPage.Should().Be(pageNumber);
+        result.PageSize.Should().Be(pageSize);
+        result.TotalCount.Should().Be(12);
+        result.TotalPages.Should().Be(3);
+        result.Items.First().CodCnes.Should().Be(106);
+        result.Items.Last().CodCnes.Should().Be(110);
+        result.Items.First().CaracteristicaEstabelecimento.Should().NotBeNull();
+        result.Items.First().Localizacao.Should().NotBeNull();
+        result.Items.First().Organizacao.Should().NotBeNull();
+        result.Items.First().Turno.Should().NotBeNull();
+        result.Items.First().Servico.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task GetPagedWithDetailsAsync_QuandoRequisitandoUltimaPagina_DeveRetornarItensRestantes()
+    {
+        await SeedDatabaseAsync(12);
+        const int pageNumber = 3;
+        const int pageSize = 5;
+
+        var result = await _repository.GetPagedWithDetailsAsync(pageNumber, pageSize);
+
+        result.Should().NotBeNull();
+        result.TotalCount.Should().Be(12);
+        result.TotalPages.Should().Be(3);
+        result.Items.Should().HaveCount(2);
+        result.Items.First().CodCnes.Should().Be(111);
+        result.Items.Last().CodCnes.Should().Be(112);
+    }
+
+    [Fact]
+    public async Task GetPagedWithDetailsAsync_QuandoNaoHaDados_DeveRetornarResultadoVazio()
+    {
+        var result = await _repository.GetPagedWithDetailsAsync(1, 10);
+
+        result.Should().NotBeNull();
+        result.Items.Should().BeEmpty();
+        result.TotalCount.Should().Be(0);
+    }
 }
