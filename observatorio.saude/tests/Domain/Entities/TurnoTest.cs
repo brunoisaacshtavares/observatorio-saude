@@ -1,7 +1,7 @@
-﻿using Xunit;
+﻿using System.ComponentModel.DataAnnotations;
 using FluentAssertions;
-using System.ComponentModel.DataAnnotations;
 using observatorio.saude.Domain.Entities;
+using Xunit;
 
 namespace observatorio.saude.tests.Domain.Entities;
 
@@ -15,12 +15,12 @@ public class TurnoTest
             DscrTurnoAtendimento = "MANHA"
         };
     }
-    
+
     private (bool IsValid, ICollection<ValidationResult> Results) ValidarModelo(Turno entidade)
     {
         var validationResults = new List<ValidationResult>();
-        var context = new ValidationContext(entidade, serviceProvider: null, items: null);
-        var isValid = Validator.TryValidateObject(entidade, context, validationResults, validateAllProperties: true);
+        var context = new ValidationContext(entidade, null, null);
+        var isValid = Validator.TryValidateObject(entidade, context, validationResults, true);
         return (isValid, validationResults);
     }
 
@@ -28,9 +28,9 @@ public class TurnoTest
     public void Entidade_ComDadosValidos_DeveSerConsideradaValida()
     {
         var entidade = CriarEntidadeValida();
-        
+
         var (isValid, results) = ValidarModelo(entidade);
-        
+
         isValid.Should().BeTrue();
         results.Should().BeEmpty();
     }
@@ -40,9 +40,9 @@ public class TurnoTest
     {
         var entidade = CriarEntidadeValida();
         entidade.CodTurnoAtendimento = 0;
-        
+
         var (isValid, results) = ValidarModelo(entidade);
-        
+
         isValid.Should().BeFalse();
         results.Should().HaveCount(1);
         results.First().MemberNames.Should().Contain(nameof(Turno.CodTurnoAtendimento));
