@@ -19,7 +19,8 @@ public class Estabelecimento
     ///     Data da extração dos dados.
     /// </summary>
     [Required]
-    [Range(typeof(DateTime), "1/1/2000", "1/1/2100", ErrorMessage = "O campo Data de Extração deve conter uma data válida.")]
+    [Range(typeof(DateTime), "1/1/2000", "1/1/2100",
+        ErrorMessage = "O campo Data de Extração deve conter uma data válida.")]
     [Display(Name = "Data de Extração", Description = "Data em que os dados foram extraídos.")]
     public DateTime DataExtracao { get; set; }
 

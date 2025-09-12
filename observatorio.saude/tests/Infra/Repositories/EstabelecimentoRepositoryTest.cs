@@ -81,6 +81,54 @@ public class EstabelecimentoRepositoryTest : IDisposable
     }
 
     [Fact]
+    public async Task GetContagemPorEstadoAsync_QuandoDadosExistem_DeveAgruparEContarCorretamente()
+    {
+        var estabelecimentos = new List<EstabelecimentoModel>
+        {
+            new()
+            {
+                CodCnes = 1, CodUnidade = "U1", Localizacao = new LocalizacaoModel { CodUnidade = "U1", CodUf = 35 }
+            },
+            new()
+            {
+                CodCnes = 2, CodUnidade = "U2", Localizacao = new LocalizacaoModel { CodUnidade = "U2", CodUf = 35 }
+            },
+            new()
+            {
+                CodCnes = 3, CodUnidade = "U3", Localizacao = new LocalizacaoModel { CodUnidade = "U3", CodUf = 35 }
+            },
+            new()
+            {
+                CodCnes = 4, CodUnidade = "U4", Localizacao = new LocalizacaoModel { CodUnidade = "U4", CodUf = 33 }
+            },
+            new()
+            {
+                CodCnes = 5, CodUnidade = "U5", Localizacao = new LocalizacaoModel { CodUnidade = "U5", CodUf = 33 }
+            },
+            new()
+            {
+                CodCnes = 6, CodUnidade = "U6", Localizacao = new LocalizacaoModel { CodUnidade = "U6", CodUf = null }
+            },
+            new() { CodCnes = 7, CodUnidade = "U7", Localizacao = null }
+        };
+        await _context.EstabelecimentoModel.AddRangeAsync(estabelecimentos);
+        await _context.SaveChangesAsync();
+
+        var result = await _repository.GetContagemPorEstadoAsync();
+
+        result.Should().NotBeNull();
+        result.Should().HaveCount(2);
+
+        var resultadoLista = result.ToList();
+
+        resultadoLista[0].CodUf.Should().Be(35);
+        resultadoLista[0].Total.Should().Be(3);
+
+        resultadoLista[1].CodUf.Should().Be(33);
+        resultadoLista[1].Total.Should().Be(2);
+    }
+    
+    [Fact]
     public async Task GetPagedWithDetailsAsync_QuandoDadosExistem_DeveRetornarResultadoPaginadoCorretamente()
     {
         await SeedDatabaseAsync(12);

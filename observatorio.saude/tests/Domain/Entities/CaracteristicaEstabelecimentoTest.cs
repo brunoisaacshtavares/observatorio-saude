@@ -20,7 +20,9 @@ public class CaracteristicaEstabelecimentoTests
             NumTelefone = "+55 (11) 98765-4321"
         };
     }
-    private static (bool IsValid, ICollection<ValidationResult> Results) ValidarModelo(CaracteristicaEstabelecimento entidade)
+
+    private static (bool IsValid, ICollection<ValidationResult> Results) ValidarModelo(
+        CaracteristicaEstabelecimento entidade)
     {
         var validationResults = new List<ValidationResult>();
         var context = new ValidationContext(entidade, null, null);
@@ -32,9 +34,9 @@ public class CaracteristicaEstabelecimentoTests
     public void Entidade_ComDadosValidos_DeveSerConsideradaValida()
     {
         var entidade = CriarEntidadeValida();
-        
+
         var (isValid, results) = ValidarModelo(entidade);
-        
+
         isValid.Should().BeTrue();
         results.Should().BeEmpty();
     }
@@ -47,9 +49,9 @@ public class CaracteristicaEstabelecimentoTests
     {
         var entidade = CriarEntidadeValida();
         entidade.CodUnidade = codUnidade;
-        
+
         var (isValid, results) = ValidarModelo(entidade);
-        
+
         isValid.Should().BeFalse();
         results.Should().HaveCount(1);
         results.First().MemberNames.Should()
@@ -64,9 +66,9 @@ public class CaracteristicaEstabelecimentoTests
     {
         var entidade = CriarEntidadeValida();
         entidade.Email = email;
-        
+
         var (isValid, results) = ValidarModelo(entidade);
-        
+
         isValid.Should().BeFalse();
         results.Should().Contain(r => r.MemberNames.Contains(nameof(CaracteristicaEstabelecimento.Email)));
     }

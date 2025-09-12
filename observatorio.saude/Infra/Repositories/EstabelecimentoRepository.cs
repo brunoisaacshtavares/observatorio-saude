@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using observatorio.saude.Domain.Dto;
 using observatorio.saude.Domain.Interface;
 using observatorio.saude.Domain.Utils;
 using observatorio.saude.Infra.Data;
@@ -10,6 +11,30 @@ public class EstabelecimentoRepository(ApplicationDbContext context) : IEstabele
 {
     private readonly ApplicationDbContext _context = context;
 
+    public async Task<IEnumerable<NumeroEstabelecimentoEstadoDto>> GetContagemPorEstadoAsync()
+    {
+        var contagemPorEstado = await _context.EstabelecimentoModel
+            .AsNoTracking() 
+            .Where(e => e.Localizacao.CodUf != null) 
+            .GroupBy(e => e.Localizacao.CodUf)
+            .Select(g => new NumeroEstabelecimentoEstadoDto
+            {
+                CodUf = g.Key.Value, 
+                Total = g.Count()
+            })
+            .OrderByDescending(r => r.Total)
+            .ToListAsync();
+
+        return contagemPorEstado;
+    }
+
+    public async Task<NumeroEstabelecimentosDto> GetContagemTotalAsync()
+    {
+        var total = await _context.EstabelecimentoModel.CountAsync();
+
+        return new NumeroEstabelecimentosDto { TotalEstabelecimentos = total };
+    }
+    
     public async Task<PaginatedResult<EstabelecimentoModel>> GetPagedWithDetailsAsync(int pageNumber, int pageSize)
     {
         var query = _context.EstabelecimentoModel

@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using observatorio.saude.Domain.Entities;
 using observatorio.saude.Domain.Utils;
 

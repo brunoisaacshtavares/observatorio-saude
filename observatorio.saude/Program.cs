@@ -2,7 +2,7 @@ using System.Reflection;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
-using observatorio.saude.Application.Queries.GetEstabelecimentosPaginados;
+using observatorio.saude.Application.Queries.GetNumeroEstabelecimentos;
 using observatorio.saude.Domain.Interface;
 using observatorio.saude.Domain.Job;
 using observatorio.saude.Infra.Data;
@@ -13,9 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
 
 if (string.IsNullOrEmpty(connectionString))
-{
     connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-}
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString)
@@ -25,7 +23,7 @@ builder.Services.AddControllers();
 builder.Services.AddMediatR(configuration => { configuration.RegisterServicesFromAssembly(typeof(Program).Assembly); });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<GetEstabelecimentosPaginadosQuery>();
+builder.Services.AddScoped<GetNumerostabelecimentosPorEstadoQuery>();
 builder.Services.AddScoped<IEstabelecimentoRepository, EstabelecimentoRepository>();
 
 builder.Services.AddCors(options =>
@@ -33,24 +31,24 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAllOrigins", policy =>
     {
         policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+            .AllowAnyMethod()
+            .AllowAnyHeader();
     });
 });
 
 builder.Services.AddControllers();
 
 builder.Services.AddApiVersioning(options =>
-{
-    options.ReportApiVersions = true;
-    options.AssumeDefaultVersionWhenUnspecified = true;
-    options.DefaultApiVersion = new ApiVersion(1, 0);
-})
-.AddApiExplorer(options =>
-{
-    options.GroupNameFormat = "'v'VVV";
-    options.SubstituteApiVersionInUrl = true;
-});
+    {
+        options.ReportApiVersions = true;
+        options.AssumeDefaultVersionWhenUnspecified = true;
+        options.DefaultApiVersion = new ApiVersion(1, 0);
+    })
+    .AddApiExplorer(options =>
+    {
+        options.GroupNameFormat = "'v'VVV";
+        options.SubstituteApiVersionInUrl = true;
+    });
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -79,4 +77,3 @@ if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName.Contains(
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
-

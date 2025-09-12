@@ -26,7 +26,8 @@ public class EtlScheduledJob(ILogger<EtlScheduledJob> logger, IConfiguration con
                     continue;
                 }
 
-                var scriptPath = Path.Combine(Directory.GetCurrentDirectory(), "Scripts", "EtlEstabelecimentos", "cnes.py");
+                var scriptPath = Path.Combine(Directory.GetCurrentDirectory(), "Scripts", "EtlEstabelecimentos",
+                    "cnes.py");
                 var arguments = BuildPythonArguments(scriptPath, connectionString);
                 if (string.IsNullOrEmpty(arguments)) continue;
 

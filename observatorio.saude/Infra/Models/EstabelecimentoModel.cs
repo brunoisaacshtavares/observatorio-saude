@@ -1,9 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace observatorio.saude.Infra.Models;
 
 [Table("fato_estabelecimento")]
+[Index(nameof(CodUnidade))]
+[Index(nameof(CodTurnoAtendimento))]
+[Index(nameof(DataExtracao))]
 public class EstabelecimentoModel
 {
     [Key] [Column("cod_cnes")] public long CodCnes { get; set; }
