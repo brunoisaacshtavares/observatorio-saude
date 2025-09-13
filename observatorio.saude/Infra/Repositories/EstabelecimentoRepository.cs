@@ -14,15 +14,15 @@ public class EstabelecimentoRepository(ApplicationDbContext context) : IEstabele
     public async Task<IEnumerable<NumeroEstabelecimentoEstadoDto>> GetContagemPorEstadoAsync()
     {
         var contagemPorEstado = await _context.EstabelecimentoModel
-            .AsNoTracking() 
-            .Where(e => e.Localizacao.CodUf != null) 
+            .AsNoTracking()
+            .Where(e => e.Localizacao.CodUf != null)
             .GroupBy(e => e.Localizacao.CodUf)
             .Select(g => new NumeroEstabelecimentoEstadoDto
             {
-                CodUf = g.Key.Value, 
-                Total = g.Count()
+                CodUf = g.Key.Value,
+                TotalEstabelecimentos = g.Count()
             })
-            .OrderByDescending(r => r.Total)
+            .OrderByDescending(r => r.TotalEstabelecimentos)
             .ToListAsync();
 
         return contagemPorEstado;
@@ -34,7 +34,7 @@ public class EstabelecimentoRepository(ApplicationDbContext context) : IEstabele
 
         return new NumeroEstabelecimentosDto { TotalEstabelecimentos = total };
     }
-    
+
     public async Task<PaginatedResult<EstabelecimentoModel>> GetPagedWithDetailsAsync(int pageNumber, int pageSize)
     {
         var query = _context.EstabelecimentoModel

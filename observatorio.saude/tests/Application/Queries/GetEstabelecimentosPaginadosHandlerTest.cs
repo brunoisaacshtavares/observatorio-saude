@@ -1,24 +1,24 @@
-﻿using Xunit;
+﻿using FluentAssertions;
 using Moq;
-using FluentAssertions;
-using observatorio.saude.Domain.Interface;
 using observatorio.saude.Application.Queries.GetEstabelecimentosPaginados;
+using observatorio.saude.Domain.Interface;
 using observatorio.saude.Domain.Utils;
 using observatorio.saude.Infra.Models;
+using Xunit;
 
 namespace observatorio.saude.tests.Application.Queries;
 
 public class GetEstabelecimentosPaginadosHandlerTest
 {
-    private readonly Mock<IEstabelecimentoRepository> _repositoryMock;
     private readonly GetEstabelecimentosPaginadosHandler _handler;
+    private readonly Mock<IEstabelecimentoRepository> _repositoryMock;
 
     public GetEstabelecimentosPaginadosHandlerTest()
     {
         _repositoryMock = new Mock<IEstabelecimentoRepository>();
         _handler = new GetEstabelecimentosPaginadosHandler(_repositoryMock.Object);
     }
-    
+
     private PaginatedResult<EstabelecimentoModel> CriarResultadoFalsoDoRepositorio()
     {
         var itemModel = new EstabelecimentoModel
@@ -33,7 +33,7 @@ public class GetEstabelecimentosPaginadosHandlerTest
         };
 
         var items = new List<EstabelecimentoModel> { itemModel };
-        
+
         return new PaginatedResult<EstabelecimentoModel>(items, 1, 10, 1);
     }
 
@@ -46,21 +46,21 @@ public class GetEstabelecimentosPaginadosHandlerTest
         _repositoryMock
             .Setup(r => r.GetPagedWithDetailsAsync(query.PageNumber, query.PageSize))
             .ReturnsAsync(resultadoFalsoDoRepo);
-        
+
         var result = await _handler.Handle(query, CancellationToken.None);
-        
+
         result.Should().NotBeNull();
         result.Items.Should().HaveCount(1);
         result.CurrentPage.Should().Be(resultadoFalsoDoRepo.CurrentPage);
         result.PageSize.Should().Be(resultadoFalsoDoRepo.PageSize);
         result.TotalCount.Should().Be(resultadoFalsoDoRepo.TotalCount);
-        
+
         var itemMapeado = result.Items.First();
         var itemOriginal = resultadoFalsoDoRepo.Items.First();
 
         itemMapeado.CodCnes.Should().Be(itemOriginal.CodCnes);
         itemMapeado.DataExtracao.Should().Be(itemOriginal.DataExtracao);
-        
+
         itemMapeado.Caracteristicas.Should().NotBeNull();
         itemMapeado.Caracteristicas.NmFantasia.Should().Be(itemOriginal.CaracteristicaEstabelecimento.NmFantasia);
 
@@ -75,8 +75,9 @@ public class GetEstabelecimentosPaginadosHandlerTest
 
         itemMapeado.Servico.Should().NotBeNull();
         itemMapeado.Servico.TemCentroCirurgico.Should().Be(itemOriginal.Servico.StCentroCirurgico);
-        itemMapeado.Servico.FazAtendimentoAmbulatorialSus.Should().Be(itemOriginal.Servico.StFazAtendimentoAmbulatorialSus);
-        
+        itemMapeado.Servico.FazAtendimentoAmbulatorialSus.Should()
+            .Be(itemOriginal.Servico.StFazAtendimentoAmbulatorialSus);
+
         _repositoryMock.Verify(r => r.GetPagedWithDetailsAsync(query.PageNumber, query.PageSize), Times.Once);
     }
 
@@ -84,14 +85,15 @@ public class GetEstabelecimentosPaginadosHandlerTest
     public async Task Handle_QuandoRepositorioRetornaVazio_DeveRetornarResultadoPaginadoVazio()
     {
         var query = new GetEstabelecimentosPaginadosQuery { PageNumber = 1, PageSize = 10 };
-        var resultadoVazioDoRepo = new PaginatedResult<EstabelecimentoModel>(new List<EstabelecimentoModel>(), 1, 10, 0);
+        var resultadoVazioDoRepo =
+            new PaginatedResult<EstabelecimentoModel>(new List<EstabelecimentoModel>(), 1, 10, 0);
 
         _repositoryMock
             .Setup(r => r.GetPagedWithDetailsAsync(query.PageNumber, query.PageSize))
             .ReturnsAsync(resultadoVazioDoRepo);
-        
+
         var result = await _handler.Handle(query, CancellationToken.None);
-        
+
         result.Should().NotBeNull();
         result.Items.Should().BeEmpty();
         result.TotalCount.Should().Be(0);
