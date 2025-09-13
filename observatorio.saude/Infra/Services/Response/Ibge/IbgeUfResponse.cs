@@ -40,3 +40,18 @@ public class IbgeUfResponse
 
     [JsonPropertyName("resultados")] public List<Resultado> Resultados { get; set; }
 }
+
+public class UfDataResponse
+{
+    public long Id { get; set; }
+    public string Sigla { get; set; }
+    public string Nome { get; set; }
+    public RegiaoResponse Regiao { get; set; }
+}
+
+public class RegiaoResponse
+{
+    public int Id { get; set; }
+    public string Sigla { get; set; }
+    public string Nome { get; set; }
+}
