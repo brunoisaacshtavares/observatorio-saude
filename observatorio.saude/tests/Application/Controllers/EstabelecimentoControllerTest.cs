@@ -28,8 +28,8 @@ public class EstabelecimentoControllerTest
     {
         var resultadoEsperado = new List<NumeroEstabelecimentoEstadoDto>
         {
-            new() { CodUf = 35, Total = 1500 },
-            new() { CodUf = 33, Total = 1200 }
+            new() { CodUf = 35, TotalEstabelecimentos = 1500 },
+            new() { CodUf = 33, TotalEstabelecimentos = 1200 }
         };
 
         _mediatorMock
@@ -45,11 +45,11 @@ public class EstabelecimentoControllerTest
         _mediatorMock.Verify(
             m => m.Send(It.IsAny<GetNumerostabelecimentosPorEstadoQuery>(), It.IsAny<CancellationToken>()), Times.Once);
     }
-    
+
     [Fact]
     public async Task GetEstabelecimentos_QuandoChamado_DeveRetornarOkComResultadoPaginado()
     {
-        var paginadosQuery = new GetEstabelecimentosPaginadosQuery() { PageNumber = 1, PageSize = 10 };
+        var paginadosQuery = new GetEstabelecimentosPaginadosQuery { PageNumber = 1, PageSize = 10 };
 
         var resultadoPaginadoEsperado = new PaginatedResult<Estabelecimento>(
             new List<Estabelecimento> { new() { CodCnes = 12345 } }, 1, 1, 10

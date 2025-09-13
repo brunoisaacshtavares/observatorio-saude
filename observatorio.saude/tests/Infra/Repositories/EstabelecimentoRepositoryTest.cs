@@ -122,12 +122,12 @@ public class EstabelecimentoRepositoryTest : IDisposable
         var resultadoLista = result.ToList();
 
         resultadoLista[0].CodUf.Should().Be(35);
-        resultadoLista[0].Total.Should().Be(3);
+        resultadoLista[0].TotalEstabelecimentos.Should().Be(3);
 
         resultadoLista[1].CodUf.Should().Be(33);
-        resultadoLista[1].Total.Should().Be(2);
+        resultadoLista[1].TotalEstabelecimentos.Should().Be(2);
     }
-    
+
     [Fact]
     public async Task GetPagedWithDetailsAsync_QuandoDadosExistem_DeveRetornarResultadoPaginadoCorretamente()
     {

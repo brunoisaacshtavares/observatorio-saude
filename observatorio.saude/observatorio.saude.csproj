@@ -32,10 +32,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Application\"/>
-    </ItemGroup>
-
-    <ItemGroup>
         <Content Update="requirements.txt">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>

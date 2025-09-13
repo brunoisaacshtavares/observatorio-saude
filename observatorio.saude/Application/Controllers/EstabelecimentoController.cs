@@ -30,7 +30,7 @@ public class EstabelecimentoController(IMediator mediator) : BaseController
         var result = await mediator.Send(query);
         return Ok(result);
     }
-    
+
     [HttpGet("info")]
     [ProducesResponseType(typeof(PaginatedResult<Estabelecimento>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetEstabelecimentos([FromQuery] GetEstabelecimentosPaginadosQuery paginadosQuery)
