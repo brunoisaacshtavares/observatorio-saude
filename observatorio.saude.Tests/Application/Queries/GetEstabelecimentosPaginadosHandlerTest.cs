@@ -4,7 +4,6 @@ using observatorio.saude.Application.Queries.GetEstabelecimentosPaginados;
 using observatorio.saude.Domain.Interface;
 using observatorio.saude.Domain.Utils;
 using observatorio.saude.Infra.Models;
-using Xunit;
 
 namespace observatorio.saude.tests.Application.Queries;
 

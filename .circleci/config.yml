@@ -24,8 +24,9 @@ jobs:
       - run:
           name: Run tests
           command: 
-            (mkdir TestResults) -and (dotnet test --no-build --configuration Release --logger "trx;LogFileName=TestResults/results.trx")
-
+            mkdir TestResults
+            dotnet test --no-build --configuration Release --logger "junit;LogFilePath=TestResults\results.xml;MethodFormat=Class"
+            
       - store_test_results:
           path: TestResults
 

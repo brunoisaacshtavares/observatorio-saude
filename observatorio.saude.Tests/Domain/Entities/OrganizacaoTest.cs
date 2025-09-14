@@ -1,22 +1,23 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using FluentAssertions;
 using observatorio.saude.Domain.Entities;
-using Xunit;
 
 namespace observatorio.saude.tests.Domain.Entities;
 
-public class TurnoTest
+public class OrganizacaoTest
 {
-    private Turno CriarEntidadeValida()
+    private Organizacao CriarEntidadeValida()
     {
-        return new Turno
+        return new Organizacao
         {
-            CodTurnoAtendimento = 1,
-            DscrTurnoAtendimento = "MANHA"
+            CodCnes = 9876543,
+            TpUnidade = 40,
+            TpGestao = 'M',
+            DscrEsferaAdministrativa = "MUNICIPAL"
         };
     }
 
-    private (bool IsValid, ICollection<ValidationResult> Results) ValidarModelo(Turno entidade)
+    private (bool IsValid, ICollection<ValidationResult> Results) ValidarModelo(Organizacao entidade)
     {
         var validationResults = new List<ValidationResult>();
         var context = new ValidationContext(entidade, null, null);
@@ -36,15 +37,15 @@ public class TurnoTest
     }
 
     [Fact]
-    public void CodTurnoAtendimento_QuandoForDefault_DeveSerInvalido()
+    public void CodCnes_QuandoForDefault_DeveSerInvalido()
     {
         var entidade = CriarEntidadeValida();
-        entidade.CodTurnoAtendimento = 0;
+        entidade.CodCnes = 0;
 
         var (isValid, results) = ValidarModelo(entidade);
 
         isValid.Should().BeFalse();
         results.Should().HaveCount(1);
-        results.First().MemberNames.Should().Contain(nameof(Turno.CodTurnoAtendimento));
+        results.First().MemberNames.Should().Contain(nameof(Organizacao.CodCnes));
     }
 }

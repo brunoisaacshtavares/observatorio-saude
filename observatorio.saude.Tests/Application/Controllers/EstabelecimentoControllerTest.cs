@@ -1,5 +1,6 @@
 using FluentAssertions;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using observatorio.saude.Application.Controllers;
@@ -8,7 +9,6 @@ using observatorio.saude.Application.Queries.GetNumeroEstabelecimentos;
 using observatorio.saude.Domain.Dto;
 using observatorio.saude.Domain.Entities;
 using observatorio.saude.Domain.Utils;
-using Xunit;
 
 namespace observatorio.saude.tests.Application.Controllers;
 

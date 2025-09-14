@@ -1,24 +1,28 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using FluentAssertions;
 using observatorio.saude.Domain.Entities;
-using Xunit;
 
 namespace observatorio.saude.tests.Domain.Entities;
 
-public class ServicoTests
+public class LocalizacaoTest
 {
-    private Servico CriarEntidadeValida()
+    private Localizacao CriarEntidadeValida()
     {
-        return new Servico
+        return new Localizacao
         {
-            CodCnes = 1234567,
-            TemCentroCirurgico = true,
-            FazAtendimentoAmbulatorialSus = true,
-            TemCentroObstetrico = false
+            CodUnidade = "UNIDADE-VALIDA-123",
+            CodCep = 12345678,
+            Endereco = "Avenida dos Testes Unitários",
+            Numero = 101,
+            Bairro = "Centro",
+            Latitude = -23.5505m,
+            Longitude = -46.6333m,
+            CodIbge = 3550308,
+            CodUf = 35
         };
     }
 
-    private (bool IsValid, ICollection<ValidationResult> Results) ValidarModelo(Servico entidade)
+    private (bool IsValid, ICollection<ValidationResult> Results) ValidarModelo(Localizacao entidade)
     {
         var validationResults = new List<ValidationResult>();
         var context = new ValidationContext(entidade, null, null);
@@ -37,16 +41,19 @@ public class ServicoTests
         results.Should().BeEmpty();
     }
 
-    [Fact]
-    public void CodCnes_QuandoForDefault_DeveSerInvalido()
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void CodUnidade_QuandoNuloOuVazio_DeveSerInvalido(string codUnidade)
     {
         var entidade = CriarEntidadeValida();
-        entidade.CodCnes = 0;
+        entidade.CodUnidade = codUnidade;
 
         var (isValid, results) = ValidarModelo(entidade);
 
         isValid.Should().BeFalse();
         results.Should().HaveCount(1);
-        results.First().MemberNames.Should().Contain(nameof(Servico.CodCnes));
+        results.First().MemberNames.Should().Contain(nameof(Localizacao.CodUnidade));
     }
 }

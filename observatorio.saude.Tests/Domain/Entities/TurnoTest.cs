@@ -1,29 +1,21 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using FluentAssertions;
 using observatorio.saude.Domain.Entities;
-using Xunit;
 
 namespace observatorio.saude.tests.Domain.Entities;
 
-public class LocalizacaoTest
+public class TurnoTest
 {
-    private Localizacao CriarEntidadeValida()
+    private Turno CriarEntidadeValida()
     {
-        return new Localizacao
+        return new Turno
         {
-            CodUnidade = "UNIDADE-VALIDA-123",
-            CodCep = 12345678,
-            Endereco = "Avenida dos Testes Unitários",
-            Numero = 101,
-            Bairro = "Centro",
-            Latitude = -23.5505m,
-            Longitude = -46.6333m,
-            CodIbge = 3550308,
-            CodUf = 35
+            CodTurnoAtendimento = 1,
+            DscrTurnoAtendimento = "MANHA"
         };
     }
 
-    private (bool IsValid, ICollection<ValidationResult> Results) ValidarModelo(Localizacao entidade)
+    private (bool IsValid, ICollection<ValidationResult> Results) ValidarModelo(Turno entidade)
     {
         var validationResults = new List<ValidationResult>();
         var context = new ValidationContext(entidade, null, null);
@@ -42,19 +34,16 @@ public class LocalizacaoTest
         results.Should().BeEmpty();
     }
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("   ")]
-    public void CodUnidade_QuandoNuloOuVazio_DeveSerInvalido(string codUnidade)
+    [Fact]
+    public void CodTurnoAtendimento_QuandoForDefault_DeveSerInvalido()
     {
         var entidade = CriarEntidadeValida();
-        entidade.CodUnidade = codUnidade;
+        entidade.CodTurnoAtendimento = 0;
 
         var (isValid, results) = ValidarModelo(entidade);
 
         isValid.Should().BeFalse();
         results.Should().HaveCount(1);
-        results.First().MemberNames.Should().Contain(nameof(Localizacao.CodUnidade));
+        results.First().MemberNames.Should().Contain(nameof(Turno.CodTurnoAtendimento));
     }
 }

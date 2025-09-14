@@ -1,24 +1,23 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using FluentAssertions;
 using observatorio.saude.Domain.Entities;
-using Xunit;
 
 namespace observatorio.saude.tests.Domain.Entities;
 
-public class OrganizacaoTest
+public class ServicoTests
 {
-    private Organizacao CriarEntidadeValida()
+    private Servico CriarEntidadeValida()
     {
-        return new Organizacao
+        return new Servico
         {
-            CodCnes = 9876543,
-            TpUnidade = 40,
-            TpGestao = 'M',
-            DscrEsferaAdministrativa = "MUNICIPAL"
+            CodCnes = 1234567,
+            TemCentroCirurgico = true,
+            FazAtendimentoAmbulatorialSus = true,
+            TemCentroObstetrico = false
         };
     }
 
-    private (bool IsValid, ICollection<ValidationResult> Results) ValidarModelo(Organizacao entidade)
+    private (bool IsValid, ICollection<ValidationResult> Results) ValidarModelo(Servico entidade)
     {
         var validationResults = new List<ValidationResult>();
         var context = new ValidationContext(entidade, null, null);
@@ -47,6 +46,6 @@ public class OrganizacaoTest
 
         isValid.Should().BeFalse();
         results.Should().HaveCount(1);
-        results.First().MemberNames.Should().Contain(nameof(Organizacao.CodCnes));
+        results.First().MemberNames.Should().Contain(nameof(Servico.CodCnes));
     }
 }

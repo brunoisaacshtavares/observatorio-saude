@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using observatorio.saude.Infra.Data;
 using observatorio.saude.Infra.Models;
 using observatorio.saude.Infra.Repositories;
-using Xunit;
 
 namespace observatorio.saude.tests.Infra.Repositories;
 

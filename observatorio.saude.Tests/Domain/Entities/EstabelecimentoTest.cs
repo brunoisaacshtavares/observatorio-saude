@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using FluentAssertions;
 using observatorio.saude.Domain.Entities;
-using Xunit;
 
 namespace observatorio.saude.tests.Domain.Entities;
 
