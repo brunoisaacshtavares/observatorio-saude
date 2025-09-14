@@ -36,7 +36,7 @@ public class EtlScheduledJob(ILogger<EtlScheduledJob> logger, IConfiguration con
 
                 var startInfo = new ProcessStartInfo
                 {
-                    FileName = "python",
+                    FileName = "python3",
                     Arguments = arguments,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
