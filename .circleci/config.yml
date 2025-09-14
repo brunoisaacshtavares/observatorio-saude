@@ -8,6 +8,11 @@ jobs:
     steps:
       - checkout
 
+      - restore_cache:
+          keys:
+            - nuget-packages-{{ checksum "observatorio.saude.sln" }}
+            - nuget-packages-
+
       - run:
           name: Restore (solution)
           command: dotnet restore observatorio.saude.sln
@@ -15,7 +20,7 @@ jobs:
       - save_cache:
           paths:
             - ~/.nuget/packages
-          key: nuget-packages-{{ checksum "observatorio.saude/obj/project.assets.json" }}
+          key: nuget-packages-{{ checksum "observatorio.saude.sln" }}
 
       - run:
           name: Build
@@ -23,7 +28,7 @@ jobs:
 
       - run:
           name: Run tests
-          command: 
+          command: |
             mkdir TestResults
             dotnet test --no-build --configuration Release --logger "junit;LogFilePath=TestResults\results.xml;MethodFormat=Class"
             
