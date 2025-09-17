@@ -6,7 +6,7 @@ using observatorio.saude.Domain.Interface;
 using observatorio.saude.Domain.Utils;
 using observatorio.saude.Infra.Models;
 
-namespace observatorio.saude.tests.Application.Queries;
+namespace observatorio.saude.tests.Application.Queries.GetEstabelecimentosPaginados;
 
 public class GetEstabelecimentosPaginadosHandlerTest
 {
@@ -131,6 +131,35 @@ public class GetEstabelecimentosPaginadosHandlerTest
             It.IsAny<int>(),
             It.IsAny<int>(),
             null), Times.Never);
+    }
+    
+    [Fact]
+    public async Task Handle_QuandoUfEhInvalida_DeveIgnorarOFiltrarEChamarORepositorioSemFiltro()
+    {
+        const string ufInvalida = "XX";
+        var query = new GetEstabelecimentosPaginadosQuery { PageNumber = 1, PageSize = 10, Uf = ufInvalida };
+        
+        _ibgeApiClientMock
+            .Setup(c => c.FindUfsAsync())
+            .ReturnsAsync(new List<UfDataResponse>()); 
+        
+        var resultadoFalsoDoRepo = CriarResultadoFalsoDoRepositorio();
+        _repositoryMock
+            .Setup(r => r.GetPagedWithDetailsAsync(query.PageNumber, query.PageSize, null))
+            .ReturnsAsync(resultadoFalsoDoRepo);
+        
+        var result = await _handler.Handle(query, CancellationToken.None);
+        
+        result.Should().NotBeNull();
+        result.Items.Should().HaveCount(1);
+        result.Items.First().CodCnes.Should().Be(resultadoFalsoDoRepo.Items.First().CodCnes);
+        
+        _ibgeApiClientMock.Verify(c => c.FindUfsAsync(), Times.Once);
+        
+        _repositoryMock.Verify(r => r.GetPagedWithDetailsAsync(
+            It.IsAny<int>(),
+            It.IsAny<int>(),
+            null), Times.Once);
     }
 }
 

@@ -5,13 +5,13 @@ using observatorio.saude.Domain.Interface;
 
 namespace observatorio.saude.Application.Queries.GetNumeroEstabelecimentos;
 
-public class GetContagemEstabelecimentosPorEstadoQueryHandler : IRequestHandler<GetNumerostabelecimentosPorEstadoQuery,
+public class GetContagemEstabelecimentosPorEstadoHandler : IRequestHandler<GetNumerostabelecimentosPorEstadoQuery,
     IEnumerable<NumeroEstabelecimentoEstadoDto>>
 {
     private readonly IEstabelecimentoRepository _estabelecimentoRepository;
     private readonly IIbgeApiClient _ibgeApiClient;
 
-    public GetContagemEstabelecimentosPorEstadoQueryHandler(
+    public GetContagemEstabelecimentosPorEstadoHandler(
         IEstabelecimentoRepository estabelecimentoRepository,
         IIbgeApiClient ibgeApiClient)
     {

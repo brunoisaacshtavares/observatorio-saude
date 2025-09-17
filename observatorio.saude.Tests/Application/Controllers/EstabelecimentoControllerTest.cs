@@ -71,4 +71,22 @@ public class EstabelecimentoControllerTest
 
         _mediatorMock.Verify(m => m.Send(paginadosQuery, It.IsAny<CancellationToken>()), Times.Once);
     }
+    
+    [Fact]
+    public async Task GetNumero_QuandoChamado_DeveRetornarOkComNumeroTotal()
+    {
+        var resultadoEsperado = new NumeroEstabelecimentosDto { TotalEstabelecimentos = 5000 };
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetNumeroEstabelecimentosQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(resultadoEsperado);
+        
+        var actionResult = await _controller.GetNumero();
+        
+        var okResult = actionResult.Should().BeOfType<OkObjectResult>().Subject;
+        okResult.StatusCode.Should().Be(StatusCodes.Status200OK);
+        okResult.Value.Should().BeEquivalentTo(resultadoEsperado);
+
+        _mediatorMock.Verify(m => m.Send(It.IsAny<GetNumeroEstabelecimentosQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
 }
