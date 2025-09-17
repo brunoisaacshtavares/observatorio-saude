@@ -1,20 +1,37 @@
 using MediatR;
+using observatorio.saude.Application.Services.Clients;
 using observatorio.saude.Domain.Entities;
 using observatorio.saude.Domain.Interface;
 using observatorio.saude.Domain.Utils;
 
 namespace observatorio.saude.Application.Queries.GetEstabelecimentosPaginados;
 
-public class GetEstabelecimentosPaginadosHandler(IEstabelecimentoRepository estabelecimentoRepository)
+public class GetEstabelecimentosPaginadosHandler(
+    IEstabelecimentoRepository estabelecimentoRepository,
+    IIbgeApiClient ibgeApiClient)
     : IRequestHandler<GetEstabelecimentosPaginadosQuery, PaginatedResult<Estabelecimento>>
 {
     private readonly IEstabelecimentoRepository _estabelecimentoRepository = estabelecimentoRepository;
+    private readonly IIbgeApiClient _ibgeApiClient = ibgeApiClient;
 
     public async Task<PaginatedResult<Estabelecimento>> Handle(GetEstabelecimentosPaginadosQuery request,
         CancellationToken cancellationToken)
     {
+        long? codUf = null;
+        if (!string.IsNullOrWhiteSpace(request.Uf))
+        {
+            var ufs = await _ibgeApiClient.FindUfsAsync();
+            var ufEncontrada = ufs.FirstOrDefault(uf =>
+                uf.Sigla.Equals(request.Uf, StringComparison.OrdinalIgnoreCase));
+
+            if (ufEncontrada != null) codUf = ufEncontrada.Id;
+        }
+
         var pagedResultFromDb =
-            await _estabelecimentoRepository.GetPagedWithDetailsAsync(request.PageNumber, request.PageSize);
+            await _estabelecimentoRepository.GetPagedWithDetailsAsync(
+                request.PageNumber,
+                request.PageSize,
+                codUf);
 
         var estabelecimentosDto = pagedResultFromDb.Items.Select(e => new Estabelecimento
         {

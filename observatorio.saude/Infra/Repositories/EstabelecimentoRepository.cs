@@ -35,7 +35,8 @@ public class EstabelecimentoRepository(ApplicationDbContext context) : IEstabele
         return new NumeroEstabelecimentosDto { TotalEstabelecimentos = total };
     }
 
-    public async Task<PaginatedResult<EstabelecimentoModel>> GetPagedWithDetailsAsync(int pageNumber, int pageSize)
+    public async Task<PaginatedResult<EstabelecimentoModel>> GetPagedWithDetailsAsync(int pageNumber, int pageSize,
+        long? codUf = null)
     {
         var query = _context.EstabelecimentoModel
             .Include(e => e.CaracteristicaEstabelecimento)
@@ -45,6 +46,7 @@ public class EstabelecimentoRepository(ApplicationDbContext context) : IEstabele
             .Include(e => e.Servico)
             .AsQueryable();
 
+        if (codUf.HasValue) query = query.Where(e => e.Localizacao.CodUf == codUf.Value);
         var totalCount = await query.CountAsync();
 
         var items = await query
