@@ -31,7 +31,12 @@ jobs:
           command: |
             mkdir TestResults
             dotnet test --no-build --configuration Release --logger "junit;LogFilePath=TestResults\results.xml;MethodFormat=Class"
-            
+ 
+      - run:
+          name: "Check for test results"
+          command: dir TestResults
+          when: always
+
       - store_test_results:
           path: TestResults
 

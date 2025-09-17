@@ -8,5 +8,7 @@ public interface IEstabelecimentoRepository
 {
     Task<IEnumerable<NumeroEstabelecimentoEstadoDto>> GetContagemPorEstadoAsync();
     Task<NumeroEstabelecimentosDto> GetContagemTotalAsync();
-    Task<PaginatedResult<EstabelecimentoModel>> GetPagedWithDetailsAsync(int pageNumber, int pageSize);
+
+    Task<PaginatedResult<EstabelecimentoModel>> GetPagedWithDetailsAsync(int pageNumber, int pageSize,
+        long? codUf = null);
 }
