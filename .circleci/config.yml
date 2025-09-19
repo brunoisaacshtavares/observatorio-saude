@@ -33,7 +33,7 @@ jobs:
       - run:
           name: Run tests and collect coverage
           command: |
-            dotnet test --no-build --configuration Release --results-directory TestResults --logger "junit;LogFilePath=TestResults/results.xml;MethodFormat=Class" --collect:"XPlat Code Coverage;Format=cobertura"
+            dotnet test --no-build --configuration Release --results-directory test-result --logger "junit;LogFilePath=test-result/results.xml;MethodFormat=Class" --collect:"XPlat Code Coverage;Format=cobertura"
 
       - run:
           name: Generate HTML coverage report
