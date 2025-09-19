@@ -44,7 +44,7 @@ jobs:
           when: always
       - run:
           name: Check for generated files
-          command: dir /s TestResults
+          command: ls -R TestResults
           when: always
 
       - store_test_results:
