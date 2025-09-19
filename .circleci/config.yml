@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   windows: circleci/windows@5.0.0
+
 jobs:
   build-and-test:
     executor:
@@ -14,7 +15,7 @@ jobs:
             - nuget-packages-
 
       - run:
-          name: Restore (solution)
+          name: Restore NuGet Packages
           command: dotnet restore observatorio.saude.sln
 
       - save_cache:
@@ -23,26 +24,27 @@ jobs:
           key: nuget-packages-{{ checksum "observatorio.saude.sln" }}
 
       - run:
-          name: Build
+          name: Build Solution
           command: dotnet build observatorio.saude.sln --configuration Release --no-restore
 
       - run:
           name: Install ReportGenerator Tool
-          command: dotnet tool install --global dotnet-reportgenerator-globaltool
+          command: dotnet tool install --global dotnet-reportgenerator-globaltool --version "5.2.0"
 
       - run:
-          name: Run tests and collect coverage
+          name: Run Tests and Collect Coverage
           command: |
-            dotnet test --no-build --configuration Release --results-directory TestResults --logger "junit;LogFilePath=TestResults/result/results.xml;MethodFormat=Class" --collect:"XPlat Code Coverage;Format=cobertura"
+            mkdir TestResults\junit
+            dotnet test observatorio.saude.Tests/observatorio.saude.Tests.csproj --no-build --configuration Release --results-directory TestResults --logger "junit;LogFilePath=TestResults\junit\results.xml;MethodFormat=Class" --collect:"XPlat Code Coverage;Format=cobertura"
 
       - run:
-          name: Generate HTML coverage report
+          name: Generate HTML Coverage Report
           command: |
-            reportgenerator -reports:"TestResults/**/*.cobertura.xml" -targetdir:"CoverageReport" -reporttypes:Html
+            reportgenerator "-reports:TestResults\**\coverage.cobertura.xml" "-targetdir:CoverageReport" "-reporttypes:Html"
           when: always
 
       - store_test_results:
-          path: TestResults/result
+          path: TestResults\junit
 
       - store_artifacts:
           path: CoverageReport
@@ -50,7 +52,7 @@ jobs:
           
       - store_artifacts:
           path: TestResults
-          destination: test-results
+          destination: raw-test-results
 
 workflows:
   version: 2
