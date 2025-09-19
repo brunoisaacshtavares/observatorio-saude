@@ -41,7 +41,7 @@ jobs:
           command: |
             dotnet tool install --global trx2junit
             mkdir JunitResults
-            $trxFile = (Get-ChildItem -Recurse -Filter *.trx).FullName
+            $trxFile = (Get-ChildItem -Recurse -Filter *.trx | Select-Object -First 1).FullName
             if ($trxFile) {
               trx2junit $trxFile --output JunitResults
             } else {
@@ -51,9 +51,10 @@ jobs:
       - run:
           name: Generate HTML Coverage Report
           command: |
-            $coverageFile = (Get-ChildItem -Recurse -Filter coverage.cobertura.xml).FullName
-            if ($coverageFile) {
-              reportgenerator "-reports:$coverageFile" "-targetdir:CoverageReport" "-reporttypes:Html"
+            $coverageFiles = (Get-ChildItem -Recurse -Filter coverage.cobertura.xml).FullName
+            if ($coverageFiles) {
+              $reportsArg = $coverageFiles -join ';'
+              reportgenerator "-reports:$reportsArg" "-targetdir:CoverageReport" "-reporttypes:Html"
             } else {
               Write-Host "No coverage file found. Skipping report generation."
             }
