@@ -41,12 +41,12 @@ jobs:
           command: |
             dotnet tool install --global trx2junit
             mkdir JunitResults
-            trx2junit "TestResults\*.trx" --output JunitResults
-            
+            trx2junit "**\TestResults\*.trx" --output JunitResults
+
       - run:
           name: Generate HTML Coverage Report
           command: |
-            reportgenerator "-reports:TestResults\**\coverage.cobertura.xml" "-targetdir:CoverageReport" "-reporttypes:Html"
+            reportgenerator "-reports:**\TestResults\**\coverage.cobertura.xml" "-targetdir:CoverageReport" "-reporttypes:Html"
           when: always
       
       - store_test_results:
