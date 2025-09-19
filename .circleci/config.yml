@@ -42,7 +42,7 @@ jobs:
           when: always
 
       - store_test_results:
-          path: TestResults
+          path: TestResults/results.xml
 
       - store_artifacts:
           path: CoverageReport
