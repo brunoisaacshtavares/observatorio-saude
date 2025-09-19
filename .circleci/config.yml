@@ -35,7 +35,7 @@ jobs:
           name: Run Tests and Collect Coverage
           command: |
             mkdir TestResults\junit
-            dotnet test --no-build --configuration Release --results-directory TestResults --logger "junit;LogFilePath=TestResults\junit\results.xml;MethodFormat=Class" --collect:"XPlat Code Coverage"
+            dotnet test --configuration Release --results-directory TestResults --logger "junit;LogFilePath=TestResults\junit\results.xml;MethodFormat=Class" --collect:"XPlat Code Coverage"
 
       - run:
           name: Generate HTML Coverage Report

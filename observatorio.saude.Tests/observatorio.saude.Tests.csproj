@@ -46,4 +46,8 @@
         <ProjectReference Include="..\observatorio.saude\observatorio.saude.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="TestResults\" />
+    </ItemGroup>
+
 </Project>
