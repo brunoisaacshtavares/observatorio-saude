@@ -41,12 +41,22 @@ jobs:
           command: |
             dotnet tool install --global trx2junit
             mkdir JunitResults
-            trx2junit "**\TestResults\*.trx" --output JunitResults
+            $trxFile = (Get-ChildItem -Recurse -Filter *.trx).FullName
+            if ($trxFile) {
+              trx2junit $trxFile --output JunitResults
+            } else {
+              Write-Host "No .trx file found. Skipping conversion."
+            }
 
       - run:
           name: Generate HTML Coverage Report
           command: |
-            reportgenerator "-reports:**\TestResults\**\coverage.cobertura.xml" "-targetdir:CoverageReport" "-reporttypes:Html"
+            $coverageFile = (Get-ChildItem -Recurse -Filter coverage.cobertura.xml).FullName
+            if ($coverageFile) {
+              reportgenerator "-reports:$coverageFile" "-targetdir:CoverageReport" "-reporttypes:Html"
+            } else {
+              Write-Host "No coverage file found. Skipping report generation."
+            }
           when: always
       
       - store_test_results:
