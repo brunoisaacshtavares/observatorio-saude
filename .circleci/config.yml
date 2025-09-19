@@ -27,19 +27,27 @@ jobs:
           command: dotnet build observatorio.saude.sln --configuration Release --no-restore
 
       - run:
-          name: Run tests
-          command: |
-            mkdir TestResults
-            dotnet test --no-build --configuration Release --logger "junit;LogFilePath=TestResults\results.xml;MethodFormat=Class"
- 
+          name: Install ReportGenerator Tool
+          command: dotnet tool install --global dotnet-reportgenerator-globaltool
+
       - run:
-          name: "Check for test results"
-          command: dir TestResults
+          name: Run tests and collect coverage
+          command: |
+            dotnet test --no-build --configuration Release --results-directory TestResults --logger "junit;LogFilePath=results.xml;MethodFormat=Class" --collect:"XPlat Code Coverage;Format=cobertura"
+
+      - run:
+          name: Generate HTML coverage report
+          command: |
+            reportgenerator -reports:"TestResults/**/*.cobertura.xml" -targetdir:"CoverageReport" -reporttypes:Html
           when: always
 
       - store_test_results:
           path: TestResults
 
+      - store_artifacts:
+          path: CoverageReport
+          destination: coverage-report
+          
       - store_artifacts:
           path: TestResults
           destination: test-results
