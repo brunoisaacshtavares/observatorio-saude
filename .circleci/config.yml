@@ -32,28 +32,30 @@ jobs:
           command: dotnet tool install --global dotnet-reportgenerator-globaltool --version "5.2.0"
 
       - run:
-          name: Run Tests and Collect Coverage
-          command: |
-            mkdir TestResults\junit
-            dotnet test --configuration Release --results-directory TestResults --logger "junit;LogFilePath=TestResults\junit\results.xml;MethodFormat=Class" --collect:"XPlat Code Coverage"
+          name: Run Tests and Generate TRX Report
+          command: dotnet test --no-build --configuration Release --logger "trx" --collect:"XPlat Code Coverage"
 
+      - run:
+          name: Convert TRX to JUnit XML
+          when: always
+          command: |
+            dotnet tool install --global trx2junit
+            mkdir JunitResults
+            trx2junit "TestResults\**\*.trx" --output JunitResults
+            
       - run:
           name: Generate HTML Coverage Report
           command: |
             reportgenerator "-reports:TestResults\**\coverage.cobertura.xml" "-targetdir:CoverageReport" "-reporttypes:Html"
           when: always
-      - run:
-          name: Check for generated files
-          command: ls -R TestResults
-          when: always
-
+      
       - store_test_results:
-          path: TestResults\junit
+          path: JunitResults
 
       - store_artifacts:
           path: CoverageReport
           destination: coverage-report
-          
+
       - store_artifacts:
           path: TestResults
           destination: raw-test-results
