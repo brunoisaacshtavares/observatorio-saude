@@ -10,6 +10,7 @@ public class NumeroEstabelecimentosDto
     /// <summary>
     ///     O número total de estabelecimentos de saúde.
     /// </summary>
-    [Display(Name = "Total de Estabelecimentos", Description = "O número total de estabelecimentos de saúde cadastrados.")]
+    [Display(Name = "Total de Estabelecimentos",
+        Description = "O número total de estabelecimentos de saúde cadastrados.")]
     public long TotalEstabelecimentos { get; set; }
 }

@@ -10,8 +10,8 @@ namespace observatorio.saude.tests.Application.Queries.GetNumeroEstabelecimentos
 public class GetNumeroEstabelecimentosEstadoHandlerTest
 {
     private readonly GetContagemEstabelecimentosPorEstadoHandler _handler;
-    private readonly Mock<IEstabelecimentoRepository> _repoMock;
     private readonly Mock<IIbgeApiClient> _ibgeClientMock;
+    private readonly Mock<IEstabelecimentoRepository> _repoMock;
 
     public GetNumeroEstabelecimentosEstadoHandlerTest()
     {
@@ -29,13 +29,21 @@ public class GetNumeroEstabelecimentosEstadoHandlerTest
             new() { CodUf = 33, TotalEstabelecimentos = 1200 },
             new() { CodUf = 99, TotalEstabelecimentos = 50 }
         };
-        
+
         var ufsIbge = new List<UfDataResponse>
         {
-            new() { Id = 35, Nome = "São Paulo", Sigla = "SP", Regiao = new RegiaoResponse { Id = 3, Nome = "Sudeste", Sigla = "SE" } },
-            new() { Id = 33, Nome = "Rio de Janeiro", Sigla = "RJ", Regiao = new RegiaoResponse { Id = 3, Nome = "Sudeste", Sigla = "SE" } }
+            new()
+            {
+                Id = 35, Nome = "São Paulo", Sigla = "SP",
+                Regiao = new RegiaoResponse { Id = 3, Nome = "Sudeste", Sigla = "SE" }
+            },
+            new()
+            {
+                Id = 33, Nome = "Rio de Janeiro", Sigla = "RJ",
+                Regiao = new RegiaoResponse { Id = 3, Nome = "Sudeste", Sigla = "SE" }
+            }
         };
-        
+
         var populacaoIbge = new List<IbgeUfResponse>
         {
             new()

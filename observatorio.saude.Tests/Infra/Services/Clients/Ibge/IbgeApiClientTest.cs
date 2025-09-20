@@ -1,10 +1,10 @@
+using System.Net;
+using System.Text.Json;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Moq.Protected;
 using observatorio.saude.Infra.Services.Clients.Ibge;
-using System.Net;
-using System.Text.Json;
 
 namespace observatorio.saude.Tests.Infra.Services.Clients.Ibge;
 
@@ -20,7 +20,7 @@ public class IbgeApiClientTest
         _configMock = new Mock<IConfiguration>();
         _handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
         _httpClient = new HttpClient(_handlerMock.Object);
-        
+
         var sectionMock = new Mock<IConfigurationSection>();
         sectionMock.Setup(s => s.Value).Returns("http://api.ibge.gov.br/populacao");
         _configMock.Setup(c => c.GetSection("Ibge:FindPopulacaoUf")).Returns(sectionMock.Object);
@@ -35,7 +35,7 @@ public class IbgeApiClientTest
     private void SetupMockedResponse(HttpStatusCode statusCode, object content)
     {
         var jsonContent = JsonSerializer.Serialize(content);
-        
+
         _handlerMock
             .Protected()
             .Setup<Task<HttpResponseMessage>>(
@@ -56,16 +56,20 @@ public class IbgeApiClientTest
     {
         var mockResponse = new List<IbgeUfResponse>
         {
-            new() { Resultados = new List<Resultado> { new() { Series = new List<Serie> { new() { Localidade = new Localidade { Id = "35" } } } } } }
+            new()
+            {
+                Resultados = new List<Resultado>
+                    { new() { Series = new List<Serie> { new() { Localidade = new Localidade { Id = "35" } } } } }
+            }
         };
         SetupMockedResponse(HttpStatusCode.OK, mockResponse);
-        
+
         var result = await _client.FindPopulacaoUfAsync();
-        
+
         result.Should().NotBeNull();
         result.Should().HaveCount(1);
         result.First().Resultados.First().Series.First().Localidade.Id.Should().Be("35");
-        
+
         _handlerMock.Protected().Verify(
             "SendAsync",
             Times.Once(),
@@ -75,19 +79,19 @@ public class IbgeApiClientTest
             ItExpr.IsAny<CancellationToken>()
         );
     }
-    
+
     [Fact]
     public async Task FindPopulacaoUfAsync_QuandoRespostaVazia_DeveRetornarListaVazia()
     {
         var mockResponse = new List<IbgeUfResponse>();
         SetupMockedResponse(HttpStatusCode.OK, mockResponse);
-        
+
         var result = await _client.FindPopulacaoUfAsync();
-        
+
         result.Should().NotBeNull();
         result.Should().BeEmpty();
     }
-    
+
     [Fact]
     public async Task FindPopulacaoUfAsync_QuandoJsonNulo_DeveRetornarListaVazia()
     {
@@ -98,7 +102,7 @@ public class IbgeApiClientTest
             StatusCode = HttpStatusCode.OK,
             Content = new StringContent(jsonContent)
         };
-        
+
         _handlerMock
             .Protected()
             .Setup<Task<HttpResponseMessage>>(
@@ -108,9 +112,9 @@ public class IbgeApiClientTest
             )
             .ReturnsAsync(httpResponseMessage)
             .Verifiable();
-        
+
         var result = await _client.FindPopulacaoUfAsync();
-        
+
         result.Should().NotBeNull();
         result.Should().BeEmpty();
     }
@@ -119,9 +123,9 @@ public class IbgeApiClientTest
     public async Task FindPopulacaoUfAsync_QuandoRespostaFalha_DeveLancarExcecao()
     {
         SetupMockedResponse(HttpStatusCode.NotFound, "{\"message\":\"Not Found\"}");
-        
+
         Func<Task> act = async () => await _client.FindPopulacaoUfAsync();
-        
+
         await act.Should().ThrowAsync<HttpRequestException>();
     }
 }

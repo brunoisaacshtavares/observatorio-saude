@@ -3,7 +3,6 @@ using Moq;
 using observatorio.saude.Application.Queries.GetNumeroEstabelecimentos;
 using observatorio.saude.Domain.Dto;
 using observatorio.saude.Domain.Interface;
-using Xunit;
 
 namespace observatorio.saude.tests.Application.Queries.GetNumeroEstabelecimentos;
 
@@ -24,12 +23,12 @@ public class GetNumeroEstabelecimentosHandlerTest
         var contagemTotalEsperada = new NumeroEstabelecimentosDto { TotalEstabelecimentos = 12345 };
         _repoMock.Setup(repo => repo.GetContagemTotalAsync()).ReturnsAsync(contagemTotalEsperada);
         var query = new GetNumeroEstabelecimentosQuery();
-        
+
         var result = await _handler.Handle(query, CancellationToken.None);
-        
+
         result.Should().NotBeNull();
         result.TotalEstabelecimentos.Should().Be(contagemTotalEsperada.TotalEstabelecimentos);
-        
+
         _repoMock.Verify(repo => repo.GetContagemTotalAsync(), Times.Once);
     }
 }

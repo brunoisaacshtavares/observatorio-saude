@@ -46,6 +46,7 @@ public class NumeroEstabelecimentoEstadoDto
     /// <summary>
     ///     Cobertura de estabelecimentos por habitante no estado.
     /// </summary>
-    [Display(Name = "Cobertura de Estabelecimentos", Description = "Relação entre o número de estabelecimentos e a população do estado.")]
+    [Display(Name = "Cobertura de Estabelecimentos",
+        Description = "Relação entre o número de estabelecimentos e a população do estado.")]
     public double CoberturaEstabelecimentos { get; set; }
 }
