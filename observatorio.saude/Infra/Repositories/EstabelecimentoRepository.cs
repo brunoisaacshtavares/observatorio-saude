@@ -17,9 +17,13 @@ public class EstabelecimentoRepository(ApplicationDbContext context) : IEstabele
         var query = _context.EstabelecimentoModel
             .AsNoTracking();
 
-        if (codUf.HasValue) query = query.Where(e => e.Localizacao.CodUf == codUf.Value);
-
+        if (codUf.HasValue)
+        {
+            query = query.Where(e => e.Localizacao.CodUf == codUf.Value);
+        }
+        
         var contagemPorEstado = await query
+            .Where(e => e.Localizacao.CodUf != null)
             .GroupBy(e => e.Localizacao.CodUf)
             .Select(g => new NumeroEstabelecimentoEstadoDto
             {
