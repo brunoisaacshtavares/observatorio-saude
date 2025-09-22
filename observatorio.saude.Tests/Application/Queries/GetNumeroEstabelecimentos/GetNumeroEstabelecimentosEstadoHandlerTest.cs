@@ -82,7 +82,7 @@ public class GetNumeroEstabelecimentosEstadoHandlerTest
             }
         };
 
-        _repoMock.Setup(r => r.GetContagemPorEstadoAsync()).ReturnsAsync(contagemRepo);
+        _repoMock.Setup(r => r.GetContagemPorEstadoAsync(null)).ReturnsAsync(contagemRepo);
         _ibgeClientMock.Setup(c => c.FindUfsAsync()).ReturnsAsync(ufsIbge);
         _ibgeClientMock.Setup(c => c.FindPopulacaoUfAsync()).ReturnsAsync(populacaoIbge);
 
@@ -120,7 +120,7 @@ public class GetNumeroEstabelecimentosEstadoHandlerTest
         ufSemDados.SiglaUf.Should().BeNullOrEmpty();
         ufSemDados.Regiao.Should().BeNullOrEmpty();
 
-        _repoMock.Verify(r => r.GetContagemPorEstadoAsync(), Times.Once);
+        _repoMock.Verify(r => r.GetContagemPorEstadoAsync(null), Times.Once);
         _ibgeClientMock.Verify(c => c.FindUfsAsync(), Times.Once);
         _ibgeClientMock.Verify(c => c.FindPopulacaoUfAsync(), Times.Once);
     }

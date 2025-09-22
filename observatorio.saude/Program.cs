@@ -3,11 +3,13 @@ using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using observatorio.saude.Application.Queries.GetNumeroEstabelecimentos;
+using observatorio.saude.Application.Services;
 using observatorio.saude.Application.Services.Clients;
 using observatorio.saude.Domain.Interface;
 using observatorio.saude.Domain.Job;
 using observatorio.saude.Infra.Data;
 using observatorio.saude.Infra.Repositories;
+using observatorio.saude.Infra.Services;
 using observatorio.saude.Infra.Services.Clients.Ibge;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,6 +30,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<GetNumerostabelecimentosPorEstadoQuery>();
 builder.Services.AddScoped<IEstabelecimentoRepository, EstabelecimentoRepository>();
 builder.Services.AddScoped<IIbgeApiClient, IbgeApiClient>();
+builder.Services.AddScoped<IFileExportService, FileExportService>();
 builder.Services.AddHttpClient();
 
 builder.Services.AddCors(options =>

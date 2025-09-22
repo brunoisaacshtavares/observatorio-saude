@@ -11,11 +11,18 @@ public class EstabelecimentoRepository(ApplicationDbContext context) : IEstabele
 {
     private readonly ApplicationDbContext _context = context;
 
-    public async Task<IEnumerable<NumeroEstabelecimentoEstadoDto>> GetContagemPorEstadoAsync()
+    public async Task<IEnumerable<NumeroEstabelecimentoEstadoDto>> GetContagemPorEstadoAsync(long? codUf = null)
     {
-        var contagemPorEstado = await _context.EstabelecimentoModel
+        var query = _context.EstabelecimentoModel
             .AsNoTracking()
-            .Where(e => e.Localizacao.CodUf != null)
+            .Where(e => e.Localizacao.CodUf != null);
+
+        if (codUf.HasValue)
+        {
+            query = query.Where(e => e.Localizacao.CodUf == codUf.Value);
+        }
+    
+        var contagemPorEstado = await query
             .GroupBy(e => e.Localizacao.CodUf)
             .Select(g => new NumeroEstabelecimentoEstadoDto
             {
@@ -56,5 +63,26 @@ public class EstabelecimentoRepository(ApplicationDbContext context) : IEstabele
             .ToListAsync();
 
         return new PaginatedResult<EstabelecimentoModel>(items, pageNumber, pageSize, totalCount);
+    }
+
+    public async IAsyncEnumerable<ExportEstabelecimentoDto> StreamAllForExportAsync(long? codUf = null)
+    {
+        var query = _context.EstabelecimentoModel
+            .AsNoTracking()
+            .Select(e => new ExportEstabelecimentoDto
+            {
+                CodCnes = e.CodCnes,
+                RazaoSocial = e.CaracteristicaEstabelecimento.NmRazaoSocial,
+                NomeFantasia = e.CaracteristicaEstabelecimento.NmFantasia,
+                Endereco = e.Localizacao.Endereco + ", " + e.Localizacao.Numero,
+                Bairro = e.Localizacao.Bairro,
+                Cep = e.Localizacao.CodCep.ToString(),
+                CodUfParaMapeamento = e.Localizacao.CodUf,
+                EsferaAdministrativa = e.Organizacao.DscrEsferaAdministrativa
+            });
+
+        if (codUf.HasValue) query = query.Where(e => e.CodUfParaMapeamento == codUf.Value);
+
+        await foreach (var item in query.AsAsyncEnumerable()) yield return item;
     }
 }

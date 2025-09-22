@@ -6,6 +6,7 @@ using Moq;
 using observatorio.saude.Application.Controllers;
 using observatorio.saude.Application.Queries.GetEstabelecimentosPaginados;
 using observatorio.saude.Application.Queries.GetNumeroEstabelecimentos;
+using observatorio.saude.Application.Services;
 using observatorio.saude.Domain.Dto;
 using observatorio.saude.Domain.Entities;
 using observatorio.saude.Domain.Utils;
@@ -16,11 +17,13 @@ public class EstabelecimentoControllerTest
 {
     private readonly EstabelecimentoController _controller;
     private readonly Mock<IMediator> _mediatorMock;
+    private readonly Mock<IFileExportService > _fileExportServiceMock;
 
     public EstabelecimentoControllerTest()
     {
         _mediatorMock = new Mock<IMediator>();
-        _controller = new EstabelecimentoController(_mediatorMock.Object);
+        _fileExportServiceMock = new Mock<IFileExportService>();
+        _controller = new EstabelecimentoController(_mediatorMock.Object, _fileExportServiceMock.Object);
     }
 
     [Fact]
