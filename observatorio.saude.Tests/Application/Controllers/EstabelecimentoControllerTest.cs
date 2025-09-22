@@ -16,8 +16,8 @@ namespace observatorio.saude.tests.Application.Controllers;
 public class EstabelecimentoControllerTest
 {
     private readonly EstabelecimentoController _controller;
+    private readonly Mock<IFileExportService> _fileExportServiceMock;
     private readonly Mock<IMediator> _mediatorMock;
-    private readonly Mock<IFileExportService > _fileExportServiceMock;
 
     public EstabelecimentoControllerTest()
     {

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Runtime.CompilerServices;
+using Microsoft.EntityFrameworkCore;
 using observatorio.saude.Domain.Dto;
 using observatorio.saude.Domain.Interface;
 using observatorio.saude.Domain.Utils;
@@ -14,14 +15,10 @@ public class EstabelecimentoRepository(ApplicationDbContext context) : IEstabele
     public async Task<IEnumerable<NumeroEstabelecimentoEstadoDto>> GetContagemPorEstadoAsync(long? codUf = null)
     {
         var query = _context.EstabelecimentoModel
-            .AsNoTracking()
-            .Where(e => e.Localizacao.CodUf != null);
+            .AsNoTracking();
 
-        if (codUf.HasValue)
-        {
-            query = query.Where(e => e.Localizacao.CodUf == codUf.Value);
-        }
-    
+        if (codUf.HasValue) query = query.Where(e => e.Localizacao.CodUf == codUf.Value);
+
         var contagemPorEstado = await query
             .GroupBy(e => e.Localizacao.CodUf)
             .Select(g => new NumeroEstabelecimentoEstadoDto
@@ -65,10 +62,19 @@ public class EstabelecimentoRepository(ApplicationDbContext context) : IEstabele
         return new PaginatedResult<EstabelecimentoModel>(items, pageNumber, pageSize, totalCount);
     }
 
-    public async IAsyncEnumerable<ExportEstabelecimentoDto> StreamAllForExportAsync(long? codUf = null)
+    public async IAsyncEnumerable<ExportEstabelecimentoDto> StreamAllForExportAsync(
+        List<long>? codUfs = null,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        var query = _context.EstabelecimentoModel
-            .AsNoTracking()
+        var baseQuery = _context.EstabelecimentoModel.AsNoTracking();
+
+        if (codUfs != null && codUfs.Count > 0)
+            baseQuery = baseQuery.Where(e =>
+                e.Localizacao.CodUf.HasValue && codUfs.Contains(e.Localizacao.CodUf.Value));
+
+        baseQuery = baseQuery.OrderBy(e => e.Localizacao.CodUf);
+
+        var finalQuery = baseQuery
             .Select(e => new ExportEstabelecimentoDto
             {
                 CodCnes = e.CodCnes,
@@ -81,8 +87,7 @@ public class EstabelecimentoRepository(ApplicationDbContext context) : IEstabele
                 EsferaAdministrativa = e.Organizacao.DscrEsferaAdministrativa
             });
 
-        if (codUf.HasValue) query = query.Where(e => e.CodUfParaMapeamento == codUf.Value);
-
-        await foreach (var item in query.AsAsyncEnumerable()) yield return item;
+        await foreach (var item in finalQuery.AsAsyncEnumerable().WithCancellation(cancellationToken))
+            yield return item;
     }
 }

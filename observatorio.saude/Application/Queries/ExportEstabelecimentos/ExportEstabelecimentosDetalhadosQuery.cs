@@ -6,8 +6,7 @@ namespace observatorio.saude.Application.Queries.ExportEstabelecimentos;
 public class ExportEstabelecimentosDetalhadosQuery : IRequest<IAsyncEnumerable<ExportEstabelecimentoDto>>
 {
     /// <summary>
-    ///     Filtro opcional pela sigla do estado (ex: "SP").
+    ///     Filtro opcional pela sigla do estado (ex: ["SP", "RJ"]).
     /// </summary>
-    public string? Uf { get; set; }
-
+    public IEnumerable<string>? Uf { get; set; }
 }

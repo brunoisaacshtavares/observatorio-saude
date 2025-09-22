@@ -8,7 +8,7 @@ public class ExportEstabelecimentosQuery : IRequest<ExportFileResult>
     ///     Filtro opcional pela sigla do estado (ex: "SP").
     /// </summary>
     public string? Uf { get; set; }
-    
+
     /// <summary>
     ///     Formato do arquivo ("xlsx" ou "csv").
     /// </summary>

@@ -1,6 +1,5 @@
 ﻿using Asp.Versioning;
 using MediatR;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using observatorio.saude.Application.Queries.ExportEstabelecimentos;
 using observatorio.saude.Application.Queries.GetEstabelecimentosPaginados;
@@ -57,11 +56,11 @@ public class EstabelecimentoController(IMediator mediator, IFileExportService fi
         var dataStream = await mediator.Send(query, cancellationToken);
 
         var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-        
+
         Response.Headers.Append("Content-Disposition", $"attachment; filename=\"estabelecimentos_{timestamp}.csv\"");
-        
+
         Response.ContentType = "text/csv";
-        
+
         await fileExportService.GenerateCsvStreamAsync(dataStream, Response.Body);
     }
 }

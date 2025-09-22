@@ -12,5 +12,6 @@ public interface IEstabelecimentoRepository
     Task<PaginatedResult<EstabelecimentoModel>> GetPagedWithDetailsAsync(int pageNumber, int pageSize,
         long? codUf = null);
 
-    IAsyncEnumerable<ExportEstabelecimentoDto> StreamAllForExportAsync(long? codUf = null);
+    IAsyncEnumerable<ExportEstabelecimentoDto> StreamAllForExportAsync(List<long>? codUfs = null,
+        CancellationToken cancellationToken = default);
 }

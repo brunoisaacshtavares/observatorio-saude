@@ -32,7 +32,7 @@ public class ExportEstabelecimentosHandler : IRequestHandler<ExportEstabelecimen
             var ufEncontrada = ufs.FirstOrDefault(u => u.Sigla.Equals(request.Uf, StringComparison.OrdinalIgnoreCase));
             if (ufEncontrada != null) codUf = ufEncontrada.Id;
         }
-        
+
         var contagemPorEstado = await _estabelecimentoRepository.GetContagemPorEstadoAsync(codUf);
         var populacaoTask = _ibgeApiClient.FindPopulacaoUfAsync();
         var ufsTask = _ibgeApiClient.FindUfsAsync();

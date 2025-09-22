@@ -16,30 +16,32 @@ public class StreamEstabelecimentosDetalhadosHandler(
     {
         var ufs = await ibgeApiClient.FindUfsAsync();
         var mapaUfs = ufs.ToDictionary(u => u.Id, u => u.Sigla);
-        long? codUf = null;
 
-        if (!string.IsNullOrWhiteSpace(request.Uf))
+        List<long>? codUfs = null;
+
+        if (request.Uf != null)
         {
-            var ufEncontrada = ufs.FirstOrDefault(u => u.Sigla.Equals(request.Uf, StringComparison.OrdinalIgnoreCase));
-            if (ufEncontrada != null) codUf = ufEncontrada.Id;
+            var ufsMapeadas = ufs
+                .Where(u => request.Uf.Contains(u.Sigla, StringComparer.OrdinalIgnoreCase))
+                .ToList();
+            if (ufsMapeadas.Count > 0) codUfs = ufsMapeadas.Select(u => u.Id).ToList();
         }
-        
-        var streamDoRepositorio = estabelecimentoRepository.StreamAllForExportAsync(codUf);
-        
+
+        var streamDoRepositorio = estabelecimentoRepository.StreamAllForExportAsync(codUfs);
+
         return ProcessarStream(streamDoRepositorio, mapaUfs, cancellationToken);
     }
-    
+
     private async IAsyncEnumerable<ExportEstabelecimentoDto> ProcessarStream(
         IAsyncEnumerable<ExportEstabelecimentoDto> inputStream,
         Dictionary<long, string> mapaUfs,
-        [EnumeratorCancellation]
-        CancellationToken cancellationToken)
+        [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         await foreach (var item in inputStream.WithCancellation(cancellationToken))
         {
             if (item.CodUfParaMapeamento.HasValue)
                 item.Uf = mapaUfs.GetValueOrDefault(item.CodUfParaMapeamento.Value, "");
-            
+
             yield return item;
         }
     }

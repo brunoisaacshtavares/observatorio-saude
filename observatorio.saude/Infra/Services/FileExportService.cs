@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Text;
 using ClosedXML.Excel;
 using CsvHelper;
+using CsvHelper.Configuration;
 using observatorio.saude.Application.Services;
 
 namespace observatorio.saude.Infra.Services;
@@ -70,13 +71,13 @@ public class FileExportService : IFileExportService
         workbook.SaveAs(stream);
         return stream.ToArray();
     }
-    
+
     public async Task GenerateCsvStreamAsync<T>(IAsyncEnumerable<T> data, Stream outputStream) where T : class
     {
         await using var streamWriter = new StreamWriter(outputStream, new UTF8Encoding(true), leaveOpen: true);
-        var config = new CsvHelper.Configuration.CsvConfiguration(CultureInfo.InvariantCulture)
+        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
-            Delimiter = ";",
+            Delimiter = ";"
         };
         await using var csvWriter = new CsvWriter(streamWriter, config);
 
@@ -86,17 +87,18 @@ public class FileExportService : IFileExportService
                 .Where(p => p.IsDefined(typeof(DisplayAttribute), false))
                 .ToArray();
 
-        var map = new CsvHelper.Configuration.DefaultClassMap<T>();
+        var map = new DefaultClassMap<T>();
         foreach (var prop in propsToKeep)
         {
             var displayAttribute = prop.GetCustomAttribute<DisplayAttribute>();
             map.Map(typeof(T), prop).Name(displayAttribute?.Name ?? prop.Name);
         }
+
         csvWriter.Context.RegisterClassMap(map);
-        
+
         csvWriter.WriteHeader<T>();
         await csvWriter.NextRecordAsync();
-        
+
         await foreach (var record in data)
         {
             csvWriter.WriteRecord(record);
