@@ -54,15 +54,14 @@ public class EstabelecimentoController(IMediator mediator, IFileExportService fi
     public async Task ExportStream([FromQuery] ExportEstabelecimentosDetalhadosQuery query,
         CancellationToken cancellationToken)
     {
-        var syncIoFeature = HttpContext.Features.Get<IHttpBodyControlFeature>();
-        if (syncIoFeature != null) syncIoFeature.AllowSynchronousIO = true;
-
         var dataStream = await mediator.Send(query, cancellationToken);
 
         var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-        Response.Headers.Append("Content-Disposition", $"attachment; filename=\"estabelecimentos_{timestamp}.xlsx\"");
-        Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-
-        await fileExportService.GenerateExcelStreamAsync(dataStream, Response.Body);
+        
+        Response.Headers.Append("Content-Disposition", $"attachment; filename=\"estabelecimentos_{timestamp}.csv\"");
+        
+        Response.ContentType = "text/csv";
+        
+        await fileExportService.GenerateCsvStreamAsync(dataStream, Response.Body);
     }
 }

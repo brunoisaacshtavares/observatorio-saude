@@ -71,49 +71,38 @@ public class FileExportService : IFileExportService
         return stream.ToArray();
     }
     
-    public async Task GenerateExcelStreamAsync<T>(IAsyncEnumerable<T> data, Stream outputStream) where T : class
+    public async Task GenerateCsvStreamAsync<T>(IAsyncEnumerable<T> data, Stream outputStream) where T : class
     {
-        await using var memoryStream = new MemoryStream();
-
-        using (var workbook = new XLWorkbook())
+        await using var streamWriter = new StreamWriter(outputStream, new UTF8Encoding(true), leaveOpen: true);
+        var config = new CsvHelper.Configuration.CsvConfiguration(CultureInfo.InvariantCulture)
         {
-            var worksheet = workbook.Worksheets.Add(typeof(T).Name.Replace("Dto", ""));
+            Delimiter = ";",
+        };
+        await using var csvWriter = new CsvWriter(streamWriter, config);
 
-            var props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            var propsToWrite = props.Where(p => p.GetCustomAttribute<DisplayAttribute>() != null).ToArray();
+        var propsToKeep =
+            typeof(T)
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.IsDefined(typeof(DisplayAttribute), false))
+                .ToArray();
 
-            var colIndex = 1;
-            foreach (var prop in propsToWrite)
-            {
-                worksheet.Cell(1, colIndex).Value = prop.GetCustomAttribute<DisplayAttribute>()?.Name ?? prop.Name;
-                colIndex++;
-            }
-
-            worksheet.Row(1).Style.Font.Bold = true;
-
-            var rowIndex = 2;
-            await foreach (var item in data)
-            {
-                colIndex = 1;
-                foreach (var prop in propsToWrite)
-                {
-                    var cellValue = prop.GetValue(item);
-
-                    if (cellValue is null)
-                        worksheet.Cell(rowIndex, colIndex).SetValue("");
-                    else
-                        worksheet.Cell(rowIndex, colIndex).SetValue((dynamic)cellValue);
-                    colIndex++;
-                }
-
-                rowIndex++;
-            }
-
-            worksheet.Columns().AdjustToContents();
-            workbook.SaveAs(memoryStream);
+        var map = new CsvHelper.Configuration.DefaultClassMap<T>();
+        foreach (var prop in propsToKeep)
+        {
+            var displayAttribute = prop.GetCustomAttribute<DisplayAttribute>();
+            map.Map(typeof(T), prop).Name(displayAttribute?.Name ?? prop.Name);
+        }
+        csvWriter.Context.RegisterClassMap(map);
+        
+        csvWriter.WriteHeader<T>();
+        await csvWriter.NextRecordAsync();
+        
+        await foreach (var record in data)
+        {
+            csvWriter.WriteRecord(record);
+            await csvWriter.NextRecordAsync();
         }
 
-        memoryStream.Position = 0;
-        await memoryStream.CopyToAsync(outputStream);
+        await streamWriter.FlushAsync();
     }
 }
