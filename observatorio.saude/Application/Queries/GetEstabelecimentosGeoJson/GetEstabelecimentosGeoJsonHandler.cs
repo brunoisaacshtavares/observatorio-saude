@@ -36,7 +36,8 @@ public class
             request.MinLatitude,
             request.MaxLatitude,
             request.MinLongitude,
-            request.MaxLongitude);
+            request.MaxLongitude,
+            request.Zoom);
 
         var features = estabelecimentosData.Select(est =>
         {

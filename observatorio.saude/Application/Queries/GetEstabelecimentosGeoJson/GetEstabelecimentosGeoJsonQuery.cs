@@ -11,4 +11,5 @@ public class GetEstabelecimentosGeoJsonQuery : IRequest<GeoJsonFeatureCollection
     public double? MaxLatitude { get; set; }
     public double? MinLongitude { get; set; }
     public double? MaxLongitude { get; set; }
+    public int Zoom { get; set; }
 }

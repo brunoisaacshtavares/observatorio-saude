@@ -20,5 +20,6 @@ public interface IEstabelecimentoRepository
         double? minLat = null,
         double? maxLat = null,
         double? minLon = null,
-        double? maxLon = null);
+        double? maxLon = null,
+        int zoom = 10);
 }

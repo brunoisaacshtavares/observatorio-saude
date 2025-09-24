@@ -97,7 +97,8 @@ public class EstabelecimentoRepository(ApplicationDbContext context) : IEstabele
         double? minLat = null,
         double? maxLat = null,
         double? minLon = null,
-        double? maxLon = null)
+        double? maxLon = null,
+        int zoom = 10)
     {
         var query = _context.EstabelecimentoModel
             .AsNoTracking()
@@ -118,6 +119,11 @@ public class EstabelecimentoRepository(ApplicationDbContext context) : IEstabele
                 e.Localizacao.Longitude >= minLonDecimal &&
                 e.Localizacao.Longitude <= maxLonDecimal);
         }
+        
+        const int LowZoomLimit = 2000;
+        const int HighZoomLimit = 15000;
+        const int ZoomThreshold = 11;
+        var limit = zoom < ZoomThreshold ? LowZoomLimit : HighZoomLimit;
 
         return await query
             .Select(e => new GeoFeatureData
@@ -130,6 +136,7 @@ public class EstabelecimentoRepository(ApplicationDbContext context) : IEstabele
                 Bairro = e.Localizacao.Bairro,
                 Cep = e.Localizacao.CodCep
             })
+            .Take(limit)
             .ToListAsync();
     }
 }
