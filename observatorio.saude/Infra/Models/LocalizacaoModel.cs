@@ -6,6 +6,7 @@ namespace observatorio.saude.Infra.Models;
 
 [Table("dim_localizacao")]
 [Index(nameof(CodUf))]
+[Index(nameof(Latitude), nameof(Longitude))]
 public class LocalizacaoModel
 {
     [Key]

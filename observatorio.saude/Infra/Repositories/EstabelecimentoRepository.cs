@@ -17,11 +17,8 @@ public class EstabelecimentoRepository(ApplicationDbContext context) : IEstabele
         var query = _context.EstabelecimentoModel
             .AsNoTracking();
 
-        if (codUf.HasValue)
-        {
-            query = query.Where(e => e.Localizacao.CodUf == codUf.Value);
-        }
-        
+        if (codUf.HasValue) query = query.Where(e => e.Localizacao.CodUf == codUf.Value);
+
         var contagemPorEstado = await query
             .Where(e => e.Localizacao.CodUf != null)
             .GroupBy(e => e.Localizacao.CodUf)
@@ -93,5 +90,46 @@ public class EstabelecimentoRepository(ApplicationDbContext context) : IEstabele
 
         await foreach (var item in finalQuery.AsAsyncEnumerable().WithCancellation(cancellationToken))
             yield return item;
+    }
+
+    public async Task<IEnumerable<GeoFeatureData>> GetWithCoordinatesAsync(
+        long? codUf = null,
+        double? minLat = null,
+        double? maxLat = null,
+        double? minLon = null,
+        double? maxLon = null)
+    {
+        var query = _context.EstabelecimentoModel
+            .AsNoTracking()
+            .Where(e => e.Localizacao.Latitude != null && e.Localizacao.Longitude != null);
+
+        if (codUf.HasValue) query = query.Where(e => e.Localizacao.CodUf == codUf.Value);
+
+        if (minLat.HasValue && maxLat.HasValue && minLon.HasValue && maxLon.HasValue)
+        {
+            var minLatDecimal = (decimal)minLat.Value;
+            var maxLatDecimal = (decimal)maxLat.Value;
+            var minLonDecimal = (decimal)minLon.Value;
+            var maxLonDecimal = (decimal)maxLon.Value;
+
+            query = query.Where(e =>
+                e.Localizacao.Latitude >= minLatDecimal &&
+                e.Localizacao.Latitude <= maxLatDecimal &&
+                e.Localizacao.Longitude >= minLonDecimal &&
+                e.Localizacao.Longitude <= maxLonDecimal);
+        }
+
+        return await query
+            .Select(e => new GeoFeatureData
+            {
+                Latitude = e.Localizacao.Latitude.Value,
+                Longitude = e.Localizacao.Longitude.Value,
+                NomeFantasia = e.CaracteristicaEstabelecimento.NmFantasia,
+                Endereco = e.Localizacao.Endereco,
+                Numero = e.Localizacao.Numero,
+                Bairro = e.Localizacao.Bairro,
+                Cep = e.Localizacao.CodCep
+            })
+            .ToListAsync();
     }
 }

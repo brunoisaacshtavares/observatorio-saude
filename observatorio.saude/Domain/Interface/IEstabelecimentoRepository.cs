@@ -14,4 +14,11 @@ public interface IEstabelecimentoRepository
 
     IAsyncEnumerable<ExportEstabelecimentoDto> StreamAllForExportAsync(List<long>? codUfs = null,
         CancellationToken cancellationToken = default);
+
+    Task<IEnumerable<GeoFeatureData>> GetWithCoordinatesAsync(
+        long? codUf = null,
+        double? minLat = null,
+        double? maxLat = null,
+        double? minLon = null,
+        double? maxLon = null);
 }

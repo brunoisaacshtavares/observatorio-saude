@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using observatorio.saude.Application.Queries.ExportEstabelecimentos;
+using observatorio.saude.Application.Queries.GetEstabelecimentosGeoJson;
 using observatorio.saude.Application.Queries.GetEstabelecimentosPaginados;
 using observatorio.saude.Application.Queries.GetNumeroEstabelecimentos;
 using observatorio.saude.Application.Services;
@@ -62,5 +63,13 @@ public class EstabelecimentoController(IMediator mediator, IFileExportService fi
         Response.ContentType = "text/csv";
 
         await fileExportService.GenerateCsvStreamAsync(dataStream, Response.Body);
+    }
+
+    [HttpGet("geojson")]
+    public async Task<ActionResult<GeoJsonFeatureCollection>> GetGeoJson(
+        [FromQuery] GetEstabelecimentosGeoJsonQuery query)
+    {
+        var result = await mediator.Send(query);
+        return Ok(result);
     }
 }
