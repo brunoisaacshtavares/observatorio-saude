@@ -122,30 +122,27 @@ public class FileExportService : IFileExportService
             {
                 var workbookPart = spreadsheetDocument.AddWorkbookPart();
                 workbookPart.Workbook = new Workbook();
+                
+                var workbookStylesPart = workbookPart.AddNewPart<WorkbookStylesPart>();
+                workbookStylesPart.Stylesheet = CreateStylesheet();
 
                 var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
                 var sheetData = new SheetData();
                 worksheetPart.Worksheet = new Worksheet(sheetData);
 
                 var sheets = spreadsheetDocument.WorkbookPart.Workbook.AppendChild(new Sheets());
-                var sheet = new Sheet
-                {
-                    Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(worksheetPart), SheetId = 1,
-                    Name = typeof(T).Name.Replace("Dto", "")
-                };
+                var sheet = new Sheet() { Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = typeof(T).Name.Replace("Dto", "") };
                 sheets.Append(sheet);
 
                 var headerRow = new Row();
                 foreach (var prop in props)
                 {
-                    var cell = new Cell(
-                        new InlineString(new Text(prop.GetCustomAttribute<DisplayAttribute>()?.Name ?? prop.Name)))
+                    var cell = new Cell(new InlineString(new Text(prop.GetCustomAttribute<DisplayAttribute>()?.Name ?? prop.Name)))
                     {
                         DataType = CellValues.InlineString
                     };
                     headerRow.AppendChild(cell);
                 }
-
                 sheetData.AppendChild(headerRow);
 
                 await foreach (var item in data)
@@ -166,8 +163,8 @@ public class FileExportService : IFileExportService
                             switch (Type.GetTypeCode(value.GetType()))
                             {
                                 case TypeCode.DateTime:
-                                    cell.CellValue = new CellValue((DateTime)value);
-                                    cell.StyleIndex = 1;
+                                    cell.CellValue = new CellValue(((DateTime)value));
+                                    cell.StyleIndex = 1; 
                                     break;
                                 case TypeCode.Int32:
                                 case TypeCode.Int64:
@@ -175,8 +172,7 @@ public class FileExportService : IFileExportService
                                 case TypeCode.Double:
                                 case TypeCode.Single:
                                     cell.DataType = CellValues.Number;
-                                    cell.CellValue =
-                                        new CellValue(Convert.ToString(value, CultureInfo.InvariantCulture));
+                                    cell.CellValue = new CellValue(Convert.ToString(value, CultureInfo.InvariantCulture));
                                     break;
                                 default:
                                     cell.DataType = CellValues.String;
@@ -184,10 +180,8 @@ public class FileExportService : IFileExportService
                                     break;
                             }
                         }
-
                         newRow.AppendChild(cell);
                     }
-
                     sheetData.AppendChild(newRow);
                 }
             }
@@ -195,5 +189,23 @@ public class FileExportService : IFileExportService
             memoryStream.Position = 0;
             await memoryStream.CopyToAsync(outputStream);
         }
+    }
+    
+    private Stylesheet CreateStylesheet()
+    {
+        var fonts = new Fonts(new Font(), new Font());
+        var fills = new Fills(new Fill());
+        var borders = new Borders(new Border());
+        
+        var numberingFormats = new NumberingFormats(
+            new NumberingFormat { NumberFormatId = 164, FormatCode = "dd/mm/yyyy;@" }
+        );
+
+        var cellFormats = new CellFormats(
+            new CellFormat(), 
+            new CellFormat { FontId = 0, FillId = 0, BorderId = 0, NumberFormatId = 164, ApplyNumberFormat = true }
+        );
+
+        return new Stylesheet(fonts, fills, borders, numberingFormats, cellFormats);
     }
 }
