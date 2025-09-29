@@ -5,6 +5,9 @@ using System.Text;
 using ClosedXML.Excel;
 using CsvHelper;
 using CsvHelper.Configuration;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
 using observatorio.saude.Application.Services;
 
 namespace observatorio.saude.Infra.Services;
@@ -106,5 +109,91 @@ public class FileExportService : IFileExportService
         }
 
         await streamWriter.FlushAsync();
+    }
+
+    public async Task GenerateXlsxStreamAsync<T>(IAsyncEnumerable<T> data, Stream outputStream) where T : class
+    {
+        var props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .Where(p => p.GetCustomAttribute<DisplayAttribute>() != null).ToArray();
+
+        await using (var memoryStream = new MemoryStream())
+        {
+            using (var spreadsheetDocument = SpreadsheetDocument.Create(memoryStream, SpreadsheetDocumentType.Workbook))
+            {
+                var workbookPart = spreadsheetDocument.AddWorkbookPart();
+                workbookPart.Workbook = new Workbook();
+
+                var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+                var sheetData = new SheetData();
+                worksheetPart.Worksheet = new Worksheet(sheetData);
+
+                var sheets = spreadsheetDocument.WorkbookPart.Workbook.AppendChild(new Sheets());
+                var sheet = new Sheet
+                {
+                    Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(worksheetPart), SheetId = 1,
+                    Name = typeof(T).Name.Replace("Dto", "")
+                };
+                sheets.Append(sheet);
+
+                var headerRow = new Row();
+                foreach (var prop in props)
+                {
+                    var cell = new Cell(
+                        new InlineString(new Text(prop.GetCustomAttribute<DisplayAttribute>()?.Name ?? prop.Name)))
+                    {
+                        DataType = CellValues.InlineString
+                    };
+                    headerRow.AppendChild(cell);
+                }
+
+                sheetData.AppendChild(headerRow);
+
+                await foreach (var item in data)
+                {
+                    var newRow = new Row();
+                    foreach (var prop in props)
+                    {
+                        var value = prop.GetValue(item);
+                        var cell = new Cell();
+
+                        if (value is null)
+                        {
+                            cell.DataType = CellValues.String;
+                            cell.CellValue = new CellValue("");
+                        }
+                        else
+                        {
+                            switch (Type.GetTypeCode(value.GetType()))
+                            {
+                                case TypeCode.DateTime:
+                                    cell.CellValue = new CellValue((DateTime)value);
+                                    cell.StyleIndex = 1;
+                                    break;
+                                case TypeCode.Int32:
+                                case TypeCode.Int64:
+                                case TypeCode.Decimal:
+                                case TypeCode.Double:
+                                case TypeCode.Single:
+                                    cell.DataType = CellValues.Number;
+                                    cell.CellValue =
+                                        new CellValue(Convert.ToString(value, CultureInfo.InvariantCulture));
+                                    break;
+                                default:
+                                    cell.DataType = CellValues.String;
+                                    cell.CellValue = new CellValue(Convert.ToString(value) ?? "");
+                                    break;
+                            }
+                        }
+
+                        newRow.AppendChild(cell);
+                    }
+
+                    sheetData.AppendChild(newRow);
+                }
+            }
+
+            memoryStream.Position = 0;
+            await memoryStream.CopyToAsync(outputStream);
+        }
     }
 }

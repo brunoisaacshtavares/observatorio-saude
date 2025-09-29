@@ -55,14 +55,27 @@ public class EstabelecimentoController(IMediator mediator, IFileExportService fi
         CancellationToken cancellationToken)
     {
         var dataStream = await mediator.Send(query, cancellationToken);
-
         var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
 
-        Response.Headers.Append("Content-Disposition", $"attachment; filename=\"estabelecimentos_{timestamp}.csv\"");
+        var format = query.Format?.ToLowerInvariant() ?? "csv";
 
-        Response.ContentType = "text/csv";
+        switch (format)
+        {
+            case "xlsx":
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                Response.Headers.Append("Content-Disposition",
+                    $"attachment; filename=\"estabelecimentos_{timestamp}.xlsx\"");
+                await fileExportService.GenerateXlsxStreamAsync(dataStream, Response.Body);
+                break;
 
-        await fileExportService.GenerateCsvStreamAsync(dataStream, Response.Body);
+            case "csv":
+            default:
+                Response.ContentType = "text/csv";
+                Response.Headers.Append("Content-Disposition",
+                    $"attachment; filename=\"estabelecimentos_{timestamp}.csv\"");
+                await fileExportService.GenerateCsvStreamAsync(dataStream, Response.Body);
+                break;
+        }
     }
 
     [HttpGet("geojson")]

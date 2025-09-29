@@ -119,7 +119,7 @@ public class EstabelecimentoRepository(ApplicationDbContext context) : IEstabele
                 e.Localizacao.Longitude >= minLonDecimal &&
                 e.Localizacao.Longitude <= maxLonDecimal);
         }
-        
+
         const int LowZoomLimit = 2000;
         const int HighZoomLimit = 15000;
         const int ZoomThreshold = 11;
