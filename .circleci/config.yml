@@ -70,9 +70,24 @@ jobs:
       - store_artifacts:
           path: TestResults
           destination: raw-test-results
+  deploy-railway:
+    docker:
+      - image: ghcr.io/railwayapp/cli:latest
+    steps:
+      - checkout
+      - run:
+          name: Deploy to Railway
+          command: |
+            railway up --detach
 
 workflows:
   version: 2
   ci:
     jobs:
       - build-and-test
+      - deploy-railway:
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              only: main
