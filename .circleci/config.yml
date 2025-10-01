@@ -80,7 +80,7 @@ jobs:
       - checkout
 
       - run:
-          name: [DEBUG] Verificar envs Railway
+          name: "DEBUG - Verificar envs Railway"
           command: |
             [ -n "$RAILWAY_TOKEN" ] && echo "[OK] RAILWAY_TOKEN set" || (echo "[ERRO] RAILWAY_TOKEN ausente" && exit 1)
             [ -n "$RAILWAY_PROJECT_ID" ] && echo "[OK] PROJECT_ID=$RAILWAY_PROJECT_ID" || echo "[AVISO] PROJECT_ID não definido"
