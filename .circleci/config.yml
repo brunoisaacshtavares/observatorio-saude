@@ -94,7 +94,7 @@ jobs:
       - run:
           name: Deploy to Railway
           command: |
-            railway up --detach
+            railway up
 
 workflows:
   version: 2
