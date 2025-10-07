@@ -22,11 +22,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString)
 );
 builder.Services.AddHostedService<EtlScheduledJob>();
+builder.Services.AddHostedService<EtlLeitosScheduleJob>();
 builder.Services.AddControllers();
 builder.Services.AddMediatR(configuration => { configuration.RegisterServicesFromAssembly(typeof(Program).Assembly); });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IEstabelecimentoRepository, EstabelecimentoRepository>();
+builder.Services.AddScoped<ILeitosRepository, LeitosRepository>();
 builder.Services.AddScoped<IIbgeApiClient, IbgeApiClient>();
 builder.Services.AddScoped<IFileExportService, FileExportService>();
 builder.Services.AddHttpClient();

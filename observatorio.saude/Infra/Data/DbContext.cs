@@ -15,4 +15,5 @@ public class ApplicationDbContext : DbContext
     public DbSet<TurnoModel> TurnoModel { get; set; }
     public DbSet<ServicoModel> ServicoModel { get; set; }
     public DbSet<EstabelecimentoModel> EstabelecimentoModel { get; set; }
+    public DbSet<LeitoModel> LeitosModel { get; set; }
 }

@@ -97,6 +97,91 @@ namespace observatorio.saude.Migrations
                     b.ToTable("fato_estabelecimento");
                 });
 
+            modelBuilder.Entity("observatorio.saude.Infra.Models.LeitoModel", b =>
+                {
+                    b.Property<long>("CodCnes")
+                        .HasColumnType("bigint")
+                        .HasColumnName("cod_cnes");
+
+                    b.Property<long>("Anomes")
+                        .HasColumnType("bigint")
+                        .HasColumnName("anomes");
+
+                    b.Property<string>("DscrTipoUnidade")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("dscr_tipo_unidade");
+
+                    b.Property<string>("NmEstabelecimento")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("nm_estabelecimento");
+
+                    b.Property<int>("QtdLeitosExistentes")
+                        .HasColumnType("integer")
+                        .HasColumnName("qtd_leitos_existentes");
+
+                    b.Property<int>("QtdLeitosSus")
+                        .HasColumnType("integer")
+                        .HasColumnName("qtd_leitos_sus");
+
+                    b.Property<int>("QtdUtiAdultoExist")
+                        .HasColumnType("integer")
+                        .HasColumnName("qtd_uti_adulto_exist");
+
+                    b.Property<int>("QtdUtiAdultoSus")
+                        .HasColumnType("integer")
+                        .HasColumnName("qtd_uti_adulto_sus");
+
+                    b.Property<int>("QtdUtiCoronarianaExist")
+                        .HasColumnType("integer")
+                        .HasColumnName("qtd_uti_coronariana_exist");
+
+                    b.Property<int>("QtdUtiCoronarianaSus")
+                        .HasColumnType("integer")
+                        .HasColumnName("qtd_uti_coronariana_sus");
+
+                    b.Property<int>("QtdUtiNeonatalExist")
+                        .HasColumnType("integer")
+                        .HasColumnName("qtd_uti_neonatal_exist");
+
+                    b.Property<int>("QtdUtiNeonatalSus")
+                        .HasColumnType("integer")
+                        .HasColumnName("qtd_uti_neonatal_sus");
+
+                    b.Property<int>("QtdUtiPediatricoExist")
+                        .HasColumnType("integer")
+                        .HasColumnName("qtd_uti_pediatrico_exist");
+
+                    b.Property<int>("QtdUtiPediatricoSus")
+                        .HasColumnType("integer")
+                        .HasColumnName("qtd_uti_pediatrico_sus");
+
+                    b.Property<int>("QtdUtiQueimadoExist")
+                        .HasColumnType("integer")
+                        .HasColumnName("qtd_uti_queimado_exist");
+
+                    b.Property<int>("QtdUtiQueimadoSus")
+                        .HasColumnType("integer")
+                        .HasColumnName("qtd_uti_queimado_sus");
+
+                    b.Property<int>("QtdUtiTotalExist")
+                        .HasColumnType("integer")
+                        .HasColumnName("qtd_uti_total_exist");
+
+                    b.Property<int>("QtdUtiTotalSus")
+                        .HasColumnType("integer")
+                        .HasColumnName("qtd_uti_total_sus");
+
+                    b.HasKey("CodCnes", "Anomes");
+
+                    b.HasIndex(new[] { "Anomes" }, "IX_fato_leito_anomes");
+
+                    b.ToTable("fato_leito");
+                });
+
             modelBuilder.Entity("observatorio.saude.Infra.Models.LocalizacaoModel", b =>
                 {
                     b.Property<string>("CodUnidade")

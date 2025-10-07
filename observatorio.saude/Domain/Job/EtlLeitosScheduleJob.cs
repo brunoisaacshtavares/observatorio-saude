@@ -1,24 +1,25 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace observatorio.saude.Domain.Job;
 
-public class EtlScheduledJob(ILogger<EtlScheduledJob> logger, IConfiguration configuration) : BackgroundService
+public class EtlLeitosScheduleJob(ILogger<EtlLeitosScheduleJob> logger, IConfiguration configuration)
+    : BackgroundService
 {
     private readonly IConfiguration _configuration = configuration;
-    private readonly ILogger<EtlScheduledJob> _logger = logger;
+    private readonly ILogger<EtlLeitosScheduleJob> _logger = logger;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var intervalInMinutes = _configuration.GetValue("EtlScheduledJobSettings:IntervalInMinutes", 60);
+        var intervalInMinutes = _configuration.GetValue("EtlLeitosJobSettings:IntervalInMinutes", 1440);
         using var timer = new PeriodicTimer(TimeSpan.FromMinutes(intervalInMinutes));
 
-        _logger.LogInformation($"Serviço de ETL Agendado está iniciando com o tempo de {intervalInMinutes} minutos.");
+        _logger.LogInformation($"Serviço de ETL de Leitos está iniciando com o tempo de {intervalInMinutes} minutos.");
 
         while (await timer.WaitForNextTickAsync(stoppingToken))
             try
             {
-                _logger.LogInformation("Iniciando execução do script Python...");
+                _logger.LogInformation("Iniciando execução do script Python de Leitos...");
 
                 var connectionString = _configuration.GetConnectionString("DefaultConnection");
                 if (string.IsNullOrEmpty(connectionString))
@@ -27,8 +28,7 @@ public class EtlScheduledJob(ILogger<EtlScheduledJob> logger, IConfiguration con
                     continue;
                 }
 
-                var scriptPath = Path.Combine(Directory.GetCurrentDirectory(), "Scripts", "EtlEstabelecimentos",
-                    "cnes.py");
+                var scriptPath = Path.Combine(Directory.GetCurrentDirectory(), "Scripts", "EtlLeitos", "leitos.py");
                 var arguments = BuildPythonArguments(scriptPath, connectionString);
                 if (string.IsNullOrEmpty(arguments)) continue;
 
@@ -67,19 +67,19 @@ public class EtlScheduledJob(ILogger<EtlScheduledJob> logger, IConfiguration con
 
                 if (process.ExitCode != 0)
                 {
-                    _logger.LogError("Script Python falhou (Exit Code: {ExitCode}): {ErrorOutput}", process.ExitCode,
-                        error);
+                    _logger.LogError("Script Python de Leitos falhou (Exit Code: {ExitCode}): {ErrorOutput}",
+                        process.ExitCode, error);
                 }
                 else
                 {
-                    _logger.LogInformation("Script Python executado com sucesso.");
+                    _logger.LogInformation("Script Python de Leitos executado com sucesso.");
                     if (!string.IsNullOrWhiteSpace(result))
                         _logger.LogInformation("Saída do script: {ScriptOutput}", result.Trim());
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ocorreu um erro inesperado ao executar a tarefa de ETL agendada.");
+                _logger.LogError(ex, "Ocorreu um erro inesperado ao executar a tarefa de ETL de Leitos.");
             }
     }
 
@@ -104,7 +104,7 @@ public class EtlScheduledJob(ILogger<EtlScheduledJob> logger, IConfiguration con
                 string.IsNullOrEmpty(user) || password is null)
             {
                 _logger.LogError(
-                    "A string de conexão é inválida ou está incompleta. Verifique se contém Server, Port, Database, User Id e Password.");
+                    "A string de conexão é inválida ou incompleta. Verifique se contém Server, Port, Database, User Id e Password.");
                 return null;
             }
 
