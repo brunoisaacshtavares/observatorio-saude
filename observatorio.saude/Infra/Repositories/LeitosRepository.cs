@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using observatorio.saude.Domain.Dto;
 using observatorio.saude.Domain.Interface;
 using observatorio.saude.Infra.Data;
+using observatorio.saude.Infra.Models;
 
 namespace observatorio.saude.Infra.Repositories;
 
@@ -13,8 +14,8 @@ public class LeitosRepository : ILeitosRepository
     {
         _context = context;
     }
-    
-    public async Task<LeitosAgregadosDto?> GetLeitosAgregadosAsync(int? ano = null)
+
+    private IQueryable<LeitoModel> GetLatestRecords(int? ano)
     {
         var query = _context.LeitosModel.AsNoTracking();
 
@@ -33,11 +34,16 @@ public class LeitosRepository : ILeitosRepository
                 MaxAnomes = g.Max(l => l.Anomes)
             });
 
-        var latestRecordsQuery = from leito in query
+        return from leito in query
             join latest in subqueryLatestEntries
                 on new { leito.CodCnes, leito.Anomes } equals new
-                    { latest.CodCnes, Anomes = latest.MaxAnomes }
+                { latest.CodCnes, Anomes = latest.MaxAnomes }
             select leito;
+    }
+    
+    public async Task<LeitosAgregadosDto?> GetLeitosAgregadosAsync(int? ano = null)
+    {
+        var latestRecordsQuery = GetLatestRecords(ano);
         
         var aggregatedData = await latestRecordsQuery
             .GroupBy(l => 1)
@@ -55,27 +61,9 @@ public class LeitosRepository : ILeitosRepository
     public async Task<IEnumerable<IndicadoresLeitosEstadoDto>> GetIndicadoresPorEstadoAsync(int? ano = null,
         List<long>? codUfs = null)
     {
-        var queryLeitos = _context.LeitosModel.AsNoTracking();
+        var queryLeitos = GetLatestRecords(ano);
 
-        if (ano.HasValue)
-        {
-            long anoInicio = ano.Value * 100 + 1;
-            long anoFim = ano.Value * 100 + 12;
-            queryLeitos = queryLeitos.Where(l => l.Anomes >= anoInicio && l.Anomes <= anoFim);
-        }
-
-        var subqueryLatestEntries = queryLeitos
-            .GroupBy(l => l.CodCnes)
-            .Select(g => new
-            {
-                CodCnes = g.Key,
-                MaxAnomes = g.Max(l => l.Anomes)
-            });
-        
-        var queryComUf = from leito in queryLeitos
-            join latest in subqueryLatestEntries on new { leito.CodCnes, leito.Anomes } equals new
-                { latest.CodCnes, Anomes = latest.MaxAnomes }
-            join estabelecimento in _context.EstabelecimentoModel.Include(e => e.Localizacao) on leito.CodCnes
+        var queryComUf = from leito in queryLeitos join estabelecimento in _context.EstabelecimentoModel.Include(e => e.Localizacao) on leito.CodCnes
                 equals estabelecimento.CodCnes
             where estabelecimento.Localizacao != null && estabelecimento.Localizacao.CodUf.HasValue
             select new { Leito = leito, Uf = estabelecimento.Localizacao.CodUf.Value };

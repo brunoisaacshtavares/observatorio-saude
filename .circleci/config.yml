@@ -71,39 +71,39 @@ jobs:
           path: TestResults
           destination: raw-test-results
 
-  deploy-railway:
-    docker:
-      - image: ghcr.io/railwayapp/cli:latest
-    environment:
-      RAILWAY_NON_INTERACTIVE: "true"
-    steps:
-      - checkout
-
-      - run:
-          name: "DEBUG - Verificar envs Railway"
-          command: |
-            [ -n "$RAILWAY_TOKEN" ] && echo "[OK] RAILWAY_TOKEN set" || (echo "[ERRO] RAILWAY_TOKEN ausente" && exit 1)
-            [ -n "$RAILWAY_PROJECT_ID" ] && echo "[OK] PROJECT_ID=$RAILWAY_PROJECT_ID" || echo "[AVISO] PROJECT_ID não definido"
-            [ -n "$RAILWAY_ENVIRONMENT_ID" ] && echo "[OK] ENVIRONMENT_ID=$RAILWAY_ENVIRONMENT_ID" || echo "[AVISO] ENVIRONMENT_ID não definido"
-
-      - run:
-          name: Test Railway Token
-          command: |
-            railway status || { echo "[ERRO] Falha na autenticação Railway (token inválido ou sem acesso)"; exit 1; }
-
-      - run:
-          name: Deploy to Railway
-          command: |
-            railway up --detach
+#  deploy-railway:
+#    docker:
+#      - image: ghcr.io/railwayapp/cli:latest
+#    environment:
+#      RAILWAY_NON_INTERACTIVE: "true"
+#    steps:
+#      - checkout
+#
+#      - run:
+#          name: "DEBUG - Verificar envs Railway"
+#          command: |
+#            [ -n "$RAILWAY_TOKEN" ] && echo "[OK] RAILWAY_TOKEN set" || (echo "[ERRO] RAILWAY_TOKEN ausente" && exit 1)
+#            [ -n "$RAILWAY_PROJECT_ID" ] && echo "[OK] PROJECT_ID=$RAILWAY_PROJECT_ID" || echo "[AVISO] PROJECT_ID não definido"
+#            [ -n "$RAILWAY_ENVIRONMENT_ID" ] && echo "[OK] ENVIRONMENT_ID=$RAILWAY_ENVIRONMENT_ID" || echo "[AVISO] ENVIRONMENT_ID não definido"
+#
+#      - run:
+#          name: Test Railway Token
+#          command: |
+#            railway status || { echo "[ERRO] Falha na autenticação Railway (token inválido ou sem acesso)"; exit 1; }
+#
+#      - run:
+#          name: Deploy to Railway
+#          command: |
+#            railway up --detach
 
 workflows:
   version: 2
   ci:
     jobs:
       - build-and-test
-      - deploy-railway:
-          requires:
-            - build-and-test
-          filters:
-            branches:
-              only: main
+#      - deploy-railway:
+#          requires:
+#            - build-and-test
+#          filters:
+#            branches:
+#              only: main
