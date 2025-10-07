@@ -47,7 +47,7 @@ public class GetIndicadoresLeitosPorEstadoHandler : IRequestHandler<GetIndicador
             .SelectMany(res => res.Series)
             .ToDictionary(
                 serie => long.Parse(serie.Localidade.Id),
-                serie => long.Parse(serie.SerieData.GetValueOrDefault("2022", "0"))
+                serie => long.Parse(serie.SerieData.GetValueOrDefault(request.Ano.ToString(), "0"))
             );
 
         var mapaUfData = dadosUfs.ToDictionary(
