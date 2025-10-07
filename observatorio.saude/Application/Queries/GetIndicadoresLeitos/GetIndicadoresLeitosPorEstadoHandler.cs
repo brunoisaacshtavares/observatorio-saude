@@ -20,8 +20,9 @@ public class GetIndicadoresLeitosPorEstadoHandler : IRequestHandler<GetIndicador
     public async Task<IEnumerable<IndicadoresLeitosEstadoDto>> Handle(GetIndicadoresLeitosPorEstadoQuery request,
         CancellationToken cancellationToken)
     {
-        List<long>? codUfs = null;
+        var anoParaBuscar = request.Ano ?? DateTime.Now.Year;
 
+        List<long>? codUfs = null;
         if (request.Ufs != null && request.Ufs.Any())
         {
             var ufsFromIbge = await _ibgeApiClient.FindUfsAsync();
@@ -33,9 +34,9 @@ public class GetIndicadoresLeitosPorEstadoHandler : IRequestHandler<GetIndicador
                 .ToList();
         }
 
-        var indicadoresPorEstado = await _leitoRepository.GetIndicadoresPorEstadoAsync(request.Ano, codUfs);
+        var indicadoresPorEstado = await _leitoRepository.GetIndicadoresPorEstadoAsync(anoParaBuscar, codUfs);
 
-        var populacaoTask = _ibgeApiClient.FindPopulacaoUfAsync(request.Ano);
+        var populacaoTask = _ibgeApiClient.FindPopulacaoUfAsync(anoParaBuscar);
         var ufsTask = _ibgeApiClient.FindUfsAsync();
         await Task.WhenAll(populacaoTask, ufsTask);
 
@@ -47,7 +48,7 @@ public class GetIndicadoresLeitosPorEstadoHandler : IRequestHandler<GetIndicador
             .SelectMany(res => res.Series)
             .ToDictionary(
                 serie => long.Parse(serie.Localidade.Id),
-                serie => long.Parse(serie.SerieData.GetValueOrDefault(request.Ano.ToString(), "0"))
+                serie => long.Parse(serie.SerieData.GetValueOrDefault(anoParaBuscar.ToString(), "0"))
             );
 
         var mapaUfData = dadosUfs.ToDictionary(

@@ -22,18 +22,16 @@ public class LeitosController : BaseController
 
     [HttpGet("indicadores")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetIndicadores([FromQuery] int? ano)
+    public async Task<IActionResult> GetIndicadores([FromQuery] GetIndicadoresLeitosQuery query)
     {
-        var query = new GetIndicadoresLeitosQuery { Ano = ano };
         var result = await _mediator.Send(query);
         return Ok(result);
     }
 
     [HttpGet("indicadores-por-estado")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetIndicadoresPorEstado([FromQuery] int ano, [FromQuery] List<string> ufs)
+    public async Task<IActionResult> GetIndicadoresPorEstado([FromQuery] GetIndicadoresLeitosPorEstadoQuery query)
     {
-        var query = new GetIndicadoresLeitosPorEstadoQuery { Ano = ano, Ufs = ufs };
         var result = await _mediator.Send(query);
         return Ok(result);
     }
@@ -45,7 +43,7 @@ public class LeitosController : BaseController
         var result = await _mediator.Send(paginadosQuery);
         return Ok(result);
     }
-    
+
     [HttpGet("top-leitos")]
     [ProducesResponseType(typeof(List<LeitosHospitalarDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetTopLeitos([FromQuery] GetTopLeitosQuery query)

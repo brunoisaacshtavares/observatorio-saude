@@ -1,7 +1,7 @@
 namespace observatorio.saude.Domain.Dto;
 
 /// <summary>
-/// Represents a GeoJSON Point geometry.
+///     Represents a GeoJSON Point geometry.
 /// </summary>
 /// <param name="Type">The geometry type, which is always "Point".</param>
 /// <param name="Coordinates">The coordinates as an array [longitude, latitude].</param>
@@ -13,7 +13,7 @@ public record GeoJsonPoint(string Type, double[] Coordinates)
 }
 
 /// <summary>
-/// Represents a GeoJSON Feature, containing a geometry and properties.
+///     Represents a GeoJSON Feature, containing a geometry and properties.
 /// </summary>
 /// <param name="Type">The feature type, which is always "Feature".</param>
 /// <param name="Geometry">The geometric shape of the feature.</param>
@@ -27,7 +27,7 @@ public record GeoJsonFeature(string Type, GeoJsonPoint Geometry, Dictionary<stri
 }
 
 /// <summary>
-/// Represents a GeoJSON FeatureCollection, a list of GeoJSON features.
+///     Represents a GeoJSON FeatureCollection, a list of GeoJSON features.
 /// </summary>
 /// <param name="Type">The collection type, which is always "FeatureCollection".</param>
 /// <param name="Features">A list of GeoJSON features.</param>
@@ -39,7 +39,7 @@ public record GeoJsonFeatureCollection(string Type, List<GeoJsonFeature> Feature
 }
 
 /// <summary>
-/// Represents raw geographic data for a feature.
+///     Represents raw geographic data for a feature.
 /// </summary>
 public class GeoFeatureData
 {
