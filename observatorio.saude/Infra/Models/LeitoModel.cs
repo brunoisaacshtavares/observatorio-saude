@@ -10,6 +10,7 @@ namespace observatorio.saude.Infra.Models;
 [Table("fato_leito")]
 [PrimaryKey(nameof(CodCnes), nameof(Anomes))]
 [Index(nameof(Anomes), Name = "IX_fato_leito_anomes")]
+[Index(nameof(Anomes), nameof(CodCnes))]
 public class LeitoModel
 {
     [Column("cod_cnes")] public long CodCnes { get; set; }
