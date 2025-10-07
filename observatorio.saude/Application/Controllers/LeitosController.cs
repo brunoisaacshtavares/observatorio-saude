@@ -27,7 +27,7 @@ public class LeitosController : BaseController
 
     [HttpGet("indicadores-por-estado")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetIndicadoresPorEstado([FromQuery] int? ano, [FromQuery] List<string> ufs)
+    public async Task<IActionResult> GetIndicadoresPorEstado([FromQuery] int ano, [FromQuery] List<string> ufs)
     {
         var query = new GetIndicadoresLeitosPorEstadoQuery { Ano = ano, Ufs = ufs };
         var result = await _mediator.Send(query);

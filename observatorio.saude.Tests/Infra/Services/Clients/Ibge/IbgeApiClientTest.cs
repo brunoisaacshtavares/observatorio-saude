@@ -64,7 +64,7 @@ public class IbgeApiClientTest
         };
         SetupMockedResponse(HttpStatusCode.OK, mockResponse);
 
-        var result = await _client.FindPopulacaoUfAsync();
+        var result = await _client.FindPopulacaoUfAsync(null);
 
         result.Should().NotBeNull();
         result.Should().HaveCount(1);
@@ -86,7 +86,7 @@ public class IbgeApiClientTest
         var mockResponse = new List<IbgeUfResponse>();
         SetupMockedResponse(HttpStatusCode.OK, mockResponse);
 
-        var result = await _client.FindPopulacaoUfAsync();
+        var result = await _client.FindPopulacaoUfAsync(null);
 
         result.Should().NotBeNull();
         result.Should().BeEmpty();
@@ -113,7 +113,7 @@ public class IbgeApiClientTest
             .ReturnsAsync(httpResponseMessage)
             .Verifiable();
 
-        var result = await _client.FindPopulacaoUfAsync();
+        var result = await _client.FindPopulacaoUfAsync(null);
 
         result.Should().NotBeNull();
         result.Should().BeEmpty();
@@ -124,7 +124,7 @@ public class IbgeApiClientTest
     {
         SetupMockedResponse(HttpStatusCode.NotFound, "{\"message\":\"Not Found\"}");
 
-        Func<Task> act = async () => await _client.FindPopulacaoUfAsync();
+        Func<Task> act = async () => await _client.FindPopulacaoUfAsync(null);
 
         await act.Should().ThrowAsync<HttpRequestException>();
     }

@@ -17,9 +17,12 @@ public class IbgeApiClient(IConfiguration configuration, HttpClient httpClient) 
         PropertyNameCaseInsensitive = true
     };
 
-    public async Task<List<IbgeUfResponse>> FindPopulacaoUfAsync()
+    public async Task<List<IbgeUfResponse>> FindPopulacaoUfAsync(int? ano)
     {
-        var fullUrl = _configuration.GetValue<string>("Ibge:FindPopulacaoUf");
+        var anoParaBuscar = ano ?? DateTime.Now.Year;
+
+        var urlTemplate = _configuration.GetValue<string>("Ibge:FindPopulacaoUf");
+        var fullUrl = urlTemplate.Replace("{ano}", anoParaBuscar.ToString());
 
         var httpResponseMessage = await _httpClient.GetAsync(fullUrl);
 

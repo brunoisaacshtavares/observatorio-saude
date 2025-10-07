@@ -20,11 +20,11 @@ public class GetIndicadoresLeitosHandler : IRequestHandler<GetIndicadoresLeitosQ
 
         if (dadosAgregados == null)
             return new IndicadoresLeitosDto();
-        
+
         var ocupacaoMedia = dadosAgregados.TotalLeitos > 0
             ? (double)(dadosAgregados.TotalLeitos - dadosAgregados.TotalLeitosSus) / dadosAgregados.TotalLeitos * 100
             : 0;
-        
+
         return new IndicadoresLeitosDto
         {
             TotalLeitos = dadosAgregados.TotalLeitos,

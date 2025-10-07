@@ -21,27 +21,27 @@ public class GetIndicadoresLeitosPorEstadoHandler : IRequestHandler<GetIndicador
         CancellationToken cancellationToken)
     {
         List<long>? codUfs = null;
-        
+
         if (request.Ufs != null && request.Ufs.Any())
         {
             var ufsFromIbge = await _ibgeApiClient.FindUfsAsync();
             var requestUfsUpper = request.Ufs.Select(u => u.ToUpperInvariant()).ToList();
-            
+
             codUfs = ufsFromIbge
                 .Where(uf => requestUfsUpper.Contains(uf.Sigla.ToUpperInvariant()))
                 .Select(uf => uf.Id)
                 .ToList();
         }
-        
+
         var indicadoresPorEstado = await _leitoRepository.GetIndicadoresPorEstadoAsync(request.Ano, codUfs);
-        
-        var populacaoTask = _ibgeApiClient.FindPopulacaoUfAsync();
+
+        var populacaoTask = _ibgeApiClient.FindPopulacaoUfAsync(request.Ano);
         var ufsTask = _ibgeApiClient.FindUfsAsync();
         await Task.WhenAll(populacaoTask, ufsTask);
 
         var dadosIbgeUf = await populacaoTask;
         var dadosUfs = await ufsTask;
-        
+
         var mapaPopulacao = dadosIbgeUf
             .SelectMany(r => r.Resultados)
             .SelectMany(res => res.Series)
@@ -54,7 +54,7 @@ public class GetIndicadoresLeitosPorEstadoHandler : IRequestHandler<GetIndicador
             uf => uf.Id,
             uf => (uf.Nome, uf.Sigla, Regiao: uf.Regiao.Nome)
         );
-        
+
         foreach (var item in indicadoresPorEstado)
         {
             if (mapaPopulacao.TryGetValue(item.CodUf, out var populacao))
