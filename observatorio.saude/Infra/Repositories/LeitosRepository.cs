@@ -85,7 +85,7 @@ public class LeitosRepository : ILeitosRepository
         if (codCnes.HasValue) latestRecordsQuery = latestRecordsQuery.Where(l => l.CodCnes == codCnes.Value);
 
         if (!string.IsNullOrWhiteSpace(nome))
-            latestRecordsQuery = latestRecordsQuery.Where(l => EF.Functions.Like(l.NmEstabelecimento, $"%{nome}%"));
+            latestRecordsQuery = latestRecordsQuery.Where(l => EF.Functions.Like(l.NmEstabelecimento, $"%{nome.ToUpper()}%"));
 
         var finalQuery = from leito in latestRecordsQuery
             join estabelecimento in _context.EstabelecimentoModel.AsNoTracking()
