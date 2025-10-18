@@ -1,0 +1,206 @@
+using FluentAssertions;
+using Moq;
+using observatorio.saude.Application.Queries.GetLeitosPaginados;
+using observatorio.saude.Application.Services.Clients;
+using observatorio.saude.Domain.Dto;
+using observatorio.saude.Domain.Interface;
+using observatorio.saude.Domain.Utils;
+
+namespace observatorio.saude.tests.Application.Queries.GetLeitosPaginados;
+
+public class GetLeitosPaginadosHandlerTest
+{
+    private readonly GetLeitosPaginadosHandler _handler;
+    private readonly Mock<IIbgeApiClient> _ibgeApiClientMock;
+    private readonly Mock<ILeitosRepository> _leitosRepositoryMock;
+
+    private readonly List<UfDataResponse> _mockUfs = new()
+    {
+        new UfDataResponse
+            { Id = 35, Sigla = "SP", Nome = "São Paulo", Regiao = new RegiaoResponse { Nome = "Sudeste" } },
+        new UfDataResponse
+            { Id = 33, Sigla = "RJ", Nome = "Rio de Janeiro", Regiao = new RegiaoResponse { Nome = "Sudeste" } }
+    };
+
+    public GetLeitosPaginadosHandlerTest()
+    {
+        _leitosRepositoryMock = new Mock<ILeitosRepository>();
+        _ibgeApiClientMock = new Mock<IIbgeApiClient>();
+
+        _ibgeApiClientMock.Setup(c => c.FindUfsAsync()).ReturnsAsync(_mockUfs);
+
+        _handler = new GetLeitosPaginadosHandler(
+            _leitosRepositoryMock.Object,
+            _ibgeApiClientMock.Object);
+    }
+
+    private PaginatedResult<LeitosHospitalarDto> GetMockPagedResult(long ufId = 35)
+    {
+        var items = new List<LeitosHospitalarDto>
+        {
+            new()
+            {
+                NomeEstabelecimento = "Hospital A", TotalLeitos = 100, LeitosDisponiveis = 20,
+                LocalizacaoUf = ufId.ToString()
+            },
+            new()
+            {
+                NomeEstabelecimento = "Clínica B", TotalLeitos = 50, LeitosDisponiveis = 50,
+                LocalizacaoUf = ufId.ToString()
+            },
+            new()
+            {
+                NomeEstabelecimento = "Posto C", TotalLeitos = 0, LeitosDisponiveis = 0, LocalizacaoUf = ufId.ToString()
+            },
+            new()
+            {
+                NomeEstabelecimento = "Hospital D", TotalLeitos = 10, LeitosDisponiveis = 1, LocalizacaoUf = "99"
+            }
+        };
+
+        return new PaginatedResult<LeitosHospitalarDto>(items, totalCount: 4, currentPage: 1, pageSize: 10);
+    }
+
+    [Fact]
+    public async Task Handle_QuandoSemFiltroUF_DeveChamarRepositorioComCodUfNulo()
+    {
+        var query = new GetLeitosPaginadosQuery { Uf = null };
+        var mockResult = GetMockPagedResult();
+
+        _leitosRepositoryMock
+            .Setup(r => r.GetPagedLeitosAsync(
+                It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<long?>(),
+                It.IsAny<int?>(), null, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(mockResult);
+
+        await _handler.Handle(query, CancellationToken.None);
+
+        _leitosRepositoryMock.Verify(r => r.GetPagedLeitosAsync(
+            query.PageNumber, query.PageSize, query.Nome, query.CodCnes, query.Ano,
+            null,
+            It.IsAny<CancellationToken>()), Times.Once);
+
+        _ibgeApiClientMock.Verify(c => c.FindUfsAsync(), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_QuandoComFiltroUFValido_DeveChamarRepositorioComCodUfCorreto()
+    {
+        var ufSigla = "RJ";
+        long codUfEsperado = 33;
+        var query = new GetLeitosPaginadosQuery { Uf = ufSigla };
+        var mockResult = GetMockPagedResult(codUfEsperado);
+
+        _leitosRepositoryMock
+            .Setup(r => r.GetPagedLeitosAsync(
+                It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<long?>(),
+                It.IsAny<int?>(), codUfEsperado, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(mockResult);
+
+        await _handler.Handle(query, CancellationToken.None);
+
+        _ibgeApiClientMock.Verify(c => c.FindUfsAsync(), Times.AtLeast(1));
+
+        _leitosRepositoryMock.Verify(r => r.GetPagedLeitosAsync(
+            query.PageNumber, query.PageSize, query.Nome, query.CodCnes, query.Ano,
+            codUfEsperado,
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_QuandoComFiltroUFInvalido_DeveChamarRepositorioComCodUfNulo()
+    {
+        var query = new GetLeitosPaginadosQuery { Uf = "XX" };
+        var mockResult = GetMockPagedResult();
+
+        _leitosRepositoryMock
+            .Setup(r => r.GetPagedLeitosAsync(
+                It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<long?>(),
+                It.IsAny<int?>(), null, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(mockResult);
+
+        await _handler.Handle(query, CancellationToken.None);
+
+        _ibgeApiClientMock.Verify(c => c.FindUfsAsync(), Times.AtLeast(1));
+
+        _leitosRepositoryMock.Verify(r => r.GetPagedLeitosAsync(
+            query.PageNumber, query.PageSize, query.Nome, query.CodCnes, query.Ano,
+            null,
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_DeveCalcularOcupacaoEMapearUfCorretamente()
+    {
+        var query = new GetLeitosPaginadosQuery { Uf = null };
+        long ufIdTeste = 35;
+        var mockResult = GetMockPagedResult(ufIdTeste);
+
+        _leitosRepositoryMock
+            .Setup(r => r.GetPagedLeitosAsync(
+                It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<long?>(),
+                It.IsAny<int?>(), null, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(mockResult);
+
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        result.Should().NotBeNull();
+        result.Items.Should().HaveCount(4);
+
+        var item1 = result.Items[0];
+        item1.NomeEstabelecimento.Should().Be("Hospital A");
+        item1.LeitosOcupados.Should().Be(80);
+        item1.PorcentagemOcupacao.Should().Be(80);
+        item1.LocalizacaoUf.Should().Be("SP");
+
+        var item2 = result.Items[1];
+        item2.NomeEstabelecimento.Should().Be("Clínica B");
+        item2.LeitosOcupados.Should().Be(0);
+        item2.PorcentagemOcupacao.Should().Be(0);
+        item2.LocalizacaoUf.Should().Be("SP");
+
+        var item3 = result.Items[2];
+        item3.NomeEstabelecimento.Should().Be("Posto C");
+        item3.LeitosOcupados.Should().Be(0);
+        item3.PorcentagemOcupacao.Should().Be(0);
+        item3.LocalizacaoUf.Should().Be("SP");
+
+        var item4 = result.Items[3];
+        item4.LeitosOcupados.Should().Be(9);
+        item4.LocalizacaoUf.Should().Be("Não Informada");
+
+        _ibgeApiClientMock.Verify(c => c.FindUfsAsync(), Times.AtLeastOnce);
+    }
+
+    [Theory]
+    [InlineData(100, 30, 70)]
+    [InlineData(3, 1, 67)]
+    [InlineData(10, 4, 60)]
+    public async Task Handle_DeveArredondarPorcentagemDeOcupacaoCorretamente(
+        int totalLeitos, int leitosDisponiveis, int porcentagemEsperada)
+    {
+        var query = new GetLeitosPaginadosQuery { Uf = null };
+        var mockItems = new List<LeitosHospitalarDto>
+        {
+            new()
+            {
+                TotalLeitos = totalLeitos,
+                LeitosDisponiveis = leitosDisponiveis,
+                LocalizacaoUf = "35"
+            }
+        };
+        var mockResult = new PaginatedResult<LeitosHospitalarDto>(mockItems, 1, 1, 10);
+
+        _leitosRepositoryMock
+            .Setup(r => r.GetPagedLeitosAsync(
+                It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<long?>(),
+                It.IsAny<int?>(), null, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(mockResult);
+
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        var item = result.Items.Single();
+        item.LeitosOcupados.Should().Be(totalLeitos - leitosDisponiveis);
+        item.PorcentagemOcupacao.Should().Be(porcentagemEsperada);
+    }
+}

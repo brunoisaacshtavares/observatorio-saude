@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using observatorio.saude.Application.Controllers;
+using observatorio.saude.Application.Queries.ExportEstabelecimentos;
+using observatorio.saude.Application.Queries.GetEstabelecimentosGeoJson;
 using observatorio.saude.Application.Queries.GetEstabelecimentosPaginados;
 using observatorio.saude.Application.Queries.GetNumeroEstabelecimentos;
 using observatorio.saude.Application.Services;
@@ -24,6 +26,12 @@ public class EstabelecimentoControllerTest
         _mediatorMock = new Mock<IMediator>();
         _fileExportServiceMock = new Mock<IFileExportService>();
         _controller = new EstabelecimentoController(_mediatorMock.Object, _fileExportServiceMock.Object);
+
+        var httpContext = new DefaultHttpContext();
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
     }
 
     [Fact]
@@ -92,5 +100,128 @@ public class EstabelecimentoControllerTest
 
         _mediatorMock.Verify(m => m.Send(It.IsAny<GetNumeroEstabelecimentosQuery>(), It.IsAny<CancellationToken>()),
             Times.Once);
+    }
+
+    [Fact]
+    public async Task ExportResumoPorEstado_QuandoTemDados_DeveRetornarFileResult()
+    {
+        var query = new ExportEstabelecimentosQuery { Formato = "csv" };
+        var fileBytes = new byte[] { 1, 2, 3 };
+        var exportResult = new ExportFileResult();
+        exportResult.FileData = fileBytes;
+        exportResult.FileName = "Estabelecimentos.csv";
+        exportResult.ContentType = "text/csv";
+
+        _mediatorMock
+            .Setup(m => m.Send(query, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(exportResult);
+
+        var actionResult = await _controller.ExportResumoPorEstado(query);
+
+        var fileResult = actionResult.Should().BeOfType<FileContentResult>().Subject;
+        fileResult.ContentType.Should().Be(exportResult.ContentType);
+        fileResult.FileDownloadName.Should().Be(exportResult.FileName);
+        fileResult.FileContents.Should().BeEquivalentTo(fileBytes);
+
+        _mediatorMock.Verify(m => m.Send(query, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task ExportResumoPorEstado_QuandoNaoTemDados_DeveRetornarNoContent()
+    {
+        var query = new ExportEstabelecimentosQuery { Formato = "csv" };
+        var exportResult = new ExportFileResult();
+
+        _mediatorMock
+            .Setup(m => m.Send(query, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(exportResult);
+
+        var actionResult = await _controller.ExportResumoPorEstado(query);
+
+        actionResult.Should().BeOfType<NoContentResult>().Subject.StatusCode.Should()
+            .Be(StatusCodes.Status204NoContent);
+
+        _mediatorMock.Verify(m => m.Send(query, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task ExportStream_QuandoFormatoXlsx_DeveGerarArquivoXlsxECallServiceCorreto()
+    {
+        var query = new ExportEstabelecimentosDetalhadosQuery { Format = "xlsx" };
+
+        var asyncDataStream = GetAsyncEnumerable();
+
+        _mediatorMock
+            .Setup(m => m.Send(query, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(asyncDataStream);
+
+        await _controller.ExportStream(query, CancellationToken.None);
+
+        var response = _controller.HttpContext.Response;
+
+        response.ContentType.Should().Be("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.Headers["Content-Disposition"].ToString().Should().Contain("attachment; filename=\"estabelecimentos_");
+        response.Headers["Content-Disposition"].ToString().Should().Contain(".xlsx\"");
+
+        _mediatorMock.Verify(m => m.Send(query, It.IsAny<CancellationToken>()), Times.Once);
+
+        _fileExportServiceMock.Verify(
+            m => m.GenerateXlsxStreamAsync(asyncDataStream, response.Body), Times.Once);
+        _fileExportServiceMock.Verify(
+            m => m.GenerateCsvStreamAsync(It.IsAny<IAsyncEnumerable<ExportEstabelecimentoDto>>(), It.IsAny<Stream>()),
+            Times.Never);
+    }
+
+    [Theory]
+    [InlineData("csv")]
+    [InlineData(null)]
+    [InlineData("invalido")]
+    public async Task ExportStream_QuandoFormatoCsvOuPadrao_DeveGerarArquivoCsvECallServiceCorreto(string format)
+    {
+        var query = new ExportEstabelecimentosDetalhadosQuery { Format = format };
+        var mockStream = GetAsyncEnumerable();
+
+        _mediatorMock
+            .Setup(m => m.Send(query, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(mockStream);
+
+        await _controller.ExportStream(query, CancellationToken.None);
+
+        var response = _controller.HttpContext.Response;
+        response.ContentType.Should().Be("text/csv");
+        response.Headers["Content-Disposition"].ToString().Should().Contain("attachment; filename=\"estabelecimentos_");
+        response.Headers["Content-Disposition"].ToString().Should().Contain(".csv\"");
+
+        _mediatorMock.Verify(m => m.Send(query, It.IsAny<CancellationToken>()), Times.Once);
+        _fileExportServiceMock.Verify(
+            m => m.GenerateCsvStreamAsync(mockStream, response.Body), Times.Once);
+        _fileExportServiceMock.Verify(
+            m => m.GenerateXlsxStreamAsync(mockStream, response.Body), Times.Never);
+    }
+
+    [Fact]
+    public async Task GetGeoJson_QuandoChamado_DeveRetornarOkComGeoJsonFeatureCollection()
+    {
+        var query = new GetEstabelecimentosGeoJsonQuery { Uf = "DF" };
+        var resultadoEsperado = new GeoJsonFeatureCollection(new List<GeoJsonFeature>());
+
+        _mediatorMock
+            .Setup(m => m.Send(query, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(resultadoEsperado);
+
+        var actionResult = await _controller.GetGeoJson(query);
+
+        var okResult = actionResult.Result.Should().BeOfType<OkObjectResult>().Subject;
+        okResult.StatusCode.Should().Be(StatusCodes.Status200OK);
+        okResult.Value.Should().BeEquivalentTo(resultadoEsperado);
+
+        _mediatorMock.Verify(m => m.Send(query, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    private static async IAsyncEnumerable<ExportEstabelecimentoDto> GetAsyncEnumerable()
+    {
+        yield return new ExportEstabelecimentoDto { CodCnes = 12345, NomeFantasia = "Hospital Teste A" };
+        yield return new ExportEstabelecimentoDto { CodCnes = 67890, NomeFantasia = "Clínica Teste B" };
+        await Task.CompletedTask;
     }
 }
