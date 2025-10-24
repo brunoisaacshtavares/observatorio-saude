@@ -36,6 +36,14 @@ public class LeitosController : BaseController
         return Ok(result);
     }
 
+    [HttpGet("indicadores-por-regiao")]
+    [ProducesResponseType(typeof(IEnumerable<IndicadoresLeitosRegiaoDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetIndicadoresPorRegiao([FromQuery] GetIndicadoresLeitosPorRegiaoQuery query)
+    {
+        var result = await _mediator.Send(query);
+        return Ok(result);
+    }
+
     [HttpGet]
     [ProducesResponseType(typeof(PaginatedResult<LeitosHospitalarDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetLeitos([FromQuery] GetLeitosPaginadosQuery paginadosQuery)

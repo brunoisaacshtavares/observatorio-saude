@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using MediatR;
 using observatorio.saude.Domain.Dto;
+using observatorio.saude.Domain.Enums;
 using observatorio.saude.Domain.Utils;
 
 namespace observatorio.saude.Application.Queries.GetLeitosPaginados;
@@ -42,4 +43,9 @@ public class GetLeitosPaginadosQuery : IRequest<PaginatedResult<LeitosHospitalar
     ///     O código UF (Unidade Federativa) para filtrar os estabelecimentos. Por exemplo: "SP", "RJ", "MG".
     /// </summary>
     public string? Uf { get; set; }
+
+    /// <summary>
+    ///     O Tipo de leito para filtrar os estabelecimentos. Por exemplo: UtiAdulto, UtiNeonatal, etc.
+    /// </summary>
+    public TipoLeito? Tipo { get; set; }
 }

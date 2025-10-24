@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using observatorio.saude.Domain.Dto;
+using observatorio.saude.Domain.Enums;
 using observatorio.saude.Domain.Interface;
 using observatorio.saude.Domain.Utils;
 using observatorio.saude.Infra.Data;
@@ -65,6 +66,7 @@ public class LeitosRepository : ILeitosRepository
         string? nome,
         long? codCnes,
         int? ano,
+        TipoLeito? tipo,
         long? codUf,
         CancellationToken cancellationToken)
     {
@@ -83,7 +85,6 @@ public class LeitosRepository : ILeitosRepository
             select leito;
 
         if (codCnes.HasValue) latestRecordsQuery = latestRecordsQuery.Where(l => l.CodCnes == codCnes.Value);
-
         if (!string.IsNullOrWhiteSpace(nome))
             latestRecordsQuery =
                 latestRecordsQuery.Where(l => EF.Functions.Like(l.NmEstabelecimento, $"%{nome.ToUpper()}%"));
@@ -100,6 +101,20 @@ public class LeitosRepository : ILeitosRepository
                 Localizacao = localizacao
             };
 
+        if (tipo.HasValue)
+        {
+            if (tipo == TipoLeito.UTI_ADULTO)
+                finalQuery = finalQuery.Where(x => x.Leito.QtdUtiAdultoExist > 0);
+            else if (tipo == TipoLeito.UTI_NEONATAL)
+                finalQuery = finalQuery.Where(x => x.Leito.QtdUtiNeonatalExist > 0);
+            else if (tipo == TipoLeito.UTI_PEDIATRICO)
+                finalQuery = finalQuery.Where(x => x.Leito.QtdUtiPediatricoExist > 0);
+            else if (tipo == TipoLeito.UTI_QUEIMADO)
+                finalQuery = finalQuery.Where(x => x.Leito.QtdUtiQueimadoExist > 0);
+            else if (tipo == TipoLeito.UTI_CORONARIANA)
+                finalQuery = finalQuery.Where(x => x.Leito.QtdUtiCoronarianaExist > 0);
+        }
+
         var totalCount = await finalQuery.CountAsync(cancellationToken);
 
         var pagedData = await finalQuery
@@ -112,8 +127,22 @@ public class LeitosRepository : ILeitosRepository
                 NomeEstabelecimento = x.Leito.NmEstabelecimento,
                 LocalizacaoUf = x.Localizacao.CodUf.ToString() ?? "0",
                 EnderecoCompleto = $"{x.Localizacao.Endereco}, {x.Localizacao.Numero} - {x.Localizacao.Bairro}",
-                TotalLeitos = x.Leito.QtdLeitosExistentes,
-                LeitosDisponiveis = x.Leito.QtdLeitosSus
+
+                TotalLeitos = !tipo.HasValue ? x.Leito.QtdLeitosExistentes :
+                    tipo == TipoLeito.UTI_ADULTO ? x.Leito.QtdUtiAdultoExist :
+                    tipo == TipoLeito.UTI_NEONATAL ? x.Leito.QtdUtiNeonatalExist :
+                    tipo == TipoLeito.UTI_PEDIATRICO ? x.Leito.QtdUtiPediatricoExist :
+                    tipo == TipoLeito.UTI_QUEIMADO ? x.Leito.QtdUtiQueimadoExist :
+                    tipo == TipoLeito.UTI_CORONARIANA ? x.Leito.QtdUtiCoronarianaExist :
+                    x.Leito.QtdLeitosExistentes,
+
+                LeitosDisponiveis = !tipo.HasValue ? x.Leito.QtdLeitosSus :
+                    tipo == TipoLeito.UTI_ADULTO ? x.Leito.QtdUtiAdultoSus :
+                    tipo == TipoLeito.UTI_NEONATAL ? x.Leito.QtdUtiNeonatalSus :
+                    tipo == TipoLeito.UTI_PEDIATRICO ? x.Leito.QtdUtiPediatricoSus :
+                    tipo == TipoLeito.UTI_QUEIMADO ? x.Leito.QtdUtiQueimadoSus :
+                    tipo == TipoLeito.UTI_CORONARIANA ? x.Leito.QtdUtiCoronarianaSus :
+                    x.Leito.QtdLeitosSus
             })
             .ToListAsync(cancellationToken);
 

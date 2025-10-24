@@ -1,4 +1,5 @@
 using observatorio.saude.Domain.Dto;
+using observatorio.saude.Domain.Enums;
 using observatorio.saude.Domain.Utils;
 
 namespace observatorio.saude.Domain.Interface;
@@ -16,12 +17,13 @@ public interface ILeitosRepository
         string? nome,
         long? codCnes,
         int? ano,
-        long? codUf, // Parâmetro adicionado
+        TipoLeito? tipo,
+        long? codUf,
         CancellationToken cancellationToken);
 
     Task<List<LeitosHospitalarDto>> GetTopLeitosAsync(
         int? ano,
         int topCount,
-        long? codUf, // Parâmetro adicionado
+        long? codUf,
         CancellationToken cancellationToken);
 }

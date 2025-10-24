@@ -32,6 +32,7 @@ public class GetLeitosPaginadosHandler(ILeitosRepository leitosRepository, IIbge
             request.Nome,
             request.CodCnes,
             request.Ano,
+            request.Tipo,
             codUf,
             cancellationToken);
 

@@ -136,7 +136,7 @@ public class LeitosRepositoryTest : IDisposable
     public async Task GetPagedLeitosAsync_DeveAplicarPaginacaoERetornarUltimoRegistro()
     {
         var result = await _repository.GetPagedLeitosAsync(
-            1, 1, null, null, AnoBase, null, CancellationToken.None);
+            1, 1, null, null, AnoBase, null, null, CancellationToken.None);
 
         result.Should().NotBeNull();
         result.TotalCount.Should().Be(2);
@@ -151,7 +151,7 @@ public class LeitosRepositoryTest : IDisposable
     public async Task GetPagedLeitosAsync_DeveFiltrarPorNomeCorretamente()
     {
         var result = await _repository.GetPagedLeitosAsync(
-            1, 10, "clINICA", null, AnoBase, null, CancellationToken.None);
+            1, 10, "clINICA", null, AnoBase, null, null, CancellationToken.None);
 
         result.TotalCount.Should().Be(1);
         result.Items.First().NomeEstabelecimento.Should().Be("CLINICA B");
@@ -161,7 +161,7 @@ public class LeitosRepositoryTest : IDisposable
     public async Task GetPagedLeitosAsync_DeveFiltrarPorCodUfCorretamente()
     {
         var result = await _repository.GetPagedLeitosAsync(
-            1, 10, null, null, AnoBase, CodUfRj, CancellationToken.None);
+            1, 10, null, null, AnoBase, null, CodUfRj, CancellationToken.None);
 
         result.TotalCount.Should().Be(1);
         result.Items.First().NomeEstabelecimento.Should().Be("CLINICA B");
