@@ -1,5 +1,6 @@
 using MediatR;
 using observatorio.saude.Domain.Dto;
+using observatorio.saude.Domain.Enums;
 
 namespace observatorio.saude.Application.Queries.GetIndicadoresLeitos;
 
@@ -12,4 +13,9 @@ public class GetIndicadoresLeitosQuery : IRequest<IndicadoresLeitosDto>
     ///     O ano para o qual os indicadores devem ser calculados.
     /// </summary>
     public int? Ano { get; set; }
+
+    /// <summary>
+    ///     O Tipo de leito para filtrar os indicadores. Por exemplo: UtiAdulto, UtiNeonatal, etc.
+    /// </summary>
+    public TipoLeito? Tipo { get; set; }
 }

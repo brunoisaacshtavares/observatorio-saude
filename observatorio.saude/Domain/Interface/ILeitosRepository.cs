@@ -6,7 +6,7 @@ namespace observatorio.saude.Domain.Interface;
 
 public interface ILeitosRepository
 {
-    Task<LeitosAgregadosDto?> GetLeitosAgregadosAsync(int? ano = null);
+    Task<LeitosAgregadosDto?> GetLeitosAgregadosAsync(int? ano = null, TipoLeito? tipo = null);
 
     Task<IEnumerable<IndicadoresLeitosEstadoDto>> GetIndicadoresPorEstadoAsync(int? ano = null,
         List<long>? codUfs = null, TipoLeito? tipo = null);

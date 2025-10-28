@@ -17,16 +17,36 @@ public class LeitosRepository : ILeitosRepository
         _context = context;
     }
 
-    public async Task<LeitosAgregadosDto?> GetLeitosAgregadosAsync(int? ano = null)
+    public async Task<LeitosAgregadosDto?> GetLeitosAgregadosAsync(int? ano = null, TipoLeito? tipo = null)
     {
         var latestRecordsQuery = GetLatestRecords(ano);
         var aggregatedData = await latestRecordsQuery
             .GroupBy(l => 1)
             .Select(g => new LeitosAgregadosDto
             {
-                TotalLeitos = g.Sum(l => l.QtdLeitosExistentes),
-                TotalLeitosSus = g.Sum(l => l.QtdLeitosSus),
-                TotalUti = g.Sum(l => l.QtdUtiTotalExist)
+                TotalLeitos = g.Sum(l => !tipo.HasValue ? l.QtdLeitosExistentes :
+                    tipo == TipoLeito.UTI_ADULTO ? l.QtdUtiAdultoExist :
+                    tipo == TipoLeito.UTI_NEONATAL ? l.QtdUtiNeonatalExist :
+                    tipo == TipoLeito.UTI_PEDIATRICO ? l.QtdUtiPediatricoExist :
+                    tipo == TipoLeito.UTI_QUEIMADO ? l.QtdUtiQueimadoExist :
+                    tipo == TipoLeito.UTI_CORONARIANA ? l.QtdUtiCoronarianaExist :
+                    l.QtdLeitosExistentes),
+
+                TotalLeitosSus = g.Sum(l => !tipo.HasValue ? l.QtdLeitosSus :
+                    tipo == TipoLeito.UTI_ADULTO ? l.QtdUtiAdultoSus :
+                    tipo == TipoLeito.UTI_NEONATAL ? l.QtdUtiNeonatalSus :
+                    tipo == TipoLeito.UTI_PEDIATRICO ? l.QtdUtiPediatricoSus :
+                    tipo == TipoLeito.UTI_QUEIMADO ? l.QtdUtiQueimadoSus :
+                    tipo == TipoLeito.UTI_CORONARIANA ? l.QtdUtiCoronarianaSus :
+                    l.QtdLeitosSus),
+
+                TotalUti = g.Sum(l => !tipo.HasValue ? l.QtdUtiTotalExist :
+                    tipo == TipoLeito.UTI_ADULTO ? l.QtdUtiAdultoExist :
+                    tipo == TipoLeito.UTI_NEONATAL ? l.QtdUtiNeonatalExist :
+                    tipo == TipoLeito.UTI_PEDIATRICO ? l.QtdUtiPediatricoExist :
+                    tipo == TipoLeito.UTI_QUEIMADO ? l.QtdUtiQueimadoExist :
+                    tipo == TipoLeito.UTI_CORONARIANA ? l.QtdUtiCoronarianaExist :
+                    l.QtdUtiTotalExist)
             })
             .FirstOrDefaultAsync();
 
