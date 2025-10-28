@@ -1,5 +1,8 @@
+// observatorio.saude.Application.Queries.GetIndicadoresLeitos.GetIndicadoresLeitosPorRegiaoQuery.cs
+
 using MediatR;
 using observatorio.saude.Domain.Dto;
+using observatorio.saude.Domain.Enums; // Adicionar using
 
 namespace observatorio.saude.Application.Queries.GetIndicadoresLeitos;
 
@@ -18,4 +21,9 @@ public class GetIndicadoresLeitosPorRegiaoQuery : IRequest<IEnumerable<Indicador
     ///     Se vazia, retorna todas as regiões.
     /// </summary>
     public List<string>? Regioes { get; set; }
+
+    /// <summary>
+    ///     O Tipo de leito para filtrar os estabelecimentos. Por exemplo: UtiAdulto, UtiNeonatal, etc.
+    /// </summary>
+    public TipoLeito? Tipo { get; set; }
 }

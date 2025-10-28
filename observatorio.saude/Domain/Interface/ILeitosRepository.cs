@@ -9,7 +9,7 @@ public interface ILeitosRepository
     Task<LeitosAgregadosDto?> GetLeitosAgregadosAsync(int? ano = null);
 
     Task<IEnumerable<IndicadoresLeitosEstadoDto>> GetIndicadoresPorEstadoAsync(int? ano = null,
-        List<long>? codUfs = null);
+        List<long>? codUfs = null, TipoLeito? tipo = null);
 
     Task<PaginatedResult<LeitosHospitalarDto>> GetPagedLeitosAsync(
         int pageNumber,

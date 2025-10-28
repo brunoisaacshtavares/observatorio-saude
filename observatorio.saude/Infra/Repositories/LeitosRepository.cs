@@ -33,32 +33,54 @@ public class LeitosRepository : ILeitosRepository
         return aggregatedData;
     }
 
-    public async Task<IEnumerable<IndicadoresLeitosEstadoDto>> GetIndicadoresPorEstadoAsync(int? ano = null,
-        List<long>? codUfs = null)
-    {
-        var queryLeitos = GetLatestRecords(ano);
+    public async Task<IEnumerable<IndicadoresLeitosEstadoDto>> GetIndicadoresPorEstadoAsync(
+    int? ano = null,
+    List<long>? codUfs = null,
+    TipoLeito? tipo = null)
+{
+    var queryLeitos = GetLatestRecords(ano);
 
-        var queryComUf = from leito in queryLeitos
-            join estabelecimento in _context.EstabelecimentoModel.Include(e => e.Localizacao) on leito.CodCnes
-                equals estabelecimento.CodCnes
-            where estabelecimento.Localizacao != null && estabelecimento.Localizacao.CodUf.HasValue
-            select new { Leito = leito, Uf = estabelecimento.Localizacao.CodUf.Value };
+    var queryComUf = from leito in queryLeitos
+        join estabelecimento in _context.EstabelecimentoModel.Include(e => e.Localizacao) on leito.CodCnes
+            equals estabelecimento.CodCnes
+        where estabelecimento.Localizacao != null && estabelecimento.Localizacao.CodUf.HasValue
+        select new { Leito = leito, Uf = estabelecimento.Localizacao.CodUf.Value };
 
-        if (codUfs != null && codUfs.Any()) queryComUf = queryComUf.Where(x => codUfs.Contains(x.Uf));
+    if (codUfs != null && codUfs.Any()) queryComUf = queryComUf.Where(x => codUfs.Contains(x.Uf));
 
-        var queryFinal = from item in queryComUf
-            group item.Leito by item.Uf
-            into g
-            select new IndicadoresLeitosEstadoDto
-            {
-                CodUf = g.Key,
-                TotalLeitos = g.Sum(l => l.QtdLeitosExistentes),
-                LeitosDisponiveis = g.Sum(l => l.QtdLeitosSus),
-                Criticos = g.Sum(l => l.QtdUtiTotalExist)
-            };
+    var queryFinal = from item in queryComUf
+        group item.Leito by item.Uf
+        into g
+        select new IndicadoresLeitosEstadoDto
+        {
+            CodUf = g.Key,
+            TotalLeitos = g.Sum(l => !tipo.HasValue ? l.QtdLeitosExistentes :
+                tipo == TipoLeito.UTI_ADULTO ? l.QtdUtiAdultoExist :
+                tipo == TipoLeito.UTI_NEONATAL ? l.QtdUtiNeonatalExist :
+                tipo == TipoLeito.UTI_PEDIATRICO ? l.QtdUtiPediatricoExist :
+                tipo == TipoLeito.UTI_QUEIMADO ? l.QtdUtiQueimadoExist :
+                tipo == TipoLeito.UTI_CORONARIANA ? l.QtdUtiCoronarianaExist :
+                l.QtdLeitosExistentes),
 
-        return await queryFinal.ToListAsync();
-    }
+            LeitosDisponiveis = g.Sum(l => !tipo.HasValue ? l.QtdLeitosSus :
+                tipo == TipoLeito.UTI_ADULTO ? l.QtdUtiAdultoSus :
+                tipo == TipoLeito.UTI_NEONATAL ? l.QtdUtiNeonatalSus :
+                tipo == TipoLeito.UTI_PEDIATRICO ? l.QtdUtiPediatricoSus :
+                tipo == TipoLeito.UTI_QUEIMADO ? l.QtdUtiQueimadoSus :
+                tipo == TipoLeito.UTI_CORONARIANA ? l.QtdUtiCoronarianaSus :
+                l.QtdLeitosSus),
+            
+            Criticos = g.Sum(l => !tipo.HasValue ? l.QtdUtiTotalExist :
+                tipo == TipoLeito.UTI_ADULTO ? l.QtdUtiAdultoExist :
+                tipo == TipoLeito.UTI_NEONATAL ? l.QtdUtiNeonatalExist :
+                tipo == TipoLeito.UTI_PEDIATRICO ? l.QtdUtiPediatricoExist :
+                tipo == TipoLeito.UTI_QUEIMADO ? l.QtdUtiQueimadoExist :
+                tipo == TipoLeito.UTI_CORONARIANA ? l.QtdUtiCoronarianaExist :
+                l.QtdUtiTotalExist)
+        };
+
+    return await queryFinal.ToListAsync();
+}
 
     public async Task<PaginatedResult<LeitosHospitalarDto>> GetPagedLeitosAsync(
         int pageNumber,

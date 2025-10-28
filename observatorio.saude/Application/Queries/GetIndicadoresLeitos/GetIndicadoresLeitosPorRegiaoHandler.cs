@@ -1,3 +1,5 @@
+// observatorio.saude.Application.Queries.GetIndicadoresLeitos.GetIndicadoresLeitosPorRegiaoHandler.cs
+
 using MediatR;
 using observatorio.saude.Domain.Dto;
 
@@ -16,7 +18,11 @@ public class GetIndicadoresLeitosPorRegiaoHandler : IRequestHandler<GetIndicador
     public async Task<IEnumerable<IndicadoresLeitosRegiaoDto>> Handle(GetIndicadoresLeitosPorRegiaoQuery request,
         CancellationToken cancellationToken)
     {
-        var indicadoresPorEstado = await _mediator.Send(new GetIndicadoresLeitosPorEstadoQuery { Ano = request.Ano },
+        var indicadoresPorEstado = await _mediator.Send(new GetIndicadoresLeitosPorEstadoQuery
+            {
+                Ano = request.Ano,
+                Tipo = request.Tipo
+            },
             cancellationToken);
 
         var indicadoresPorRegiao = indicadoresPorEstado
