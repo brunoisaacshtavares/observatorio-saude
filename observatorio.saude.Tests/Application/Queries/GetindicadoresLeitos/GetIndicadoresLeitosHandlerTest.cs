@@ -23,7 +23,7 @@ public class GetIndicadoresLeitosHandlerTest
         var query = new GetIndicadoresLeitosQuery { Ano = 2023 };
 
         _leitoRepositoryMock
-            .Setup(r => r.GetLeitosAgregadosAsync(It.IsAny<int?>()))
+            .Setup(r => r.GetLeitosAgregadosAsync(It.IsAny<int?>(), null))
             .ReturnsAsync((LeitosAgregadosDto)null);
 
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -34,7 +34,7 @@ public class GetIndicadoresLeitosHandlerTest
         result.Criticos.Should().Be(0);
         result.OcupacaoMedia.Should().Be(0);
 
-        _leitoRepositoryMock.Verify(r => r.GetLeitosAgregadosAsync(query.Ano), Times.Once);
+        _leitoRepositoryMock.Verify(r => r.GetLeitosAgregadosAsync(query.Ano, null), Times.Once);
     }
 
     [Fact]
@@ -49,7 +49,7 @@ public class GetIndicadoresLeitosHandlerTest
         };
 
         _leitoRepositoryMock
-            .Setup(r => r.GetLeitosAgregadosAsync(It.IsAny<int?>()))
+            .Setup(r => r.GetLeitosAgregadosAsync(It.IsAny<int?>(), null))
             .ReturnsAsync(mockDados);
 
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -73,7 +73,7 @@ public class GetIndicadoresLeitosHandlerTest
         };
 
         _leitoRepositoryMock
-            .Setup(r => r.GetLeitosAgregadosAsync(It.IsAny<int?>()))
+            .Setup(r => r.GetLeitosAgregadosAsync(It.IsAny<int?>(), null))
             .ReturnsAsync(mockDados);
 
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -97,7 +97,7 @@ public class GetIndicadoresLeitosHandlerTest
         };
 
         _leitoRepositoryMock
-            .Setup(r => r.GetLeitosAgregadosAsync(It.IsAny<int?>()))
+            .Setup(r => r.GetLeitosAgregadosAsync(It.IsAny<int?>(), null))
             .ReturnsAsync(mockDados);
 
         var result = await _handler.Handle(query, CancellationToken.None);
