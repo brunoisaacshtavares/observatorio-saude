@@ -125,7 +125,7 @@ public class LeitosRepositoryTest : IDisposable
     {
         var codUfsFiltro = new List<long> { CodUfRj };
 
-        var result = await _repository.GetIndicadoresPorEstadoAsync(AnoBase, codUfsFiltro);
+        var result = await _repository.GetIndicadoresPorEstadoAsync(AnoBase, null,codUfsFiltro);
 
         result.Should().ContainSingle();
         result.First().CodUf.Should().Be(CodUfRj);
@@ -136,7 +136,7 @@ public class LeitosRepositoryTest : IDisposable
     public async Task GetPagedLeitosAsync_DeveAplicarPaginacaoERetornarUltimoRegistro()
     {
         var result = await _repository.GetPagedLeitosAsync(
-            1, 1, null, null, AnoBase, null, null, CancellationToken.None);
+            1, 1, null,null, null, AnoBase, null, null, CancellationToken.None);
 
         result.Should().NotBeNull();
         result.TotalCount.Should().Be(2);
@@ -151,7 +151,7 @@ public class LeitosRepositoryTest : IDisposable
     public async Task GetPagedLeitosAsync_DeveFiltrarPorNomeCorretamente()
     {
         var result = await _repository.GetPagedLeitosAsync(
-            1, 10, "clINICA", null, AnoBase, null, null, CancellationToken.None);
+            1, 10, "clINICA", null, AnoBase, null,null, null, CancellationToken.None);
 
         result.TotalCount.Should().Be(1);
         result.Items.First().NomeEstabelecimento.Should().Be("CLINICA B");
@@ -161,7 +161,7 @@ public class LeitosRepositoryTest : IDisposable
     public async Task GetPagedLeitosAsync_DeveFiltrarPorCodUfCorretamente()
     {
         var result = await _repository.GetPagedLeitosAsync(
-            1, 10, null, null, AnoBase, null, CodUfRj, CancellationToken.None);
+            1, 10, null, null, AnoBase, null, null,CodUfRj, CancellationToken.None);
 
         result.TotalCount.Should().Be(1);
         result.Items.First().NomeEstabelecimento.Should().Be("CLINICA B");
@@ -171,7 +171,7 @@ public class LeitosRepositoryTest : IDisposable
     [Fact]
     public async Task GetTopLeitosAsync_DeveOrdenarPorOcupacaoETerOLimiteCorreto()
     {
-        var result = await _repository.GetTopLeitosAsync(AnoBase, 1, null, CancellationToken.None);
+        var result = await _repository.GetTopLeitosAsync(AnoBase, null,1, null, CancellationToken.None);
 
         result.Should().ContainSingle();
 
@@ -182,7 +182,7 @@ public class LeitosRepositoryTest : IDisposable
     [Fact]
     public async Task GetTopLeitosAsync_DeveAplicarFiltroDeUf()
     {
-        var result = await _repository.GetTopLeitosAsync(AnoBase, 1, CodUfSp, CancellationToken.None);
+        var result = await _repository.GetTopLeitosAsync(AnoBase, null,1, CodUfSp, CancellationToken.None);
 
         result.Should().ContainSingle();
         result.First().NomeEstabelecimento.Should().Be("HOSPITAL A");

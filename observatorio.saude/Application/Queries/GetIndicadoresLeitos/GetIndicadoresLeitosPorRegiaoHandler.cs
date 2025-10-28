@@ -21,6 +21,7 @@ public class GetIndicadoresLeitosPorRegiaoHandler : IRequestHandler<GetIndicador
         var indicadoresPorEstado = await _mediator.Send(new GetIndicadoresLeitosPorEstadoQuery
             {
                 Ano = request.Ano,
+                Anomes = request.Anomes,
                 Tipo = request.Tipo
             },
             cancellationToken);

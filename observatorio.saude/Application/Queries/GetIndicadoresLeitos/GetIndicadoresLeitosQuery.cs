@@ -18,4 +18,9 @@ public class GetIndicadoresLeitosQuery : IRequest<IndicadoresLeitosDto>
     ///     O Tipo de leito para filtrar os indicadores. Por exemplo: UtiAdulto, UtiNeonatal, etc.
     /// </summary>
     public TipoLeito? Tipo { get; set; }
+    
+    /// <summary>
+    ///     O ano e o mês buscado concatenado em uma string ex: 08/2023 => 202308
+    /// </summary>
+    public long? Anomes { get; set; }
 }

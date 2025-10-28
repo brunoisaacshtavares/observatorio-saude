@@ -25,4 +25,9 @@ public class GetTopLeitosQuery : IRequest<List<LeitosHospitalarDto>>
     ///     O código UF (Unidade Federativa) para filtrar os estabelecimentos. Por exemplo: "SP", "RJ", "MG".
     /// </summary>
     public string? Uf { get; set; }
+    
+    /// <summary>
+    ///     O ano e o mês buscado concatenado em uma string ex: 08/2023 => 202308
+    /// </summary>
+    public long? Anomes { get; set; }
 }

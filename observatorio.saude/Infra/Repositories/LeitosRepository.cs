@@ -16,10 +16,11 @@ public class LeitosRepository : ILeitosRepository
     {
         _context = context;
     }
-
-    public async Task<LeitosAgregadosDto?> GetLeitosAgregadosAsync(int? ano = null, TipoLeito? tipo = null)
+    
+    public async Task<LeitosAgregadosDto?> GetLeitosAgregadosAsync(int? ano = null, long? anomes = null, TipoLeito? tipo = null)
     {
-        var latestRecordsQuery = GetLatestRecords(ano);
+        var latestRecordsQuery = GetLatestRecords(ano, anomes); 
+        
         var aggregatedData = await latestRecordsQuery
             .GroupBy(l => 1)
             .Select(g => new LeitosAgregadosDto
@@ -52,85 +53,95 @@ public class LeitosRepository : ILeitosRepository
 
         return aggregatedData;
     }
-
+    
     public async Task<IEnumerable<IndicadoresLeitosEstadoDto>> GetIndicadoresPorEstadoAsync(
-    int? ano = null,
-    List<long>? codUfs = null,
-    TipoLeito? tipo = null)
-{
-    var queryLeitos = GetLatestRecords(ano);
+        int? ano = null, 
+        long? anomes = null, 
+        List<long>? codUfs = null, 
+        TipoLeito? tipo = null)
+    {
+        var queryLeitos = GetLatestRecords(ano, anomes);
 
-    var queryComUf = from leito in queryLeitos
-        join estabelecimento in _context.EstabelecimentoModel.Include(e => e.Localizacao) on leito.CodCnes
-            equals estabelecimento.CodCnes
-        where estabelecimento.Localizacao != null && estabelecimento.Localizacao.CodUf.HasValue
-        select new { Leito = leito, Uf = estabelecimento.Localizacao.CodUf.Value };
+        var queryComUf = from leito in queryLeitos
+            join estabelecimento in _context.EstabelecimentoModel.Include(e => e.Localizacao) on leito.CodCnes
+                equals estabelecimento.CodCnes
+            where estabelecimento.Localizacao != null && estabelecimento.Localizacao.CodUf.HasValue
+            select new { Leito = leito, Uf = estabelecimento.Localizacao.CodUf.Value };
 
-    if (codUfs != null && codUfs.Any()) queryComUf = queryComUf.Where(x => codUfs.Contains(x.Uf));
+        if (codUfs != null && codUfs.Any()) queryComUf = queryComUf.Where(x => codUfs.Contains(x.Uf));
 
-    var queryFinal = from item in queryComUf
-        group item.Leito by item.Uf
-        into g
-        select new IndicadoresLeitosEstadoDto
-        {
-            CodUf = g.Key,
-            TotalLeitos = g.Sum(l => !tipo.HasValue ? l.QtdLeitosExistentes :
-                tipo == TipoLeito.UTI_ADULTO ? l.QtdUtiAdultoExist :
-                tipo == TipoLeito.UTI_NEONATAL ? l.QtdUtiNeonatalExist :
-                tipo == TipoLeito.UTI_PEDIATRICO ? l.QtdUtiPediatricoExist :
-                tipo == TipoLeito.UTI_QUEIMADO ? l.QtdUtiQueimadoExist :
-                tipo == TipoLeito.UTI_CORONARIANA ? l.QtdUtiCoronarianaExist :
-                l.QtdLeitosExistentes),
+        var queryFinal = from item in queryComUf
+            group item.Leito by item.Uf
+            into g
+            select new IndicadoresLeitosEstadoDto
+            {
+                CodUf = g.Key,
+                TotalLeitos = g.Sum(l => !tipo.HasValue ? l.QtdLeitosExistentes :
+                    tipo == TipoLeito.UTI_ADULTO ? l.QtdUtiAdultoExist :
+                    tipo == TipoLeito.UTI_NEONATAL ? l.QtdUtiNeonatalExist :
+                    tipo == TipoLeito.UTI_PEDIATRICO ? l.QtdUtiPediatricoExist :
+                    tipo == TipoLeito.UTI_QUEIMADO ? l.QtdUtiQueimadoExist :
+                    tipo == TipoLeito.UTI_CORONARIANA ? l.QtdUtiCoronarianaExist :
+                    l.QtdLeitosExistentes),
 
-            LeitosDisponiveis = g.Sum(l => !tipo.HasValue ? l.QtdLeitosSus :
-                tipo == TipoLeito.UTI_ADULTO ? l.QtdUtiAdultoSus :
-                tipo == TipoLeito.UTI_NEONATAL ? l.QtdUtiNeonatalSus :
-                tipo == TipoLeito.UTI_PEDIATRICO ? l.QtdUtiPediatricoSus :
-                tipo == TipoLeito.UTI_QUEIMADO ? l.QtdUtiQueimadoSus :
-                tipo == TipoLeito.UTI_CORONARIANA ? l.QtdUtiCoronarianaSus :
-                l.QtdLeitosSus),
-            
-            Criticos = g.Sum(l => !tipo.HasValue ? l.QtdUtiTotalExist :
-                tipo == TipoLeito.UTI_ADULTO ? l.QtdUtiAdultoExist :
-                tipo == TipoLeito.UTI_NEONATAL ? l.QtdUtiNeonatalExist :
-                tipo == TipoLeito.UTI_PEDIATRICO ? l.QtdUtiPediatricoExist :
-                tipo == TipoLeito.UTI_QUEIMADO ? l.QtdUtiQueimadoExist :
-                tipo == TipoLeito.UTI_CORONARIANA ? l.QtdUtiCoronarianaExist :
-                l.QtdUtiTotalExist)
-        };
+                LeitosDisponiveis = g.Sum(l => !tipo.HasValue ? l.QtdLeitosSus :
+                    tipo == TipoLeito.UTI_ADULTO ? l.QtdUtiAdultoSus :
+                    tipo == TipoLeito.UTI_NEONATAL ? l.QtdUtiNeonatalSus :
+                    tipo == TipoLeito.UTI_PEDIATRICO ? l.QtdUtiPediatricoSus :
+                    tipo == TipoLeito.UTI_QUEIMADO ? l.QtdUtiQueimadoSus :
+                    tipo == TipoLeito.UTI_CORONARIANA ? l.QtdUtiCoronarianaSus :
+                    l.QtdLeitosSus),
+                
+                Criticos = g.Sum(l => !tipo.HasValue ? l.QtdUtiTotalExist :
+                    tipo == TipoLeito.UTI_ADULTO ? l.QtdUtiAdultoExist :
+                    tipo == TipoLeito.UTI_NEONATAL ? l.QtdUtiNeonatalExist :
+                    tipo == TipoLeito.UTI_PEDIATRICO ? l.QtdUtiPediatricoExist :
+                    tipo == TipoLeito.UTI_QUEIMADO ? l.QtdUtiQueimadoExist :
+                    tipo == TipoLeito.UTI_CORONARIANA ? l.QtdUtiCoronarianaExist :
+                    l.QtdUtiTotalExist)
+            };
 
-    return await queryFinal.ToListAsync();
-}
-
+        return await queryFinal.ToListAsync();
+    }
+    
     public async Task<PaginatedResult<LeitosHospitalarDto>> GetPagedLeitosAsync(
         int pageNumber,
         int pageSize,
         string? nome,
         long? codCnes,
         int? ano,
+        long? anomes,
         TipoLeito? tipo,
         long? codUf,
         CancellationToken cancellationToken)
     {
-        var anoParaBuscar = ano ?? DateTime.Now.Year;
-        var anoInicio = (long)anoParaBuscar * 100 + 1;
-        var anoFim = anoInicio + 11;
-
         var queryLeitos = _context.LeitosModel.AsNoTracking();
+        
+        IQueryable<LeitoModel> latestRecordsQuery;
+        if (anomes.HasValue)
+        {
+            latestRecordsQuery = queryLeitos.Where(l => l.Anomes == anomes.Value);
+        }
+        else
+        {
+            var anoParaBuscar = ano ?? DateTime.Now.Year;
+            var anoInicio = (long)anoParaBuscar * 100 + 1;
+            var anoFim = anoInicio + 11;
 
-        var latestRecordsQuery = from leito in queryLeitos
-            join latest in queryLeitos
-                    .Where(l => l.Anomes >= anoInicio && l.Anomes <= anoFim)
-                    .GroupBy(l => l.CodCnes)
-                    .Select(g => new { g.Key, MaxAnomes = g.Max(l => l.Anomes) })
-                on new { leito.CodCnes, leito.Anomes } equals new { CodCnes = latest.Key, Anomes = latest.MaxAnomes }
-            select leito;
+            latestRecordsQuery = from leito in queryLeitos
+                join latest in queryLeitos
+                        .Where(l => l.Anomes >= anoInicio && l.Anomes <= anoFim)
+                        .GroupBy(l => l.CodCnes)
+                        .Select(g => new { g.Key, MaxAnomes = g.Max(l => l.Anomes) })
+                    on new { leito.CodCnes, leito.Anomes } equals new { CodCnes = latest.Key, Anomes = latest.MaxAnomes }
+                select leito;
+        }
 
         if (codCnes.HasValue) latestRecordsQuery = latestRecordsQuery.Where(l => l.CodCnes == codCnes.Value);
         if (!string.IsNullOrWhiteSpace(nome))
             latestRecordsQuery =
                 latestRecordsQuery.Where(l => EF.Functions.Like(l.NmEstabelecimento, $"%{nome.ToUpper()}%"));
-
+        
         var finalQuery = from leito in latestRecordsQuery
             join estabelecimento in _context.EstabelecimentoModel.AsNoTracking()
                 on leito.CodCnes equals estabelecimento.CodCnes
@@ -142,7 +153,7 @@ public class LeitosRepository : ILeitosRepository
                 Leito = leito,
                 Localizacao = localizacao
             };
-
+        
         if (tipo.HasValue)
         {
             if (tipo == TipoLeito.UTI_ADULTO)
@@ -190,23 +201,35 @@ public class LeitosRepository : ILeitosRepository
 
         return new PaginatedResult<LeitosHospitalarDto>(pagedData, pageNumber, pageSize, totalCount);
     }
-
-    public async Task<List<LeitosHospitalarDto>> GetTopLeitosAsync(int? ano, int topCount, long? codUf,
+    
+    public async Task<List<LeitosHospitalarDto>> GetTopLeitosAsync(
+        int? ano, 
+        long? anomes,
+        int topCount, 
+        long? codUf,
         CancellationToken cancellationToken)
     {
-        var anoParaBuscar = ano ?? DateTime.Now.Year;
-        var anoInicio = (long)anoParaBuscar * 100 + 1;
-        var anoFim = anoInicio + 11;
-
         var queryLeitos = _context.LeitosModel.AsNoTracking();
-
-        var latestRecordsQuery = from leito in queryLeitos
-            join latest in queryLeitos
-                    .Where(l => l.Anomes >= anoInicio && l.Anomes <= anoFim)
-                    .GroupBy(l => l.CodCnes)
-                    .Select(g => new { g.Key, MaxAnomes = g.Max(l => l.Anomes) })
-                on new { leito.CodCnes, leito.Anomes } equals new { CodCnes = latest.Key, Anomes = latest.MaxAnomes }
-            select leito;
+        
+        IQueryable<LeitoModel> latestRecordsQuery;
+        if (anomes.HasValue)
+        {
+            latestRecordsQuery = queryLeitos.Where(l => l.Anomes == anomes.Value);
+        }
+        else
+        {
+            var anoParaBuscar = ano ?? DateTime.Now.Year;
+            var anoInicio = (long)anoParaBuscar * 100 + 1;
+            var anoFim = anoInicio + 11;
+            
+            latestRecordsQuery = from leito in queryLeitos
+                join latest in queryLeitos
+                        .Where(l => l.Anomes >= anoInicio && l.Anomes <= anoFim)
+                        .GroupBy(l => l.CodCnes)
+                        .Select(g => new { g.Key, MaxAnomes = g.Max(l => l.Anomes) })
+                    on new { leito.CodCnes, leito.Anomes } equals new { CodCnes = latest.Key, Anomes = latest.MaxAnomes }
+                select leito;
+        }
 
         var finalQuery = from leito in latestRecordsQuery
             join estabelecimento in _context.EstabelecimentoModel.AsNoTracking()
@@ -244,11 +267,16 @@ public class LeitosRepository : ILeitosRepository
 
         return pagedData;
     }
-
-    private IQueryable<LeitoModel> GetLatestRecords(int? ano)
+    
+    private IQueryable<LeitoModel> GetLatestRecords(int? ano, long? anomes)
     {
         var query = _context.LeitosModel.AsNoTracking();
-
+        
+        if (anomes.HasValue)
+        {
+            return query.Where(l => l.Anomes == anomes.Value);
+        }
+        
         if (ano.HasValue)
         {
             var anoInicio = (long)ano.Value * 100 + 1;

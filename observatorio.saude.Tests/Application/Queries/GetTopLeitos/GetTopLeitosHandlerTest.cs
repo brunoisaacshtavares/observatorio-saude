@@ -67,13 +67,13 @@ public class GetTopLeitosHandlerTest
 
         _leitosRepositoryMock
             .Setup(r => r.GetTopLeitosAsync(
-                It.IsAny<int?>(), It.IsAny<int>(), null, It.IsAny<CancellationToken>()))
+                It.IsAny<int?>(), null,It.IsAny<int>(), null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(mockResult);
 
         await _handler.Handle(query, CancellationToken.None);
 
         _leitosRepositoryMock.Verify(r => r.GetTopLeitosAsync(
-            query.Ano,
+            query.Ano,null,
             query.Count,
             null,
             It.IsAny<CancellationToken>()), Times.Once);
@@ -91,7 +91,7 @@ public class GetTopLeitosHandlerTest
 
         _leitosRepositoryMock
             .Setup(r => r.GetTopLeitosAsync(
-                It.IsAny<int?>(), It.IsAny<int>(), codUfEsperado, It.IsAny<CancellationToken>()))
+                It.IsAny<int?>(), null,It.IsAny<int>(), codUfEsperado, It.IsAny<CancellationToken>()))
             .ReturnsAsync(mockResult);
 
         await _handler.Handle(query, CancellationToken.None);
@@ -99,7 +99,7 @@ public class GetTopLeitosHandlerTest
         _ibgeApiClientMock.Verify(c => c.FindUfsAsync(), Times.AtLeast(1));
 
         _leitosRepositoryMock.Verify(r => r.GetTopLeitosAsync(
-            query.Ano,
+            query.Ano,null,
             query.Count,
             codUfEsperado,
             It.IsAny<CancellationToken>()), Times.Once);
@@ -113,7 +113,7 @@ public class GetTopLeitosHandlerTest
 
         _leitosRepositoryMock
             .Setup(r => r.GetTopLeitosAsync(
-                It.IsAny<int?>(), It.IsAny<int>(), null, It.IsAny<CancellationToken>()))
+                It.IsAny<int?>(), null,It.IsAny<int>(), null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(mockResult);
 
         await _handler.Handle(query, CancellationToken.None);
@@ -121,7 +121,7 @@ public class GetTopLeitosHandlerTest
         _ibgeApiClientMock.Verify(c => c.FindUfsAsync(), Times.AtLeast(1));
 
         _leitosRepositoryMock.Verify(r => r.GetTopLeitosAsync(
-            query.Ano,
+            query.Ano,null,
             query.Count,
             null,
             It.IsAny<CancellationToken>()), Times.Once);
@@ -136,7 +136,7 @@ public class GetTopLeitosHandlerTest
 
         _leitosRepositoryMock
             .Setup(r => r.GetTopLeitosAsync(
-                It.IsAny<int?>(), It.IsAny<int>(), null, It.IsAny<CancellationToken>()))
+                It.IsAny<int?>(), null,It.IsAny<int>(), null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(mockResult);
 
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -189,7 +189,7 @@ public class GetTopLeitosHandlerTest
 
         _leitosRepositoryMock
             .Setup(r => r.GetTopLeitosAsync(
-                It.IsAny<int?>(), It.IsAny<int>(), null, It.IsAny<CancellationToken>()))
+                It.IsAny<int?>(), null,It.IsAny<int>(), null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(mockItems);
 
         var result = await _handler.Handle(query, CancellationToken.None);

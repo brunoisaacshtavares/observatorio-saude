@@ -25,7 +25,7 @@ public class GetTopLeitosHandler(ILeitosRepository leitosRepository, IIbgeApiCli
             if (ufEncontrada != null) codUf = ufEncontrada.Id;
         }
 
-        var items = await _leitosRepository.GetTopLeitosAsync(request.Ano, request.Count, codUf, cancellationToken);
+        var items = await _leitosRepository.GetTopLeitosAsync(request.Ano, request.Anomes, request.Count, codUf, cancellationToken);
 
         var ufsData = await _ibgeApiClient.FindUfsAsync();
         var ufMap = ufsData.ToDictionary(uf => uf.Id.ToString(), uf => uf.Sigla);

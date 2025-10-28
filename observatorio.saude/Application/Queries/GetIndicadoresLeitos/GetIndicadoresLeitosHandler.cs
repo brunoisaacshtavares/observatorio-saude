@@ -16,7 +16,7 @@ public class GetIndicadoresLeitosHandler : IRequestHandler<GetIndicadoresLeitosQ
     public async Task<IndicadoresLeitosDto> Handle(GetIndicadoresLeitosQuery request,
         CancellationToken cancellationToken)
     {
-        var dadosAgregados = await _leitoRepository.GetLeitosAgregadosAsync(request.Ano, request.Tipo);
+        var dadosAgregados = await _leitoRepository.GetLeitosAgregadosAsync(request.Ano, request.Anomes, request.Tipo);
 
         if (dadosAgregados == null)
             return new IndicadoresLeitosDto();
