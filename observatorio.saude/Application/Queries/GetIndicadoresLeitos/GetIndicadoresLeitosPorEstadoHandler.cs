@@ -68,10 +68,6 @@ public class GetIndicadoresLeitosPorEstadoHandler : IRequestHandler<GetIndicador
                 item.Regiao = ufData.Regiao;
             }
 
-            item.OcupacaoMedia = item.TotalLeitos > 0
-                ? Math.Round((double)(item.TotalLeitos - item.LeitosDisponiveis) / item.TotalLeitos * 100, 2)
-                : 0;
-
             item.CoberturaLeitosPor1kHab = item.Populacao > 0
                 ? Math.Round((double)item.TotalLeitos / item.Populacao * 1000, 2)
                 : 0;

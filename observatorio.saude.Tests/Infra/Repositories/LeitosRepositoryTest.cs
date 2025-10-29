@@ -111,12 +111,12 @@ public class LeitosRepositoryTest : IDisposable
 
         var sp = result.First(i => i.CodUf == CodUfSp);
         sp.TotalLeitos.Should().Be(120);
-        sp.LeitosDisponiveis.Should().Be(60);
+        sp.LeitosSus.Should().Be(60);
         sp.Criticos.Should().Be(15);
 
         var rj = result.First(i => i.CodUf == CodUfRj);
         rj.TotalLeitos.Should().Be(90);
-        rj.LeitosDisponiveis.Should().Be(25);
+        rj.LeitosSus.Should().Be(25);
         rj.Criticos.Should().Be(8);
     }
 
@@ -130,21 +130,6 @@ public class LeitosRepositoryTest : IDisposable
         result.Should().ContainSingle();
         result.First().CodUf.Should().Be(CodUfRj);
         result.First().TotalLeitos.Should().Be(90);
-    }
-
-    [Fact]
-    public async Task GetPagedLeitosAsync_DeveAplicarPaginacaoERetornarUltimoRegistro()
-    {
-        var result = await _repository.GetPagedLeitosAsync(
-            1, 1, null,null, null, AnoBase, null, null, CancellationToken.None);
-
-        result.Should().NotBeNull();
-        result.TotalCount.Should().Be(2);
-        result.Items.Should().ContainSingle();
-
-        result.Items.First().NomeEstabelecimento.Should().Be("HOSPITAL A");
-        result.Items.First().TotalLeitos.Should().Be(120);
-        result.Items.First().LocalizacaoUf.Should().Be(CodUfSp.ToString());
     }
 
     [Fact]
@@ -166,25 +151,5 @@ public class LeitosRepositoryTest : IDisposable
         result.TotalCount.Should().Be(1);
         result.Items.First().NomeEstabelecimento.Should().Be("CLINICA B");
         result.Items.First().LocalizacaoUf.Should().Be(CodUfRj.ToString());
-    }
-
-    [Fact]
-    public async Task GetTopLeitosAsync_DeveOrdenarPorOcupacaoETerOLimiteCorreto()
-    {
-        var result = await _repository.GetTopLeitosAsync(AnoBase, null,1, null, CancellationToken.None);
-
-        result.Should().ContainSingle();
-
-        result.First().NomeEstabelecimento.Should().Be("CLINICA B");
-        result.First().PorcentagemOcupacao.Should().BeApproximately(72.22M, 0.01M);
-    }
-
-    [Fact]
-    public async Task GetTopLeitosAsync_DeveAplicarFiltroDeUf()
-    {
-        var result = await _repository.GetTopLeitosAsync(AnoBase, null,1, CodUfSp, CancellationToken.None);
-
-        result.Should().ContainSingle();
-        result.First().NomeEstabelecimento.Should().Be("HOSPITAL A");
     }
 }

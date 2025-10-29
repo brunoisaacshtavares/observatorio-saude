@@ -3,7 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using observatorio.saude.Application.Queries.GetIndicadoresLeitos;
 using observatorio.saude.Application.Queries.GetLeitosPaginados;
-using observatorio.saude.Application.Queries.GetTopLeitos;
 using observatorio.saude.Domain.Dto;
 using observatorio.saude.Domain.Utils;
 
@@ -49,14 +48,6 @@ public class LeitosController : BaseController
     public async Task<IActionResult> GetLeitos([FromQuery] GetLeitosPaginadosQuery paginadosQuery)
     {
         var result = await _mediator.Send(paginadosQuery);
-        return Ok(result);
-    }
-
-    [HttpGet("top-leitos")]
-    [ProducesResponseType(typeof(List<LeitosHospitalarDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetTopLeitos([FromQuery] GetTopLeitosQuery query)
-    {
-        var result = await _mediator.Send(query);
         return Ok(result);
     }
 }

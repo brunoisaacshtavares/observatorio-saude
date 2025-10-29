@@ -11,14 +11,9 @@ public class IndicadoresLeitosDto
     public int TotalLeitos { get; set; }
 
     /// <summary>
-    ///     The total number of beds available for SUS (Brazil's public health system).
-    /// </summary>
-    public int LeitosDisponiveis { get; set; }
-
-    /// <summary>
     ///     The average occupancy rate of beds.
     /// </summary>
-    public double OcupacaoMedia { get; set; }
+    public double TotalLeitosSus { get; set; }
 
     /// <summary>
     ///     The number of critical care beds (e.g., in ICUs).

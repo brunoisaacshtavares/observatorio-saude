@@ -75,10 +75,10 @@ public class GetIndicadoresLeitosPorEstadoHandlerTest
     {
         return new List<IndicadoresLeitosEstadoDto>
         {
-            new() { CodUf = 35, TotalLeitos = 44000, LeitosDisponiveis = 4000, Criticos = 1000 },
-            new() { CodUf = 33, TotalLeitos = 16000, LeitosDisponiveis = 8000, Criticos = 500 },
-            new() { CodUf = 29, TotalLeitos = 0, LeitosDisponiveis = 0, Criticos = 0 },
-            new() { CodUf = 99, TotalLeitos = 1000, LeitosDisponiveis = 100, Criticos = 50 }
+            new() { CodUf = 35, TotalLeitos = 44000, LeitosSus = 4000, Criticos = 1000 },
+            new() { CodUf = 33, TotalLeitos = 16000, LeitosSus = 8000, Criticos = 500 },
+            new() { CodUf = 29, TotalLeitos = 0, LeitosSus = 0, Criticos = 0 },
+            new() { CodUf = 99, TotalLeitos = 1000, LeitosSus = 100, Criticos = 50 }
         };
     }
 
@@ -140,21 +140,16 @@ public class GetIndicadoresLeitosPorEstadoHandlerTest
         sp.SiglaUf.Should().Be("SP");
         sp.Regiao.Should().Be("Sudeste");
         sp.Populacao.Should().Be(44000000);
-
-        sp.OcupacaoMedia.Should().Be(90.91);
         sp.CoberturaLeitosPor1kHab.Should().Be(1.00);
 
         var rj = result.First(x => x.CodUf == 33);
         rj.NomeUf.Should().Be("Rio de Janeiro");
         rj.Populacao.Should().Be(16000000);
-
-        rj.OcupacaoMedia.Should().Be(50.00);
         rj.CoberturaLeitosPor1kHab.Should().Be(1.00);
 
         var ba = result.First(x => x.CodUf == 29);
         ba.NomeUf.Should().Be("Bahia");
         ba.TotalLeitos.Should().Be(0);
-        ba.OcupacaoMedia.Should().Be(0);
         ba.CoberturaLeitosPor1kHab.Should().Be(0);
 
         var ufNaoMapeada = result.First(x => x.CodUf == 99);

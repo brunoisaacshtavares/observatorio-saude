@@ -6,7 +6,6 @@ using Moq;
 using observatorio.saude.Application.Controllers;
 using observatorio.saude.Application.Queries.GetIndicadoresLeitos;
 using observatorio.saude.Application.Queries.GetLeitosPaginados;
-using observatorio.saude.Application.Queries.GetTopLeitos;
 using observatorio.saude.Domain.Dto;
 using observatorio.saude.Domain.Utils;
 
@@ -27,7 +26,7 @@ public class LeitosControllerTest
     public async Task GetIndicadores_QuandoChamado_DeveRetornarOkComIndicadores()
     {
         var query = new GetIndicadoresLeitosQuery { Ano = 2025 };
-        var resultadoEsperado = new IndicadoresLeitosDto { TotalLeitos = 5000, OcupacaoMedia = 10.5 };
+        var resultadoEsperado = new IndicadoresLeitosDto { TotalLeitos = 5000 };
 
         _mediatorMock
             .Setup(m => m.Send(query, It.IsAny<CancellationToken>()))
@@ -48,7 +47,7 @@ public class LeitosControllerTest
         var query = new GetIndicadoresLeitosPorEstadoQuery { Ufs = ["DF"] };
         var resultadoEsperado = new List<IndicadoresLeitosEstadoDto>
         {
-            new() { CodUf = 35, TotalLeitos = 1500, OcupacaoMedia = 12.0 }
+            new() { CodUf = 35, TotalLeitos = 1500}
         };
 
         _mediatorMock
@@ -88,28 +87,5 @@ public class LeitosControllerTest
             .Which.Value.Should().Be(resultadoPaginadoEsperado);
 
         _mediatorMock.Verify(m => m.Send(paginadosQuery, It.IsAny<CancellationToken>()), Times.Once);
-    }
-
-    [Fact]
-    public async Task GetTopLeitos_QuandoChamado_DeveRetornarOkComListaDeTopLeitos()
-    {
-        var query = new GetTopLeitosQuery { Uf = "DF", Count = 5 };
-        var resultadoEsperado = new List<LeitosHospitalarDto>
-        {
-            new() { CodCnes = 11111, LeitosOcupados = 100 },
-            new() { CodCnes = 22222, LeitosOcupados = 90 }
-        };
-
-        _mediatorMock
-            .Setup(m => m.Send(query, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(resultadoEsperado);
-
-        var actionResult = await _controller.GetTopLeitos(query);
-
-        var okResult = actionResult.Should().BeOfType<OkObjectResult>().Subject;
-        okResult.StatusCode.Should().Be(StatusCodes.Status200OK);
-        okResult.Value.Should().BeEquivalentTo(resultadoEsperado);
-
-        _mediatorMock.Verify(m => m.Send(query, It.IsAny<CancellationToken>()), Times.Once);
     }
 }

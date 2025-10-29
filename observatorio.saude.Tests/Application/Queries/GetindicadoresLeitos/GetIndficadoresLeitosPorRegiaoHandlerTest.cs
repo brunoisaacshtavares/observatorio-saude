@@ -23,22 +23,22 @@ public class GetIndicadoresLeitosPorRegiaoHandlerTest
         {
             new()
             {
-                Regiao = "SUDESTE", Populacao = 1000000, TotalLeitos = 1000, LeitosDisponiveis = 100, Criticos = 100
+                Regiao = "SUDESTE", Populacao = 1000000, TotalLeitos = 1000, LeitosSus = 100, Criticos = 100
             },
-            new() { Regiao = "SUDESTE", Populacao = 500000, TotalLeitos = 600, LeitosDisponiveis = 200, Criticos = 50 },
+            new() { Regiao = "SUDESTE", Populacao = 500000, TotalLeitos = 600, LeitosSus = 200, Criticos = 50 },
 
             new()
             {
-                Regiao = "NORDESTE", Populacao = 800000, TotalLeitos = 700, LeitosDisponiveis = 200, Criticos = 70
+                Regiao = "NORDESTE", Populacao = 800000, TotalLeitos = 700, LeitosSus = 200, Criticos = 70
             },
             new()
             {
-                Regiao = "NORDESTE", Populacao = 400000, TotalLeitos = 300, LeitosDisponiveis = 150, Criticos = 30
+                Regiao = "NORDESTE", Populacao = 400000, TotalLeitos = 300, LeitosSus = 150, Criticos = 30
             },
 
-            new() { Regiao = "SUL", Populacao = 600000, TotalLeitos = 500, LeitosDisponiveis = 50, Criticos = 40 },
+            new() { Regiao = "SUL", Populacao = 600000, TotalLeitos = 500, LeitosSus = 50, Criticos = 40 },
 
-            new() { Regiao = "NORTE", Populacao = 0, TotalLeitos = 0, LeitosDisponiveis = 0, Criticos = 0 }
+            new() { Regiao = "NORTE", Populacao = 0, TotalLeitos = 0, LeitosSus = 0, Criticos = 0 }
         };
     }
 
@@ -60,9 +60,7 @@ public class GetIndicadoresLeitosPorRegiaoHandlerTest
         var sudeste = result.First(r => r.NomeRegiao == "SUDESTE");
         sudeste.Populacao.Should().Be(1500000);
         sudeste.TotalLeitos.Should().Be(1600);
-        sudeste.LeitosDisponiveis.Should().Be(300);
         sudeste.Criticos.Should().Be(150);
-        sudeste.OcupacaoMedia.Should().Be(81.25);
         sudeste.CoberturaLeitosPor1kHab.Should().Be(1.07);
 
         var nordeste = result.First(r => r.NomeRegiao == "NORDESTE");
@@ -75,7 +73,6 @@ public class GetIndicadoresLeitosPorRegiaoHandlerTest
 
         var norte = result.First(r => r.NomeRegiao == "NORTE");
         norte.TotalLeitos.Should().Be(0);
-        norte.OcupacaoMedia.Should().Be(0);
         norte.CoberturaLeitosPor1kHab.Should().Be(0);
     }
 

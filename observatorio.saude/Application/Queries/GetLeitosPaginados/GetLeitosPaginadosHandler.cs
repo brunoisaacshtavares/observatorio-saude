@@ -42,16 +42,6 @@ public class GetLeitosPaginadosHandler(ILeitosRepository leitosRepository, IIbge
 
         foreach (var item in pagedResult.Items)
         {
-            var totalLeitos = item.TotalLeitos;
-            var leitosDisponiveis = item.LeitosDisponiveis;
-
-            var leitosOcupados = totalLeitos - leitosDisponiveis;
-            item.LeitosOcupados = leitosOcupados;
-
-            item.PorcentagemOcupacao = totalLeitos > 0
-                ? Math.Round((decimal)leitosOcupados / totalLeitos * 100)
-                : 0;
-
             if (ufMap.TryGetValue(item.LocalizacaoUf, out var ufSigla))
                 item.LocalizacaoUf = ufSigla;
             else

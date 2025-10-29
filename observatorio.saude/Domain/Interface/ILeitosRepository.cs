@@ -21,11 +21,4 @@ public interface ILeitosRepository
         TipoLeito? tipo,
         long? codUf,
         CancellationToken cancellationToken);
-
-    Task<List<LeitosHospitalarDto>> GetTopLeitosAsync(
-        int? ano,
-        long? anomes,
-        int topCount,
-        long? codUf,
-        CancellationToken cancellationToken);
 }

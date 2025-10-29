@@ -84,7 +84,7 @@ public class LeitosRepository : ILeitosRepository
                     tipo == TipoLeito.UTI_CORONARIANA ? l.QtdUtiCoronarianaExist :
                     l.QtdLeitosExistentes),
 
-                LeitosDisponiveis = g.Sum(l => !tipo.HasValue ? l.QtdLeitosSus :
+                LeitosSus = g.Sum(l => !tipo.HasValue ? l.QtdLeitosSus :
                     tipo == TipoLeito.UTI_ADULTO ? l.QtdUtiAdultoSus :
                     tipo == TipoLeito.UTI_NEONATAL ? l.QtdUtiNeonatalSus :
                     tipo == TipoLeito.UTI_PEDIATRICO ? l.QtdUtiPediatricoSus :
@@ -189,7 +189,7 @@ public class LeitosRepository : ILeitosRepository
                     tipo == TipoLeito.UTI_CORONARIANA ? x.Leito.QtdUtiCoronarianaExist :
                     x.Leito.QtdLeitosExistentes,
 
-                LeitosDisponiveis = !tipo.HasValue ? x.Leito.QtdLeitosSus :
+                LeitosSus = !tipo.HasValue ? x.Leito.QtdLeitosSus :
                     tipo == TipoLeito.UTI_ADULTO ? x.Leito.QtdUtiAdultoSus :
                     tipo == TipoLeito.UTI_NEONATAL ? x.Leito.QtdUtiNeonatalSus :
                     tipo == TipoLeito.UTI_PEDIATRICO ? x.Leito.QtdUtiPediatricoSus :
@@ -200,72 +200,6 @@ public class LeitosRepository : ILeitosRepository
             .ToListAsync(cancellationToken);
 
         return new PaginatedResult<LeitosHospitalarDto>(pagedData, pageNumber, pageSize, totalCount);
-    }
-    
-    public async Task<List<LeitosHospitalarDto>> GetTopLeitosAsync(
-        int? ano, 
-        long? anomes,
-        int topCount, 
-        long? codUf,
-        CancellationToken cancellationToken)
-    {
-        var queryLeitos = _context.LeitosModel.AsNoTracking();
-        
-        IQueryable<LeitoModel> latestRecordsQuery;
-        if (anomes.HasValue)
-        {
-            latestRecordsQuery = queryLeitos.Where(l => l.Anomes == anomes.Value);
-        }
-        else
-        {
-            var anoParaBuscar = ano ?? DateTime.Now.Year;
-            var anoInicio = (long)anoParaBuscar * 100 + 1;
-            var anoFim = anoInicio + 11;
-            
-            latestRecordsQuery = from leito in queryLeitos
-                join latest in queryLeitos
-                        .Where(l => l.Anomes >= anoInicio && l.Anomes <= anoFim)
-                        .GroupBy(l => l.CodCnes)
-                        .Select(g => new { g.Key, MaxAnomes = g.Max(l => l.Anomes) })
-                    on new { leito.CodCnes, leito.Anomes } equals new { CodCnes = latest.Key, Anomes = latest.MaxAnomes }
-                select leito;
-        }
-
-        var finalQuery = from leito in latestRecordsQuery
-            join estabelecimento in _context.EstabelecimentoModel.AsNoTracking()
-                on leito.CodCnes equals estabelecimento.CodCnes
-            join localizacao in _context.LocalizacaoModel.AsNoTracking()
-                on estabelecimento.CodUnidade equals localizacao.CodUnidade
-            where !codUf.HasValue || localizacao.CodUf == codUf
-            select new LeitosHospitalarDto
-            {
-                CodCnes = leito.CodCnes,
-                NomeEstabelecimento = leito.NmEstabelecimento,
-                LocalizacaoUf = localizacao.CodUf.ToString() ?? "0",
-                EnderecoCompleto = $"{localizacao.Endereco}, {localizacao.Numero} - {localizacao.Bairro}",
-                TotalLeitos = leito.QtdLeitosExistentes,
-                LeitosDisponiveis = leito.QtdLeitosSus
-            };
-
-        var pagedData = await finalQuery
-            .Select(dto => new LeitosHospitalarDto
-            {
-                CodCnes = dto.CodCnes,
-                NomeEstabelecimento = dto.NomeEstabelecimento,
-                LocalizacaoUf = dto.LocalizacaoUf,
-                EnderecoCompleto = dto.EnderecoCompleto,
-                TotalLeitos = dto.TotalLeitos,
-                LeitosDisponiveis = dto.LeitosDisponiveis,
-                PorcentagemOcupacao = dto.TotalLeitos > 0
-                    ? (decimal)(dto.TotalLeitos - dto.LeitosDisponiveis) / dto.TotalLeitos * 100
-                    : 0
-            })
-            .OrderByDescending(x => x.PorcentagemOcupacao)
-            .ThenBy(x => x.CodCnes)
-            .Take(topCount)
-            .ToListAsync(cancellationToken);
-
-        return pagedData;
     }
     
     private IQueryable<LeitoModel> GetLatestRecords(int? ano, long? anomes)

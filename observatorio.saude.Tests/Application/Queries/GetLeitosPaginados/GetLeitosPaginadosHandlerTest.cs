@@ -40,21 +40,21 @@ public class GetLeitosPaginadosHandlerTest
         {
             new()
             {
-                NomeEstabelecimento = "Hospital A", TotalLeitos = 100, LeitosDisponiveis = 20,
+                NomeEstabelecimento = "Hospital A", TotalLeitos = 100, LeitosSus = 20,
                 LocalizacaoUf = ufId.ToString()
             },
             new()
             {
-                NomeEstabelecimento = "Clínica B", TotalLeitos = 50, LeitosDisponiveis = 50,
+                NomeEstabelecimento = "Clínica B", TotalLeitos = 50, LeitosSus = 50,
                 LocalizacaoUf = ufId.ToString()
             },
             new()
             {
-                NomeEstabelecimento = "Posto C", TotalLeitos = 0, LeitosDisponiveis = 0, LocalizacaoUf = ufId.ToString()
+                NomeEstabelecimento = "Posto C", TotalLeitos = 0, LeitosSus = 0, LocalizacaoUf = ufId.ToString()
             },
             new()
             {
-                NomeEstabelecimento = "Hospital D", TotalLeitos = 10, LeitosDisponiveis = 1, LocalizacaoUf = "99"
+                NomeEstabelecimento = "Hospital D", TotalLeitos = 10, LeitosSus = 1, LocalizacaoUf = "99"
             }
         };
 
@@ -149,35 +149,28 @@ public class GetLeitosPaginadosHandlerTest
 
         var item1 = result.Items[0];
         item1.NomeEstabelecimento.Should().Be("Hospital A");
-        item1.LeitosOcupados.Should().Be(80);
-        item1.PorcentagemOcupacao.Should().Be(80);
         item1.LocalizacaoUf.Should().Be("SP");
 
         var item2 = result.Items[1];
         item2.NomeEstabelecimento.Should().Be("Clínica B");
-        item2.LeitosOcupados.Should().Be(0);
-        item2.PorcentagemOcupacao.Should().Be(0);
         item2.LocalizacaoUf.Should().Be("SP");
 
         var item3 = result.Items[2];
         item3.NomeEstabelecimento.Should().Be("Posto C");
-        item3.LeitosOcupados.Should().Be(0);
-        item3.PorcentagemOcupacao.Should().Be(0);
         item3.LocalizacaoUf.Should().Be("SP");
 
         var item4 = result.Items[3];
-        item4.LeitosOcupados.Should().Be(9);
         item4.LocalizacaoUf.Should().Be("Não Informada");
 
         _ibgeApiClientMock.Verify(c => c.FindUfsAsync(), Times.AtLeastOnce);
     }
 
     [Theory]
-    [InlineData(100, 30, 70)]
-    [InlineData(3, 1, 67)]
-    [InlineData(10, 4, 60)]
+    [InlineData(100, 30)]
+    [InlineData(3, 1)]
+    [InlineData(10, 4)]
     public async Task Handle_DeveArredondarPorcentagemDeOcupacaoCorretamente(
-        int totalLeitos, int leitosDisponiveis, int porcentagemEsperada)
+        int totalLeitos, int leitosSus)
     {
         var query = new GetLeitosPaginadosQuery { Uf = null };
         var mockItems = new List<LeitosHospitalarDto>
@@ -185,7 +178,7 @@ public class GetLeitosPaginadosHandlerTest
             new()
             {
                 TotalLeitos = totalLeitos,
-                LeitosDisponiveis = leitosDisponiveis,
+                LeitosSus = leitosSus,
                 LocalizacaoUf = "35"
             }
         };
@@ -200,7 +193,5 @@ public class GetLeitosPaginadosHandlerTest
         var result = await _handler.Handle(query, CancellationToken.None);
 
         var item = result.Items.Single();
-        item.LeitosOcupados.Should().Be(totalLeitos - leitosDisponiveis);
-        item.PorcentagemOcupacao.Should().Be(porcentagemEsperada);
     }
 }

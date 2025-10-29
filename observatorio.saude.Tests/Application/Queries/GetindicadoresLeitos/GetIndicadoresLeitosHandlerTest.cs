@@ -30,80 +30,9 @@ public class GetIndicadoresLeitosHandlerTest
 
         result.Should().NotBeNull();
         result.TotalLeitos.Should().Be(0);
-        result.LeitosDisponiveis.Should().Be(0);
+        result.TotalLeitosSus.Should().Be(0);
         result.Criticos.Should().Be(0);
-        result.OcupacaoMedia.Should().Be(0);
 
         _leitoRepositoryMock.Verify(r => r.GetLeitosAgregadosAsync(query.Ano, null, null), Times.Once);
-    }
-
-    [Fact]
-    public async Task Handle_QuandoTotalLeitosZero_DeveRetornarOcupacaoMediaZero()
-    {
-        var query = new GetIndicadoresLeitosQuery { Ano = 2023 };
-        var mockDados = new LeitosAgregadosDto
-        {
-            TotalLeitos = 0,
-            TotalLeitosSus = 50,
-            TotalUti = 10
-        };
-
-        _leitoRepositoryMock
-            .Setup(r => r.GetLeitosAgregadosAsync(It.IsAny<int?>(), null, null))
-            .ReturnsAsync(mockDados);
-
-        var result = await _handler.Handle(query, CancellationToken.None);
-
-        result.Should().NotBeNull();
-        result.TotalLeitos.Should().Be(0);
-        result.LeitosDisponiveis.Should().Be(50);
-        result.Criticos.Should().Be(10);
-        result.OcupacaoMedia.Should().Be(0);
-    }
-
-    [Fact]
-    public async Task Handle_DeveCalcularOcupacaoMediaCorretamente()
-    {
-        var query = new GetIndicadoresLeitosQuery { Ano = 2023 };
-        var mockDados = new LeitosAgregadosDto
-        {
-            TotalLeitos = 200,
-            TotalLeitosSus = 50,
-            TotalUti = 20
-        };
-
-        _leitoRepositoryMock
-            .Setup(r => r.GetLeitosAgregadosAsync(It.IsAny<int?>(), null, null))
-            .ReturnsAsync(mockDados);
-
-        var result = await _handler.Handle(query, CancellationToken.None);
-
-        result.Should().NotBeNull();
-        result.TotalLeitos.Should().Be(200);
-        result.LeitosDisponiveis.Should().Be(50);
-        result.Criticos.Should().Be(20);
-        result.OcupacaoMedia.Should().Be(75.0);
-    }
-
-    [Fact]
-    public async Task Handle_DeveArredondarOcupacaoMediaParaDuasCasasDecimais()
-    {
-        var query = new GetIndicadoresLeitosQuery { Ano = 2023 };
-        var mockDados = new LeitosAgregadosDto
-        {
-            TotalLeitos = 300,
-            TotalLeitosSus = 100,
-            TotalUti = 10
-        };
-
-        _leitoRepositoryMock
-            .Setup(r => r.GetLeitosAgregadosAsync(It.IsAny<int?>(), null, null))
-            .ReturnsAsync(mockDados);
-
-        var result = await _handler.Handle(query, CancellationToken.None);
-
-        var ocupacaoEsperadaArredondada = 66.67;
-
-        result.OcupacaoMedia.Should().Be(ocupacaoEsperadaArredondada);
     }
 }

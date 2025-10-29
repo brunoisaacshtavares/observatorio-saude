@@ -1,5 +1,3 @@
-// observatorio.saude.Application.Queries.GetIndicadoresLeitos.GetIndicadoresLeitosPorRegiaoHandler.cs
-
 using MediatR;
 using observatorio.saude.Domain.Dto;
 
@@ -31,22 +29,15 @@ public class GetIndicadoresLeitosPorRegiaoHandler : IRequestHandler<GetIndicador
             .Select(grupo =>
             {
                 var totalLeitosAgregado = grupo.Sum(e => e.TotalLeitos);
-                var leitosDisponiveisAgregado = grupo.Sum(e => e.LeitosDisponiveis);
                 var populacaoAgregada = grupo.Sum(e => e.Populacao);
-
+                var totalleitosSus = grupo.Sum(e => e.LeitosSus);
                 return new IndicadoresLeitosRegiaoDto
                 {
                     NomeRegiao = grupo.Key,
                     Populacao = populacaoAgregada,
                     TotalLeitos = totalLeitosAgregado,
-                    LeitosDisponiveis = leitosDisponiveisAgregado,
                     Criticos = grupo.Sum(e => e.Criticos),
-
-                    OcupacaoMedia = totalLeitosAgregado > 0
-                        ? Math.Round(
-                            (double)(totalLeitosAgregado - leitosDisponiveisAgregado) / totalLeitosAgregado * 100, 2)
-                        : 0,
-
+                    LeitosSus = totalleitosSus,
                     CoberturaLeitosPor1kHab = populacaoAgregada > 0
                         ? Math.Round((double)totalLeitosAgregado / populacaoAgregada * 1000, 2)
                         : 0

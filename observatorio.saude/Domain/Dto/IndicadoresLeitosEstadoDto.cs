@@ -38,12 +38,7 @@ public class IndicadoresLeitosEstadoDto
     /// <summary>
     ///     The total number of beds available for SUS in the state.
     /// </summary>
-    public int LeitosDisponiveis { get; set; }
-
-    /// <summary>
-    ///     The average occupancy rate of beds in the state.
-    /// </summary>
-    public double OcupacaoMedia { get; set; }
+    public int LeitosSus { get; set; }
 
     /// <summary>
     ///     The number of critical care beds in the state.
