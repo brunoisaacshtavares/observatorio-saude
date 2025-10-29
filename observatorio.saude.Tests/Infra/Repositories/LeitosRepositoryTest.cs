@@ -90,7 +90,7 @@ public class LeitosRepositoryTest : IDisposable
 
         result.Should().NotBeNull();
         result!.TotalLeitos.Should().Be(210);
-        result.TotalLeitosSus.Should().Be(85);
+        result.LeitosSus.Should().Be(85);
         result.TotalUti.Should().Be(23);
     }
 

@@ -33,7 +33,7 @@ public class LeitosRepository : ILeitosRepository
                     tipo == TipoLeito.UTI_CORONARIANA ? l.QtdUtiCoronarianaExist :
                     l.QtdLeitosExistentes),
 
-                TotalLeitosSus = g.Sum(l => !tipo.HasValue ? l.QtdLeitosSus :
+                LeitosSus = g.Sum(l => !tipo.HasValue ? l.QtdLeitosSus :
                     tipo == TipoLeito.UTI_ADULTO ? l.QtdUtiAdultoSus :
                     tipo == TipoLeito.UTI_NEONATAL ? l.QtdUtiNeonatalSus :
                     tipo == TipoLeito.UTI_PEDIATRICO ? l.QtdUtiPediatricoSus :

@@ -30,7 +30,7 @@ public class GetIndicadoresLeitosHandlerTest
 
         result.Should().NotBeNull();
         result.TotalLeitos.Should().Be(0);
-        result.TotalLeitosSus.Should().Be(0);
+        result.LeitosSus.Should().Be(0);
         result.Criticos.Should().Be(0);
 
         _leitoRepositoryMock.Verify(r => r.GetLeitosAgregadosAsync(query.Ano, null, null), Times.Once);

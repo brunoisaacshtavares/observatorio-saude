@@ -13,7 +13,7 @@ public class LeitosAgregadosDto
     /// <summary>
     ///     The total number of beds available for SUS.
     /// </summary>
-    public int TotalLeitosSus { get; set; }
+    public int LeitosSus { get; set; }
 
     /// <summary>
     ///     The total number of ICU beds.

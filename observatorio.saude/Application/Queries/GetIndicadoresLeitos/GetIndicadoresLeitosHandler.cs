@@ -24,7 +24,7 @@ public class GetIndicadoresLeitosHandler : IRequestHandler<GetIndicadoresLeitosQ
         return new IndicadoresLeitosDto
         {
             TotalLeitos = dadosAgregados.TotalLeitos,
-            TotalLeitosSus = dadosAgregados.TotalLeitosSus,
+            LeitosSus = dadosAgregados.LeitosSus,
             Criticos = dadosAgregados.TotalUti
         };
     }
