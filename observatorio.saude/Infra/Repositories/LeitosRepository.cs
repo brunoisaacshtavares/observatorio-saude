@@ -116,7 +116,7 @@ public class LeitosRepository : ILeitosRepository
         CancellationToken cancellationToken)
     {
         var queryLeitos = _context.LeitosModel.AsNoTracking();
-        
+
         IQueryable<LeitoModel> latestRecordsQuery;
         if (anomes.HasValue)
         {
@@ -141,7 +141,7 @@ public class LeitosRepository : ILeitosRepository
         if (!string.IsNullOrWhiteSpace(nome))
             latestRecordsQuery =
                 latestRecordsQuery.Where(l => EF.Functions.Like(l.NmEstabelecimento, $"%{nome.ToUpper()}%"));
-        
+
         var finalQuery = from leito in latestRecordsQuery
             join estabelecimento in _context.EstabelecimentoModel.AsNoTracking()
                 on leito.CodCnes equals estabelecimento.CodCnes
@@ -153,7 +153,7 @@ public class LeitosRepository : ILeitosRepository
                 Leito = leito,
                 Localizacao = localizacao
             };
-        
+
         if (tipo.HasValue)
         {
             if (tipo == TipoLeito.UTI_ADULTO)
@@ -178,6 +178,7 @@ public class LeitosRepository : ILeitosRepository
             {
                 CodCnes = x.Leito.CodCnes,
                 NomeEstabelecimento = x.Leito.NmEstabelecimento,
+                DscrTipoUnidade = x.Leito.DscrTipoUnidade, // <-- NOVO CAMPO
                 LocalizacaoUf = x.Localizacao.CodUf.ToString() ?? "0",
                 EnderecoCompleto = $"{x.Localizacao.Endereco}, {x.Localizacao.Numero} - {x.Localizacao.Bairro}",
 
@@ -195,7 +196,20 @@ public class LeitosRepository : ILeitosRepository
                     tipo == TipoLeito.UTI_PEDIATRICO ? x.Leito.QtdUtiPediatricoSus :
                     tipo == TipoLeito.UTI_QUEIMADO ? x.Leito.QtdUtiQueimadoSus :
                     tipo == TipoLeito.UTI_CORONARIANA ? x.Leito.QtdUtiCoronarianaSus :
-                    x.Leito.QtdLeitosSus
+                    x.Leito.QtdLeitosSus,
+                
+                QtdUtiTotalExist = x.Leito.QtdUtiTotalExist,
+                QtdUtiTotalSus = x.Leito.QtdUtiTotalSus,
+                QtdUtiAdultoExist = x.Leito.QtdUtiAdultoExist,
+                QtdUtiAdultoSus = x.Leito.QtdUtiAdultoSus,
+                QtdUtiPediatricoExist = x.Leito.QtdUtiPediatricoExist,
+                QtdUtiPediatricoSus = x.Leito.QtdUtiPediatricoSus,
+                QtdUtiNeonatalExist = x.Leito.QtdUtiNeonatalExist,
+                QtdUtiNeonatalSus = x.Leito.QtdUtiNeonatalSus,
+                QtdUtiQueimadoExist = x.Leito.QtdUtiQueimadoExist,
+                QtdUtiQueimadoSus = x.Leito.QtdUtiQueimadoSus,
+                QtdUtiCoronarianaExist = x.Leito.QtdUtiCoronarianaExist,
+                QtdUtiCoronarianaSus = x.Leito.QtdUtiCoronarianaSus
             })
             .ToListAsync(cancellationToken);
 
