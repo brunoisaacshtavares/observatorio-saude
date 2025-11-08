@@ -2,7 +2,9 @@
 
 using MediatR;
 using observatorio.saude.Domain.Dto;
-using observatorio.saude.Domain.Enums; // Adicionar using
+using observatorio.saude.Domain.Enums;
+
+// Adicionar using
 
 namespace observatorio.saude.Application.Queries.GetIndicadoresLeitos;
 
@@ -26,7 +28,7 @@ public class GetIndicadoresLeitosPorRegiaoQuery : IRequest<IEnumerable<Indicador
     ///     O Tipo de leito para filtrar os estabelecimentos. Por exemplo: UtiAdulto, UtiNeonatal, etc.
     /// </summary>
     public TipoLeito? Tipo { get; set; }
-    
+
     /// <summary>
     ///     O ano e o mês buscado concatenado em uma string ex: 08/2023 => 202308
     /// </summary>

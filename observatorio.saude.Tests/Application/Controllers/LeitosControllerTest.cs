@@ -47,7 +47,7 @@ public class LeitosControllerTest
         var query = new GetIndicadoresLeitosPorEstadoQuery { Ufs = ["DF"] };
         var resultadoEsperado = new List<IndicadoresLeitosEstadoDto>
         {
-            new() { CodUf = 35, TotalLeitos = 1500}
+            new() { CodUf = 35, TotalLeitos = 1500 }
         };
 
         _mediatorMock

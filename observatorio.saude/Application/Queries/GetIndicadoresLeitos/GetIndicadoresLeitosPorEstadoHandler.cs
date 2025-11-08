@@ -34,7 +34,8 @@ public class GetIndicadoresLeitosPorEstadoHandler : IRequestHandler<GetIndicador
                 .ToList();
         }
 
-        var indicadoresPorEstado = await _leitoRepository.GetIndicadoresPorEstadoAsync(anoParaBuscar, request.Anomes, codUfs, request.Tipo);
+        var indicadoresPorEstado =
+            await _leitoRepository.GetIndicadoresPorEstadoAsync(anoParaBuscar, request.Anomes, codUfs, request.Tipo);
 
         var populacaoTask = _ibgeApiClient.FindPopulacaoUfAsync(anoParaBuscar);
         var ufsTask = _ibgeApiClient.FindUfsAsync();

@@ -21,4 +21,15 @@ public interface ILeitosRepository
         TipoLeito? tipo,
         long? codUf,
         CancellationToken cancellationToken);
+
+    Task<PaginatedResult<LeitosHospitalarDetalhadoDto>> GetDetailedPagedLeitosAsync(
+        int pageNumber,
+        int pageSize,
+        string? nome,
+        long? codCnes,
+        int? ano,
+        long? anomes,
+        TipoLeito? tipo,
+        long? codUf,
+        CancellationToken cancellationToken);
 }

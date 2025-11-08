@@ -16,11 +16,12 @@ public class LeitosRepository : ILeitosRepository
     {
         _context = context;
     }
-    
-    public async Task<LeitosAgregadosDto?> GetLeitosAgregadosAsync(int? ano = null, long? anomes = null, TipoLeito? tipo = null)
+
+    public async Task<LeitosAgregadosDto?> GetLeitosAgregadosAsync(int? ano = null, long? anomes = null,
+        TipoLeito? tipo = null)
     {
-        var latestRecordsQuery = GetLatestRecords(ano, anomes); 
-        
+        var latestRecordsQuery = GetLatestRecords(ano, anomes);
+
         var aggregatedData = await latestRecordsQuery
             .GroupBy(l => 1)
             .Select(g => new LeitosAgregadosDto
@@ -53,11 +54,11 @@ public class LeitosRepository : ILeitosRepository
 
         return aggregatedData;
     }
-    
+
     public async Task<IEnumerable<IndicadoresLeitosEstadoDto>> GetIndicadoresPorEstadoAsync(
-        int? ano = null, 
-        long? anomes = null, 
-        List<long>? codUfs = null, 
+        int? ano = null,
+        long? anomes = null,
+        List<long>? codUfs = null,
         TipoLeito? tipo = null)
     {
         var queryLeitos = GetLatestRecords(ano, anomes);
@@ -91,7 +92,7 @@ public class LeitosRepository : ILeitosRepository
                     tipo == TipoLeito.UTI_QUEIMADO ? l.QtdUtiQueimadoSus :
                     tipo == TipoLeito.UTI_CORONARIANA ? l.QtdUtiCoronarianaSus :
                     l.QtdLeitosSus),
-                
+
                 Criticos = g.Sum(l => !tipo.HasValue ? l.QtdUtiTotalExist :
                     tipo == TipoLeito.UTI_ADULTO ? l.QtdUtiAdultoExist :
                     tipo == TipoLeito.UTI_NEONATAL ? l.QtdUtiNeonatalExist :
@@ -103,7 +104,7 @@ public class LeitosRepository : ILeitosRepository
 
         return await queryFinal.ToListAsync();
     }
-    
+
     public async Task<PaginatedResult<LeitosHospitalarDto>> GetPagedLeitosAsync(
         int pageNumber,
         int pageSize,
@@ -133,7 +134,8 @@ public class LeitosRepository : ILeitosRepository
                         .Where(l => l.Anomes >= anoInicio && l.Anomes <= anoFim)
                         .GroupBy(l => l.CodCnes)
                         .Select(g => new { g.Key, MaxAnomes = g.Max(l => l.Anomes) })
-                    on new { leito.CodCnes, leito.Anomes } equals new { CodCnes = latest.Key, Anomes = latest.MaxAnomes }
+                    on new { leito.CodCnes, leito.Anomes } equals new
+                        { CodCnes = latest.Key, Anomes = latest.MaxAnomes }
                 select leito;
         }
 
@@ -178,7 +180,6 @@ public class LeitosRepository : ILeitosRepository
             {
                 CodCnes = x.Leito.CodCnes,
                 NomeEstabelecimento = x.Leito.NmEstabelecimento,
-                DscrTipoUnidade = x.Leito.DscrTipoUnidade, // <-- NOVO CAMPO
                 LocalizacaoUf = x.Localizacao.CodUf.ToString() ?? "0",
                 EnderecoCompleto = $"{x.Localizacao.Endereco}, {x.Localizacao.Numero} - {x.Localizacao.Bairro}",
 
@@ -196,35 +197,178 @@ public class LeitosRepository : ILeitosRepository
                     tipo == TipoLeito.UTI_PEDIATRICO ? x.Leito.QtdUtiPediatricoSus :
                     tipo == TipoLeito.UTI_QUEIMADO ? x.Leito.QtdUtiQueimadoSus :
                     tipo == TipoLeito.UTI_CORONARIANA ? x.Leito.QtdUtiCoronarianaSus :
-                    x.Leito.QtdLeitosSus,
-                
-                QtdUtiTotalExist = x.Leito.QtdUtiTotalExist,
-                QtdUtiTotalSus = x.Leito.QtdUtiTotalSus,
-                QtdUtiAdultoExist = x.Leito.QtdUtiAdultoExist,
-                QtdUtiAdultoSus = x.Leito.QtdUtiAdultoSus,
-                QtdUtiPediatricoExist = x.Leito.QtdUtiPediatricoExist,
-                QtdUtiPediatricoSus = x.Leito.QtdUtiPediatricoSus,
-                QtdUtiNeonatalExist = x.Leito.QtdUtiNeonatalExist,
-                QtdUtiNeonatalSus = x.Leito.QtdUtiNeonatalSus,
-                QtdUtiQueimadoExist = x.Leito.QtdUtiQueimadoExist,
-                QtdUtiQueimadoSus = x.Leito.QtdUtiQueimadoSus,
-                QtdUtiCoronarianaExist = x.Leito.QtdUtiCoronarianaExist,
-                QtdUtiCoronarianaSus = x.Leito.QtdUtiCoronarianaSus
+                    x.Leito.QtdLeitosSus
             })
             .ToListAsync(cancellationToken);
 
         return new PaginatedResult<LeitosHospitalarDto>(pagedData, pageNumber, pageSize, totalCount);
     }
-    
+
+    public async Task<PaginatedResult<LeitosHospitalarDetalhadoDto>> GetDetailedPagedLeitosAsync(
+        int pageNumber,
+        int pageSize,
+        string? nome,
+        long? codCnes,
+        int? ano,
+        long? anomes,
+        TipoLeito? tipo,
+        long? codUf,
+        CancellationToken cancellationToken)
+    {
+        var queryLeitos = _context.LeitosModel.AsNoTracking();
+
+        IQueryable<LeitoModel> latestRecordsQuery;
+        if (anomes.HasValue)
+        {
+            latestRecordsQuery = queryLeitos.Where(l => l.Anomes == anomes.Value);
+        }
+        else
+        {
+            var anoParaBuscar = ano ?? DateTime.Now.Year;
+            var anoInicio = (long)anoParaBuscar * 100 + 1;
+            var anoFim = anoInicio + 11;
+
+            latestRecordsQuery = from leito in queryLeitos
+                join latest in queryLeitos
+                        .Where(l => l.Anomes >= anoInicio && l.Anomes <= anoFim)
+                        .GroupBy(l => l.CodCnes)
+                        .Select(g => new { g.Key, MaxAnomes = g.Max(l => l.Anomes) })
+                    on new { leito.CodCnes, leito.Anomes } equals new
+                        { CodCnes = latest.Key, Anomes = latest.MaxAnomes }
+                select leito;
+        }
+
+        if (codCnes.HasValue) latestRecordsQuery = latestRecordsQuery.Where(l => l.CodCnes == codCnes.Value);
+        if (!string.IsNullOrWhiteSpace(nome))
+            latestRecordsQuery =
+                latestRecordsQuery.Where(l => EF.Functions.Like(l.NmEstabelecimento, $"%{nome.ToUpper()}%"));
+
+        var finalQuery = from leito in latestRecordsQuery
+            join estabelecimento in _context.EstabelecimentoModel.AsNoTracking()
+                on leito.CodCnes equals estabelecimento.CodCnes
+            join localizacao in _context.LocalizacaoModel.AsNoTracking()
+                on estabelecimento.CodUnidade equals localizacao.CodUnidade
+            join Servico in _context.ServicoModel.AsNoTracking()
+                on estabelecimento.CodCnes equals Servico.CodCnes
+            join Organizacao in _context.OrganizacaoModel.AsNoTracking()
+                on estabelecimento.CodCnes equals Organizacao.CodCnes
+            join Turno in _context.TurnoModel.AsNoTracking()
+                on estabelecimento.CodTurnoAtendimento equals Turno.CodTurnoAtendimento
+            where !codUf.HasValue || localizacao.CodUf == codUf
+            select new
+            {
+                Leito = leito,
+                Localizacao = localizacao,
+                Servico,
+                Organizacao,
+                Estabelecimento = estabelecimento,
+                Turno
+            };
+
+        if (tipo.HasValue)
+        {
+            if (tipo == TipoLeito.UTI_ADULTO)
+                finalQuery = finalQuery.Where(x => x.Leito.QtdUtiAdultoExist > 0);
+            else if (tipo == TipoLeito.UTI_NEONATAL)
+                finalQuery = finalQuery.Where(x => x.Leito.QtdUtiNeonatalExist > 0);
+            else if (tipo == TipoLeito.UTI_PEDIATRICO)
+                finalQuery = finalQuery.Where(x => x.Leito.QtdUtiPediatricoExist > 0);
+            else if (tipo == TipoLeito.UTI_QUEIMADO)
+                finalQuery = finalQuery.Where(x => x.Leito.QtdUtiQueimadoExist > 0);
+            else if (tipo == TipoLeito.UTI_CORONARIANA)
+                finalQuery = finalQuery.Where(x => x.Leito.QtdUtiCoronarianaExist > 0);
+        }
+
+        var totalCount = await finalQuery.CountAsync(cancellationToken);
+
+        var pagedData = await finalQuery
+            .OrderByDescending(x => x.Leito.QtdLeitosExistentes)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(x => new LeitosHospitalarDetalhadoDto
+            {
+                // --- Propriedades Raiz (de LeitoModel) ---
+                CodCnes = x.Leito.CodCnes,
+                NomeEstabelecimento = x.Leito.NmEstabelecimento,
+                DscrTipoUnidade = x.Leito.DscrTipoUnidade,
+
+                // --- Objeto: Capacidade (de LeitoModel) ---
+                Capacidade = new CapacidadeLeitosDto
+                {
+                    TotalLeitos = !tipo.HasValue ? x.Leito.QtdLeitosExistentes :
+                        tipo == TipoLeito.UTI_ADULTO ? x.Leito.QtdUtiAdultoExist :
+                        tipo == TipoLeito.UTI_NEONATAL ? x.Leito.QtdUtiNeonatalExist :
+                        tipo == TipoLeito.UTI_PEDIATRICO ? x.Leito.QtdUtiPediatricoExist :
+                        tipo == TipoLeito.UTI_QUEIMADO ? x.Leito.QtdUtiQueimadoExist :
+                        tipo == TipoLeito.UTI_CORONARIANA ? x.Leito.QtdUtiCoronarianaExist :
+                        x.Leito.QtdLeitosExistentes,
+                    LeitosSus = !tipo.HasValue ? x.Leito.QtdLeitosSus :
+                        tipo == TipoLeito.UTI_ADULTO ? x.Leito.QtdUtiAdultoSus :
+                        tipo == TipoLeito.UTI_NEONATAL ? x.Leito.QtdUtiNeonatalSus :
+                        tipo == TipoLeito.UTI_PEDIATRICO ? x.Leito.QtdUtiPediatricoSus :
+                        tipo == TipoLeito.UTI_QUEIMADO ? x.Leito.QtdUtiQueimadoSus :
+                        tipo == TipoLeito.UTI_CORONARIANA ? x.Leito.QtdUtiCoronarianaSus :
+                        x.Leito.QtdLeitosSus,
+                    QtdUtiTotalExist = x.Leito.QtdUtiTotalExist,
+                    QtdUtiTotalSus = x.Leito.QtdUtiTotalSus,
+                    QtdUtiAdultoExist = x.Leito.QtdUtiAdultoExist,
+                    QtdUtiAdultoSus = x.Leito.QtdUtiAdultoSus,
+                    QtdUtiPediatricoExist = x.Leito.QtdUtiPediatricoExist,
+                    QtdUtiPediatricoSus = x.Leito.QtdUtiPediatricoSus,
+                    QtdUtiNeonatalExist = x.Leito.QtdUtiNeonatalExist,
+                    QtdUtiNeonatalSus = x.Leito.QtdUtiNeonatalSus,
+                    QtdUtiQueimadoExist = x.Leito.QtdUtiQueimadoExist,
+                    QtdUtiQueimadoSus = x.Leito.QtdUtiQueimadoSus,
+                    QtdUtiCoronarianaExist = x.Leito.QtdUtiCoronarianaExist,
+                    QtdUtiCoronarianaSus = x.Leito.QtdUtiCoronarianaSus
+                },
+
+                // --- Objeto: Localizacao (de LocalizacaoModel) ---
+                Localizacao = new LocalizacaoDetalhesDto
+                {
+                    Uf = x.Localizacao.CodUf.ToString() ?? "0",
+                    EnderecoCompleto = $"{x.Localizacao.Endereco}, {x.Localizacao.Numero} - {x.Localizacao.Bairro}"
+                },
+
+                // --- Objeto: Servicos (de ServicoModel) ---
+                Servicos = new ServicosDisponiveisDto
+                {
+                    FazAtendimentoAmbulatorialSus = x.Servico.StFazAtendimentoAmbulatorialSus,
+                    TemCentroCirurgico = x.Servico.StCentroCirurgico,
+                    TemCentroObstetrico = x.Servico.StCentroObstetrico,
+                    TemCentroNeonatal = x.Servico.StCentroNeonatal,
+                    FazAtendimentoHospitalar = x.Servico.StAtendimentoHospitalar,
+                    TemServicoApoio = x.Servico.StServicoApoio,
+                    FazAtendimentoAmbulatorial = x.Servico.StAtendimentoAmbulatorial
+                },
+
+                // --- Objeto: Organizacao (de OrganizacaoModel) ---
+                Organizacao = new OrganizacaoDetalhesDto
+                {
+                    TipoUnidade = x.Organizacao.TpUnidade,
+                    TipoGestao = x.Organizacao.TpGestao,
+                    CodAtividade = x.Organizacao.CodAtividade,
+                    DescricaoEsferaAdministrativa = x.Organizacao.DscrEsferaAdministrativa
+                },
+
+                // --- Objeto: Turno (de EstabelecimentoModel e TurnoModel) ---
+                Turno = new TurnoAtendimentoDto
+                {
+                    CodTurnoAtendimento = x.Estabelecimento.CodTurnoAtendimento,
+                    DscrTurnoAtendimento = x.Turno.DscrTurnoAtendimento
+                }
+            })
+            .ToListAsync(cancellationToken);
+
+        return new PaginatedResult<LeitosHospitalarDetalhadoDto>(pagedData, pageNumber, pageSize, totalCount);
+    }
+
     private IQueryable<LeitoModel> GetLatestRecords(int? ano, long? anomes)
     {
         var query = _context.LeitosModel.AsNoTracking();
-        
-        if (anomes.HasValue)
-        {
-            return query.Where(l => l.Anomes == anomes.Value);
-        }
-        
+
+        if (anomes.HasValue) return query.Where(l => l.Anomes == anomes.Value);
+
         if (ano.HasValue)
         {
             var anoInicio = (long)ano.Value * 100 + 1;

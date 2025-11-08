@@ -4,12 +4,12 @@ using observatorio.saude.Domain.Dto;
 using observatorio.saude.Domain.Enums;
 using observatorio.saude.Domain.Utils;
 
-namespace observatorio.saude.Application.Queries.GetLeitosPaginados;
+namespace observatorio.saude.Application.Queries.GetDetalhesLeitosPaginados;
 
 /// <summary>
 ///     Representa uma requisição paginada para buscar leitos hospitalares.
 /// </summary>
-public class GetLeitosPaginadosQuery : IRequest<PaginatedResult<LeitosHospitalarDto>>
+public class GetDetalhesLeitosPaginadosQuery : IRequest<PaginatedResult<LeitosHospitalarDetalhadoDto>>
 {
     /// <summary>
     ///     O número da página a ser retornada. O padrão é 1.

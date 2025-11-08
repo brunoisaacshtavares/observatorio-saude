@@ -70,13 +70,13 @@ public class GetLeitosPaginadosHandlerTest
         _leitosRepositoryMock
             .Setup(r => r.GetPagedLeitosAsync(
                 It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<long?>(),
-                It.IsAny<int?>(), null,null, null, It.IsAny<CancellationToken>()))
+                It.IsAny<int?>(), null, null, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(mockResult);
 
         await _handler.Handle(query, CancellationToken.None);
 
         _leitosRepositoryMock.Verify(r => r.GetPagedLeitosAsync(
-            query.PageNumber, query.PageSize, query.Nome, query.CodCnes, query.Ano,null,
+            query.PageNumber, query.PageSize, query.Nome, query.CodCnes, query.Ano, null,
             null, null,
             It.IsAny<CancellationToken>()), Times.Once);
 
@@ -94,7 +94,7 @@ public class GetLeitosPaginadosHandlerTest
         _leitosRepositoryMock
             .Setup(r => r.GetPagedLeitosAsync(
                 It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<long?>(),
-                It.IsAny<int?>(), null,null, codUfEsperado, It.IsAny<CancellationToken>()))
+                It.IsAny<int?>(), null, null, codUfEsperado, It.IsAny<CancellationToken>()))
             .ReturnsAsync(mockResult);
 
         await _handler.Handle(query, CancellationToken.None);
@@ -102,7 +102,7 @@ public class GetLeitosPaginadosHandlerTest
         _ibgeApiClientMock.Verify(c => c.FindUfsAsync(), Times.AtLeast(1));
 
         _leitosRepositoryMock.Verify(r => r.GetPagedLeitosAsync(
-            query.PageNumber, query.PageSize, query.Nome, query.CodCnes, query.Ano, null,null,
+            query.PageNumber, query.PageSize, query.Nome, query.CodCnes, query.Ano, null, null,
             codUfEsperado,
             It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -116,7 +116,7 @@ public class GetLeitosPaginadosHandlerTest
         _leitosRepositoryMock
             .Setup(r => r.GetPagedLeitosAsync(
                 It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<long?>(),
-                It.IsAny<int?>(), null,null, null, It.IsAny<CancellationToken>()))
+                It.IsAny<int?>(), null, null, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(mockResult);
 
         await _handler.Handle(query, CancellationToken.None);
@@ -124,7 +124,7 @@ public class GetLeitosPaginadosHandlerTest
         _ibgeApiClientMock.Verify(c => c.FindUfsAsync(), Times.AtLeast(1));
 
         _leitosRepositoryMock.Verify(r => r.GetPagedLeitosAsync(
-            query.PageNumber, query.PageSize, query.Nome, query.CodCnes, query.Ano,null,
+            query.PageNumber, query.PageSize, query.Nome, query.CodCnes, query.Ano, null,
             null, null,
             It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -139,7 +139,7 @@ public class GetLeitosPaginadosHandlerTest
         _leitosRepositoryMock
             .Setup(r => r.GetPagedLeitosAsync(
                 It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<long?>(),
-                It.IsAny<int?>(), null,null, null, It.IsAny<CancellationToken>()))
+                It.IsAny<int?>(), null, null, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(mockResult);
 
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -187,7 +187,7 @@ public class GetLeitosPaginadosHandlerTest
         _leitosRepositoryMock
             .Setup(r => r.GetPagedLeitosAsync(
                 It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<long?>(),
-                It.IsAny<int?>(), null,null, null, It.IsAny<CancellationToken>()))
+                It.IsAny<int?>(), null, null, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(mockResult);
 
         var result = await _handler.Handle(query, CancellationToken.None);

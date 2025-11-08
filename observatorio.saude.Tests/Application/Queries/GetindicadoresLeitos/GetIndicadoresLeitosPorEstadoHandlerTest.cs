@@ -95,7 +95,7 @@ public class GetIndicadoresLeitosPorEstadoHandlerTest
 
         await _handler.Handle(query, CancellationToken.None);
 
-        _leitoRepositoryMock.Verify(r => r.GetIndicadoresPorEstadoAsync(anoAtual, null ,null, null), Times.Once);
+        _leitoRepositoryMock.Verify(r => r.GetIndicadoresPorEstadoAsync(anoAtual, null, null, null), Times.Once);
     }
 
     [Fact]
@@ -108,14 +108,16 @@ public class GetIndicadoresLeitosPorEstadoHandlerTest
         var mockIndicadores = GetMockIndicadores(ano).Where(i => i.CodUf == 35 || i.CodUf == 33).ToList();
 
         _leitoRepositoryMock
-            .Setup(r => r.GetIndicadoresPorEstadoAsync(ano, null,It.Is<List<long>>(c => c.SequenceEqual(codUfsEsperado)),null))
+            .Setup(r => r.GetIndicadoresPorEstadoAsync(ano, null,
+                It.Is<List<long>>(c => c.SequenceEqual(codUfsEsperado)), null))
             .ReturnsAsync(mockIndicadores);
 
         await _handler.Handle(query, CancellationToken.None);
 
         _ibgeApiClientMock.Verify(c => c.FindUfsAsync(), Times.AtLeast(2));
         _leitoRepositoryMock.Verify(
-            r => r.GetIndicadoresPorEstadoAsync(ano, null, It.Is<List<long>>(c => c.SequenceEqual(codUfsEsperado)), null),
+            r => r.GetIndicadoresPorEstadoAsync(ano, null, It.Is<List<long>>(c => c.SequenceEqual(codUfsEsperado)),
+                null),
             Times.Once);
     }
 

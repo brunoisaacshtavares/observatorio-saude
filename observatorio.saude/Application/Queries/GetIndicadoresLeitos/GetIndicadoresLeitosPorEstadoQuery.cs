@@ -18,12 +18,12 @@ public class GetIndicadoresLeitosPorEstadoQuery : IRequest<IEnumerable<Indicador
     ///     Lista de siglas de UF para filtrar os resultados. Por exemplo: ["SP", "RJ"].
     /// </summary>
     public List<string>? Ufs { get; set; }
-    
+
     /// <summary>
     ///     O Tipo de leito para filtrar os estabelecimentos. Por exemplo: UtiAdulto, UtiNeonatal, etc.
     /// </summary>
     public TipoLeito? Tipo { get; set; }
-    
+
     /// <summary>
     ///     O ano e o mês buscado concatenado em uma string ex: 08/2023 => 202308
     /// </summary>

@@ -4,16 +4,16 @@ using observatorio.saude.Domain.Dto;
 using observatorio.saude.Domain.Interface;
 using observatorio.saude.Domain.Utils;
 
-namespace observatorio.saude.Application.Queries.GetLeitosPaginados;
+namespace observatorio.saude.Application.Queries.GetDetalhesLeitosPaginados;
 
-public class GetLeitosPaginadosHandler(ILeitosRepository leitosRepository, IIbgeApiClient ibgeApiClient)
-    : IRequestHandler<GetLeitosPaginadosQuery, PaginatedResult<LeitosHospitalarDto>>
+public class GetDetalhesLeitosPaginadosHandler(ILeitosRepository leitosRepository, IIbgeApiClient ibgeApiClient)
+    : IRequestHandler<GetDetalhesLeitosPaginadosQuery, PaginatedResult<LeitosHospitalarDetalhadoDto>>
 {
     private readonly IIbgeApiClient _ibgeApiClient = ibgeApiClient;
     private readonly ILeitosRepository _leitosRepository = leitosRepository;
 
-    public async Task<PaginatedResult<LeitosHospitalarDto>> Handle(
-        GetLeitosPaginadosQuery request,
+    public async Task<PaginatedResult<LeitosHospitalarDetalhadoDto>> Handle(
+        GetDetalhesLeitosPaginadosQuery request,
         CancellationToken cancellationToken)
     {
         long? codUf = null;
@@ -26,7 +26,7 @@ public class GetLeitosPaginadosHandler(ILeitosRepository leitosRepository, IIbge
             if (ufEncontrada != null) codUf = ufEncontrada.Id;
         }
 
-        var pagedResult = await _leitosRepository.GetPagedLeitosAsync(
+        var pagedResult = await _leitosRepository.GetDetailedPagedLeitosAsync(
             request.PageNumber,
             request.PageSize,
             request.Nome,
@@ -41,10 +41,10 @@ public class GetLeitosPaginadosHandler(ILeitosRepository leitosRepository, IIbge
         var ufMap = ufsData.ToDictionary(uf => uf.Id.ToString(), uf => uf.Sigla);
 
         foreach (var item in pagedResult.Items)
-            if (ufMap.TryGetValue(item.LocalizacaoUf, out var ufSigla))
-                item.LocalizacaoUf = ufSigla;
+            if (ufMap.TryGetValue(item.Localizacao.Uf, out var ufSigla))
+                item.Localizacao.Uf = ufSigla;
             else
-                item.LocalizacaoUf = "Não Informada";
+                item.Localizacao.Uf = "Não Informada";
 
         return pagedResult;
     }

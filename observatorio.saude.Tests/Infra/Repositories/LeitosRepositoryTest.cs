@@ -125,7 +125,7 @@ public class LeitosRepositoryTest : IDisposable
     {
         var codUfsFiltro = new List<long> { CodUfRj };
 
-        var result = await _repository.GetIndicadoresPorEstadoAsync(AnoBase, null,codUfsFiltro);
+        var result = await _repository.GetIndicadoresPorEstadoAsync(AnoBase, null, codUfsFiltro);
 
         result.Should().ContainSingle();
         result.First().CodUf.Should().Be(CodUfRj);
@@ -136,7 +136,7 @@ public class LeitosRepositoryTest : IDisposable
     public async Task GetPagedLeitosAsync_DeveFiltrarPorNomeCorretamente()
     {
         var result = await _repository.GetPagedLeitosAsync(
-            1, 10, "clINICA", null, AnoBase, null,null, null, CancellationToken.None);
+            1, 10, "clINICA", null, AnoBase, null, null, null, CancellationToken.None);
 
         result.TotalCount.Should().Be(1);
         result.Items.First().NomeEstabelecimento.Should().Be("CLINICA B");
@@ -146,7 +146,7 @@ public class LeitosRepositoryTest : IDisposable
     public async Task GetPagedLeitosAsync_DeveFiltrarPorCodUfCorretamente()
     {
         var result = await _repository.GetPagedLeitosAsync(
-            1, 10, null, null, AnoBase, null, null,CodUfRj, CancellationToken.None);
+            1, 10, null, null, AnoBase, null, null, CodUfRj, CancellationToken.None);
 
         result.TotalCount.Should().Be(1);
         result.Items.First().NomeEstabelecimento.Should().Be("CLINICA B");
