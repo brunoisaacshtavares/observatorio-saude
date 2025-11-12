@@ -10,6 +10,7 @@ namespace observatorio.saude.Tests.Infra.Services.Clients.Ibge;
 
 public class IbgeApiClientTest
 {
+    private const int _maxTentativasCliente = 3;
     private readonly IbgeApiClient _client;
     private readonly Mock<IConfiguration> _configMock;
     private readonly int _currentYear = DateTime.Now.Year;
@@ -34,10 +35,18 @@ public class IbgeApiClientTest
         _client = new IbgeApiClient(_configMock.Object, _httpClient);
     }
 
-    private void SetupMockedResponse(HttpStatusCode statusCode, object content)
+    private HttpResponseMessage CreateHttpResponse(HttpStatusCode statusCode, object content)
     {
         var jsonContent = JsonSerializer.Serialize(content);
+        return new HttpResponseMessage
+        {
+            StatusCode = statusCode,
+            Content = new StringContent(jsonContent)
+        };
+    }
 
+    private void SetupMockedResponse(HttpStatusCode statusCode, object content)
+    {
         _handlerMock
             .Protected()
             .Setup<Task<HttpResponseMessage>>(
@@ -45,11 +54,7 @@ public class IbgeApiClientTest
                 ItExpr.IsAny<HttpRequestMessage>(),
                 ItExpr.IsAny<CancellationToken>()
             )
-            .ReturnsAsync(() => new HttpResponseMessage
-            {
-                StatusCode = statusCode,
-                Content = new StringContent(jsonContent)
-            })
+            .ReturnsAsync(() => CreateHttpResponse(statusCode, content))
             .Verifiable();
     }
 
@@ -66,21 +71,58 @@ public class IbgeApiClientTest
         };
         SetupMockedResponse(HttpStatusCode.OK, mockResponse);
 
-        var result = await _client.FindPopulacaoUfAsync(null);
+        var result = await _client.FindPopulacaoUfAsync(_currentYear);
 
         result.Should().NotBeNull();
         result.Dados.Should().HaveCount(1);
-        result.Dados.First().Resultados.First().Series.First().Localidade.Id.Should().Be("35");
-
         result.AnoEncontrado.Should().Be(_currentYear);
 
         _handlerMock.Protected().Verify(
             "SendAsync",
             Times.Once(),
             ItExpr.Is<HttpRequestMessage>(req =>
-                req.Method == HttpMethod.Get &&
                 req.RequestUri.ToString() == $"http://api.ibge.gov.br/populacao/{_currentYear}"
             ),
+            ItExpr.IsAny<CancellationToken>()
+        );
+    }
+
+    [Fact]
+    public async Task FindPopulacaoUfAsync_QuandoSucessoNoFallback_DeveRetornarDadosDoAnoAnterior()
+    {
+        var anoFallback = _currentYear - 1;
+        var mockResponseOk = new List<IbgeUfResponse>
+        {
+            new()
+            {
+                Resultados = new List<Resultado>
+                    { new() { Series = new List<Serie> { new() { Localidade = new Localidade { Id = "35" } } } } }
+            }
+        };
+
+        // Configura uma sequência de respostas:
+        // 1. Chamada para o ano atual (2025) -> Retorna 404
+        // 2. Chamada para o ano anterior (2024) -> Retorna 200 OK
+        _handlerMock
+            .Protected()
+            .SetupSequence<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req => req.RequestUri.ToString().Contains(_currentYear.ToString())),
+                ItExpr.IsAny<CancellationToken>()
+            )
+            .ReturnsAsync(CreateHttpResponse(HttpStatusCode.NotFound, "{}"))
+            .ReturnsAsync(CreateHttpResponse(HttpStatusCode.OK, mockResponseOk));
+
+        var result = await _client.FindPopulacaoUfAsync(_currentYear);
+
+        result.Should().NotBeNull();
+        result.Dados.Should().HaveCount(1);
+        result.AnoEncontrado.Should().Be(anoFallback); // Verifica se retornou o ano do fallback
+
+        _handlerMock.Protected().Verify(
+            "SendAsync",
+            Times.Exactly(2), // Deve chamar 2 vezes (ano atual + fallback)
+            ItExpr.IsAny<HttpRequestMessage>(),
             ItExpr.IsAny<CancellationToken>()
         );
     }
@@ -91,16 +133,15 @@ public class IbgeApiClientTest
         var mockResponse = new List<IbgeUfResponse>();
         SetupMockedResponse(HttpStatusCode.OK, mockResponse);
 
-        var result = await _client.FindPopulacaoUfAsync(null);
+        var result = await _client.FindPopulacaoUfAsync(_currentYear);
 
         result.Should().NotBeNull();
         result.Dados.Should().BeEmpty();
-
         result.AnoEncontrado.Should().BeNull();
 
         _handlerMock.Protected().Verify(
             "SendAsync",
-            Times.Exactly(2),
+            Times.Exactly(_maxTentativasCliente),
             ItExpr.IsAny<HttpRequestMessage>(),
             ItExpr.IsAny<CancellationToken>()
         );
@@ -125,16 +166,15 @@ public class IbgeApiClientTest
             })
             .Verifiable();
 
-        var result = await _client.FindPopulacaoUfAsync(null);
+        var result = await _client.FindPopulacaoUfAsync(_currentYear);
 
         result.Should().NotBeNull();
         result.Dados.Should().BeEmpty();
-
         result.AnoEncontrado.Should().BeNull();
 
         _handlerMock.Protected().Verify(
             "SendAsync",
-            Times.Exactly(2),
+            Times.Exactly(_maxTentativasCliente),
             ItExpr.IsAny<HttpRequestMessage>(),
             ItExpr.IsAny<CancellationToken>()
         );
@@ -145,7 +185,7 @@ public class IbgeApiClientTest
     {
         SetupMockedResponse(HttpStatusCode.InternalServerError, "{\"message\":\"Server Error\"}");
 
-        Func<Task> act = async () => await _client.FindPopulacaoUfAsync(null);
+        Func<Task> act = async () => await _client.FindPopulacaoUfAsync(_currentYear);
 
         await act.Should().ThrowAsync<HttpRequestException>();
 

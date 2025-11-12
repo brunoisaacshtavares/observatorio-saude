@@ -16,16 +16,14 @@ public class IbgeApiClient(IConfiguration configuration, HttpClient httpClient) 
 
     public async Task<PopulacaoUfResultado> FindPopulacaoUfAsync(int? ano)
     {
-        var anoParaBuscar = ano ?? DateTime.Now.Year;
+        var anoInicial = ano ?? DateTime.Now.Year;
 
-        var anosParaTentar = new List<int>
-        {
-            anoParaBuscar,
-            anoParaBuscar - 1
-        };
+        const int maxTentativas = 3;
 
-        foreach (var anoTentar in anosParaTentar)
+        for (var i = 0; i < maxTentativas; i++)
         {
+            var anoTentar = anoInicial - i;
+
             var urlTemplate = _configuration.GetValue<string>("Ibge:FindPopulacaoUf");
             var fullUrl = urlTemplate.Replace("{ano}", anoTentar.ToString());
 
