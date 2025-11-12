@@ -12,7 +12,7 @@ COPY . .
 WORKDIR "/src/observatorio.saude"
 RUN dotnet build "./observatorio.saude.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-RUN dotnet tool install dotnet-ef --tool-path /tools
+RUN dotnet tool install dotnet-ef --tool-path /tools --version 8.0.7
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
