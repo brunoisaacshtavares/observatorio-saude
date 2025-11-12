@@ -12,9 +12,7 @@ COPY . .
 WORKDIR "/src/observatorio.saude"
 RUN dotnet build "./observatorio.saude.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-RUN dotnet nuget locals all --clear
-
-RUN dotnet tool install dotnet-ef --tool-path /tools
+RUN dotnet tool install dotnet-ef --tool-path /tools --version 8.0.7
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
@@ -37,7 +35,7 @@ COPY --from=build /src/observatorio.saude/Scripts ./Scripts
 
 RUN pip install --no-cache-dir -r ./Scripts/requirements.txt
 
-COPY --from=publish /app/publish .
+COPY --from-publish /app/publish .
 
 USER $APP_UID
 
