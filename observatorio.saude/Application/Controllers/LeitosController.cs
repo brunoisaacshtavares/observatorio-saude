@@ -53,7 +53,7 @@ public class LeitosController : BaseController
     }
 
     [HttpGet("detalhes")]
-    [ProducesResponseType(typeof(PaginatedResult<LeitosHospitalarDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PaginatedResult<LeitosHospitalarDetalhadoDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetLeitos([FromQuery] GetDetalhesLeitosPaginadosQuery query)
     {
         var result = await _mediator.Send(query);
