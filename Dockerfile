@@ -12,6 +12,8 @@ COPY . .
 WORKDIR "/src/observatorio.saude"
 RUN dotnet build "./observatorio.saude.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
+RUN dotnet nuget locals all --clear
+
 RUN dotnet tool install dotnet-ef --tool-path /tools
 
 FROM build AS publish
