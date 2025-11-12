@@ -35,7 +35,7 @@ COPY --from=build /src/observatorio.saude/Scripts ./Scripts
 
 RUN pip install --no-cache-dir -r ./Scripts/requirements.txt
 
-COPY --from-publish /app/publish .
+COPY --from=publish /app/publish .
 
 USER $APP_UID
 
