@@ -62,11 +62,13 @@ public class GetIndicadoresLeitosPorEstadoHandlerTest
 
     public GetIndicadoresLeitosPorEstadoHandlerTest()
     {
+        var populacaoZeroResultado = new PopulacaoUfResultado(2023, _mockPopulacao);
+
         _leitoRepositoryMock = new Mock<ILeitosRepository>();
         _ibgeApiClientMock = new Mock<IIbgeApiClient>();
 
         _ibgeApiClientMock.Setup(c => c.FindUfsAsync()).ReturnsAsync(_mockUfs);
-        _ibgeApiClientMock.Setup(c => c.FindPopulacaoUfAsync(It.IsAny<int?>())).ReturnsAsync(_mockPopulacao);
+        _ibgeApiClientMock.Setup(c => c.FindPopulacaoUfAsync(It.IsAny<int?>())).ReturnsAsync(populacaoZeroResultado);
 
         _handler = new GetIndicadoresLeitosPorEstadoHandler(_leitoRepositoryMock.Object, _ibgeApiClientMock.Object);
     }

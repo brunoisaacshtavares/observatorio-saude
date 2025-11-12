@@ -41,15 +41,19 @@ public class GetIndicadoresLeitosPorEstadoHandler : IRequestHandler<GetIndicador
         var ufsTask = _ibgeApiClient.FindUfsAsync();
         await Task.WhenAll(populacaoTask, ufsTask);
 
-        var dadosIbgeUf = await populacaoTask;
+        var resultadoPopulacao = await populacaoTask;
         var dadosUfs = await ufsTask;
 
-        var mapaPopulacao = dadosIbgeUf
+        if (resultadoPopulacao.AnoEncontrado == null) return indicadoresPorEstado.OrderByDescending(x => x.TotalLeitos);
+
+        var anoEncontradoStr = resultadoPopulacao.AnoEncontrado.Value.ToString();
+
+        var mapaPopulacao = resultadoPopulacao.Dados
             .SelectMany(r => r.Resultados)
             .SelectMany(res => res.Series)
             .ToDictionary(
                 serie => long.Parse(serie.Localidade.Id),
-                serie => long.Parse(serie.SerieData.GetValueOrDefault(anoParaBuscar.ToString(), "0"))
+                serie => long.Parse(serie.SerieData.GetValueOrDefault(anoEncontradoStr, "0"))
             );
 
         var mapaUfData = dadosUfs.ToDictionary(

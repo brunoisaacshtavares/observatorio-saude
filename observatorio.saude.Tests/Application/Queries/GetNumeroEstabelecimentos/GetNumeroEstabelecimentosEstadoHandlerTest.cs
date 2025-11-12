@@ -82,14 +82,14 @@ public class GetNumeroEstabelecimentosEstadoHandlerTest
             }
         };
 
+        var populacaoZeroResultado = new PopulacaoUfResultado(2025, populacaoIbge);
+
         _repoMock.Setup(r => r.GetContagemPorEstadoAsync(null)).ReturnsAsync(contagemRepo);
         _ibgeClientMock.Setup(c => c.FindUfsAsync()).ReturnsAsync(ufsIbge);
-        _ibgeClientMock.Setup(c => c.FindPopulacaoUfAsync(null)).ReturnsAsync(populacaoIbge);
+        _ibgeClientMock.Setup(c => c.FindPopulacaoUfAsync(null)).ReturnsAsync(populacaoZeroResultado);
 
-        // Act
         var result = await _handler.Handle(new GetNumerostabelecimentosPorEstadoQuery(), CancellationToken.None);
 
-        // Assert
         result.Should().NotBeNull().And.HaveCount(3);
         var spResult = result.FirstOrDefault(x => x.SiglaUf == "SP");
         spResult.Should().NotBeNull();

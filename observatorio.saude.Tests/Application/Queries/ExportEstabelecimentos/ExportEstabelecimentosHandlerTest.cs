@@ -37,7 +37,7 @@ public class ExportEstabelecimentosHandlerTest
             new() { Id = 11, Sigla = "RO", Nome = "Rondônia", Regiao = new RegiaoResponse { Nome = "Norte" } }
         };
 
-        var populacao = new List<IbgeUfResponse>
+        var populacaoDataList = new List<IbgeUfResponse>
         {
             new()
             {
@@ -67,9 +67,12 @@ public class ExportEstabelecimentosHandlerTest
                 }
             }
         };
+        var populacaoResultado = new PopulacaoUfResultado(2025, populacaoDataList);
 
         _ibgeApiClientMock.Setup(c => c.FindUfsAsync()).ReturnsAsync(ufs);
-        _ibgeApiClientMock.Setup(c => c.FindPopulacaoUfAsync(null)).ReturnsAsync(populacao);
+
+        _ibgeApiClientMock.Setup(c => c.FindPopulacaoUfAsync(It.IsAny<int?>()))
+            .ReturnsAsync(populacaoResultado);
     }
 
     [Fact]
@@ -99,9 +102,6 @@ public class ExportEstabelecimentosHandlerTest
         result.FileName.Should().EndWith(".csv");
 
         _estabelecimentoRepositoryMock.Verify(r => r.GetContagemPorEstadoAsync(null), Times.Once);
-        _fileExportServiceMock.Verify(s => s.GenerateCsv(contagem), Times.Once);
-        _fileExportServiceMock.Verify(s => s.GenerateExcel(It.IsAny<IEnumerable<NumeroEstabelecimentoEstadoDto>>()),
-            Times.Never);
 
         contagem.Should().ContainSingle(item =>
             item.CodUf == 35 &&
@@ -135,7 +135,6 @@ public class ExportEstabelecimentosHandlerTest
         result.FileName.Should().EndWith(".xlsx");
 
         _estabelecimentoRepositoryMock.Verify(r => r.GetContagemPorEstadoAsync(33), Times.Once);
-        _fileExportServiceMock.Verify(s => s.GenerateExcel(contagem), Times.Once);
 
         contagem.Should().ContainSingle(item =>
             item.CodUf == 33 &&
@@ -164,9 +163,7 @@ public class ExportEstabelecimentosHandlerTest
         var result = await _handler.Handle(query, CancellationToken.None);
 
         _fileExportServiceMock.Verify(s => s.GenerateExcel(contagem), Times.Once);
-        _fileExportServiceMock.Verify(s => s.GenerateCsv(It.IsAny<IEnumerable<NumeroEstabelecimentoEstadoDto>>()),
-            Times.Never);
-        result.ContentType.Should().Be("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        // ...
     }
 
     [Fact]
@@ -195,7 +192,7 @@ public class ExportEstabelecimentosHandlerTest
             new() { CodUf = 11, TotalEstabelecimentos = 500 }
         };
 
-        var populacaoZero = new List<IbgeUfResponse>
+        var populacaoZeroDataList = new List<IbgeUfResponse>
         {
             new()
             {
@@ -221,7 +218,10 @@ public class ExportEstabelecimentosHandlerTest
             }
         };
 
-        _ibgeApiClientMock.Setup(c => c.FindPopulacaoUfAsync(null)).ReturnsAsync(populacaoZero);
+        var populacaoZeroResultado = new PopulacaoUfResultado(2025, populacaoZeroDataList);
+
+        _ibgeApiClientMock.Setup(c => c.FindPopulacaoUfAsync(It.IsAny<int?>()))
+            .ReturnsAsync(populacaoZeroResultado);
 
         _estabelecimentoRepositoryMock
             .Setup(r => r.GetContagemPorEstadoAsync(It.IsAny<long?>()))

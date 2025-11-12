@@ -1,9 +1,6 @@
+using System.Net;
 using System.Text.Json;
 using observatorio.saude.Application.Services.Clients;
-
-// Adicione este using
-
-// Adicione este using
 
 namespace observatorio.saude.Infra.Services.Clients.Ibge;
 
@@ -17,22 +14,40 @@ public class IbgeApiClient(IConfiguration configuration, HttpClient httpClient) 
         PropertyNameCaseInsensitive = true
     };
 
-    public async Task<List<IbgeUfResponse>> FindPopulacaoUfAsync(int? ano)
+    public async Task<PopulacaoUfResultado> FindPopulacaoUfAsync(int? ano)
     {
         var anoParaBuscar = ano ?? DateTime.Now.Year;
 
-        var urlTemplate = _configuration.GetValue<string>("Ibge:FindPopulacaoUf");
-        var fullUrl = urlTemplate.Replace("{ano}", anoParaBuscar.ToString());
+        var anosParaTentar = new List<int>
+        {
+            anoParaBuscar,
+            anoParaBuscar - 1
+        };
 
-        var httpResponseMessage = await _httpClient.GetAsync(fullUrl);
+        foreach (var anoTentar in anosParaTentar)
+        {
+            var urlTemplate = _configuration.GetValue<string>("Ibge:FindPopulacaoUf");
+            var fullUrl = urlTemplate.Replace("{ano}", anoTentar.ToString());
 
-        httpResponseMessage.EnsureSuccessStatusCode();
+            var httpResponseMessage = await _httpClient.GetAsync(fullUrl);
 
-        await using var contentStream = await httpResponseMessage.Content.ReadAsStreamAsync();
+            if (httpResponseMessage.IsSuccessStatusCode)
+            {
+                await using var contentStream = await httpResponseMessage.Content.ReadAsStreamAsync();
+                var ibgeData = await JsonSerializer.DeserializeAsync<List<IbgeUfResponse>>(contentStream, _jsonOptions);
 
-        var ibgeData = await JsonSerializer.DeserializeAsync<List<IbgeUfResponse>>(contentStream, _jsonOptions);
+                if (ibgeData != null && ibgeData.Count > 0) return new PopulacaoUfResultado(anoTentar, ibgeData);
+            }
+            else if (httpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+            {
+            }
+            else
+            {
+                httpResponseMessage.EnsureSuccessStatusCode();
+            }
+        }
 
-        return ibgeData ?? new List<IbgeUfResponse>();
+        return new PopulacaoUfResultado(null, new List<IbgeUfResponse>());
     }
 
     public async Task<IEnumerable<UfDataResponse>> FindUfsAsync()

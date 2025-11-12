@@ -154,3 +154,11 @@ public class RegiaoResponse
     /// </summary>
     public string Nome { get; set; }
 }
+
+/// <summary>
+///     Contém o resultado da busca de população, incluindo o ano
+/// </summary>
+public record PopulacaoUfResultado(
+    int? AnoEncontrado,
+    List<IbgeUfResponse> Dados
+);

@@ -32,7 +32,7 @@ public class GetContagemEstabelecimentosPorEstadoHandler : IRequestHandler<GetNu
         var dadosIbgeUf = await populacaoTask;
         var dadosUfs = await ufsTask;
 
-        var mapaPopulacao = dadosIbgeUf
+        var mapaPopulacao = dadosIbgeUf.Dados
             .SelectMany(r => r.Resultados)
             .SelectMany(res => res.Series)
             .ToDictionary(
