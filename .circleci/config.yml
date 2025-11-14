@@ -6,7 +6,6 @@ jobs:
   build-and-test:
     executor:
       name: windows/default
-      version: 2024.07.1
         
     steps:
       - checkout
