@@ -1,20 +1,11 @@
 version: 2.1
 orbs:
-  # ATUALIZADO: Usando uma versão mais recente do orb do Windows.
-  # Verifique no CircleCI Orb Registry qual é a última (ex: 6.0.0)
-  windows: circleci/windows@6.0.0
+  windows: circleci/windows@5.0.0
 
 jobs:
   build-and-test:
     executor:
-      # O 'default' do orb mais recente deve ter um SDK mais novo.
       name: windows/default
-      
-      # --- PLANO B ---
-      # Se o 'default' acima ainda falhar, descomente a linha abaixo
-      # para forçar uma imagem de VM específica e mais recente.
-      # Você pode ver as imagens disponíveis em: https://circleci.com/docs/windows-images
-      # version: 2024.07.1 # Exemplo de uma imagem recente
         
     steps:
       - checkout
