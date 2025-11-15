@@ -30,7 +30,7 @@ jobs:
 
       - run:
           name: Install ReportGenerator Tool
-          command: dotnet tool install --global dotnet-reportgenerator-globaltool --version "5.2.0" || exit 0
+          command: dotnet tool install --global dotnet-reportgenerator-globaltool --version "5.2.0"
 
       - run:
           name: Run Tests and Generate TRX Report
@@ -40,8 +40,7 @@ jobs:
           name: Convert TRX to JUnit XML
           when: always
           command: |
-            # Adicionado '|| exit 0' para não falhar se já estiver instalado
-            dotnet tool install --global trx2junit || exit 0
+            dotnet tool install --global trx2junit
             mkdir JunitResults
             $trxFile = (Get-ChildItem -Recurse -Filter *.trx | Select-Object -First 1).FullName
             if ($trxFile) {
