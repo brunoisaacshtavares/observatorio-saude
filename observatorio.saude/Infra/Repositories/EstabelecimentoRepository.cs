@@ -17,14 +17,15 @@ public class EstabelecimentoRepository(ApplicationDbContext context) : IEstabele
         var query = _context.EstabelecimentoModel
             .AsNoTracking();
 
-        if (codUf.HasValue) query = query.Where(e => e.Localizacao.CodUf == codUf.Value);
+        if (codUf.HasValue)
+            query = query.Where(e => e.Localizacao != null && e.Localizacao.CodUf == codUf.Value);
 
         var contagemPorEstado = await query
-            .Where(e => e.Localizacao.CodUf != null)
-            .GroupBy(e => e.Localizacao.CodUf)
+            .Where(e => e.Localizacao != null && e.Localizacao.CodUf != null)
+            .GroupBy(e => e.Localizacao!.CodUf)
             .Select(g => new NumeroEstabelecimentoEstadoDto
             {
-                CodUf = g.Key.Value,
+                CodUf = g.Key!.Value,
                 TotalEstabelecimentos = g.Count()
             })
             .OrderByDescending(r => r.TotalEstabelecimentos)
@@ -51,7 +52,8 @@ public class EstabelecimentoRepository(ApplicationDbContext context) : IEstabele
             .Include(e => e.Servico)
             .AsQueryable();
 
-        if (codUf.HasValue) query = query.Where(e => e.Localizacao.CodUf == codUf.Value);
+        if (codUf.HasValue)
+            query = query.Where(e => e.Localizacao != null && e.Localizacao.CodUf == codUf.Value);
         var totalCount = await query.CountAsync();
 
         var items = await query
@@ -71,21 +73,21 @@ public class EstabelecimentoRepository(ApplicationDbContext context) : IEstabele
 
         if (codUfs != null && codUfs.Count > 0)
             baseQuery = baseQuery.Where(e =>
-                e.Localizacao.CodUf.HasValue && codUfs.Contains(e.Localizacao.CodUf.Value));
+                e.Localizacao != null && e.Localizacao.CodUf.HasValue && codUfs.Contains(e.Localizacao.CodUf.Value));
 
-        baseQuery = baseQuery.OrderBy(e => e.Localizacao.CodUf);
+        baseQuery = baseQuery.OrderBy(e => e.Localizacao != null ? e.Localizacao.CodUf : null);
 
         var finalQuery = baseQuery
             .Select(e => new ExportEstabelecimentoDto
             {
                 CodCnes = e.CodCnes,
-                RazaoSocial = e.CaracteristicaEstabelecimento.NmRazaoSocial,
-                NomeFantasia = e.CaracteristicaEstabelecimento.NmFantasia,
-                Endereco = e.Localizacao.Endereco + ", " + e.Localizacao.Numero,
-                Bairro = e.Localizacao.Bairro,
-                Cep = e.Localizacao.CodCep.ToString(),
-                CodUfParaMapeamento = e.Localizacao.CodUf,
-                EsferaAdministrativa = e.Organizacao.DscrEsferaAdministrativa
+                RazaoSocial = e.CaracteristicaEstabelecimento != null ? e.CaracteristicaEstabelecimento.NmRazaoSocial ?? string.Empty : string.Empty,
+                NomeFantasia = e.CaracteristicaEstabelecimento != null ? e.CaracteristicaEstabelecimento.NmFantasia ?? string.Empty : string.Empty,
+                Endereco = e.Localizacao != null ? $"{e.Localizacao.Endereco ?? string.Empty}, {e.Localizacao.Numero.ToString() ?? string.Empty}" : string.Empty,
+                Bairro = e.Localizacao != null ? e.Localizacao.Bairro ?? string.Empty : string.Empty,
+                Cep = e.Localizacao != null ? e.Localizacao.CodCep.ToString() ?? string.Empty : string.Empty,
+                CodUfParaMapeamento = e.Localizacao != null ? e.Localizacao.CodUf : null,
+                EsferaAdministrativa = e.Organizacao != null ? e.Organizacao.DscrEsferaAdministrativa ?? string.Empty : string.Empty
             });
 
         await foreach (var item in finalQuery.AsAsyncEnumerable().WithCancellation(cancellationToken))
@@ -102,9 +104,10 @@ public class EstabelecimentoRepository(ApplicationDbContext context) : IEstabele
     {
         var query = _context.EstabelecimentoModel
             .AsNoTracking()
-            .Where(e => e.Localizacao.Latitude != null && e.Localizacao.Longitude != null);
+            .Where(e => e.Localizacao != null && e.Localizacao.Latitude != null && e.Localizacao.Longitude != null);
 
-        if (codUf.HasValue) query = query.Where(e => e.Localizacao.CodUf == codUf.Value);
+        if (codUf.HasValue)
+            query = query.Where(e => e.Localizacao != null && e.Localizacao.CodUf == codUf.Value);
 
         if (minLat.HasValue && maxLat.HasValue && minLon.HasValue && maxLon.HasValue)
         {
@@ -114,27 +117,27 @@ public class EstabelecimentoRepository(ApplicationDbContext context) : IEstabele
             var maxLonDecimal = (decimal)maxLon.Value;
 
             query = query.Where(e =>
-                e.Localizacao.Latitude >= minLatDecimal &&
+                e.Localizacao!.Latitude >= minLatDecimal &&
                 e.Localizacao.Latitude <= maxLatDecimal &&
                 e.Localizacao.Longitude >= minLonDecimal &&
                 e.Localizacao.Longitude <= maxLonDecimal);
         }
 
-        const int LowZoomLimit = 2000;
-        const int HighZoomLimit = 15000;
-        const int ZoomThreshold = 11;
-        var limit = zoom < ZoomThreshold ? LowZoomLimit : HighZoomLimit;
+        const int lowZoomLimit = 2000;
+        const int highZoomLimit = 15000;
+        const int zoomThreshold = 11;
+        var limit = zoom < zoomThreshold ? lowZoomLimit : highZoomLimit;
 
         return await query
             .Select(e => new GeoFeatureData
             {
-                Latitude = e.Localizacao.Latitude.Value,
-                Longitude = e.Localizacao.Longitude.Value,
-                NomeFantasia = e.CaracteristicaEstabelecimento.NmFantasia,
-                Endereco = e.Localizacao.Endereco,
-                Numero = e.Localizacao.Numero,
-                Bairro = e.Localizacao.Bairro,
-                Cep = e.Localizacao.CodCep
+                Latitude = e.Localizacao!.Latitude!.Value,
+                Longitude = e.Localizacao!.Longitude!.Value,
+                NomeFantasia = e.CaracteristicaEstabelecimento != null ? e.CaracteristicaEstabelecimento.NmFantasia : null,
+                Endereco = e.Localizacao!.Endereco,
+                Numero = e.Localizacao!.Numero,
+                Bairro = e.Localizacao!.Bairro,
+                Cep = e.Localizacao!.CodCep
             })
             .Take(limit)
             .ToListAsync();

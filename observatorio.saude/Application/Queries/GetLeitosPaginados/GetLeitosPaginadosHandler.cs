@@ -41,7 +41,7 @@ public class GetLeitosPaginadosHandler(ILeitosRepository leitosRepository, IIbge
         var ufMap = ufsData.ToDictionary(uf => uf.Id.ToString(), uf => uf.Sigla);
 
         foreach (var item in pagedResult.Items)
-            if (ufMap.TryGetValue(item.LocalizacaoUf, out var ufSigla))
+            if (item.LocalizacaoUf != null && ufMap.TryGetValue(item.LocalizacaoUf, out var ufSigla))
                 item.LocalizacaoUf = ufSigla;
             else
                 item.LocalizacaoUf = "Não Informada";

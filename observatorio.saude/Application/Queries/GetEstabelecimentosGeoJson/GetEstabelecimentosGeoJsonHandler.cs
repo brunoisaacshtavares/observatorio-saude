@@ -46,8 +46,8 @@ public class
             {
                 { "nome", est.NomeFantasia ?? "Nome não informado" },
                 { "endereco", $"{est.Endereco}, {est.Numero}" },
-                { "bairro", est.Bairro },
-                { "cep", est.Cep }
+                { "bairro", est.Bairro ?? "Bairro não informado" },
+                { "cep", est.Cep as object ?? "CEP não informado" }
             };
             return new GeoJsonFeature(point, properties);
         }).ToList();

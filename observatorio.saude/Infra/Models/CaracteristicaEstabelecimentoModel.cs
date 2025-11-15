@@ -9,7 +9,7 @@ public class CaracteristicaEstabelecimentoModel
     [Key]
     [Column("cod_unidade")]
     [MaxLength(100)]
-    public string CodUnidade { get; set; }
+    public required string CodUnidade { get; set; }
 
     [Column("nm_razao_social")]
     [MaxLength(255)]

@@ -81,8 +81,12 @@ public class ExportEstabelecimentosHandlerTest
         var query = new ExportEstabelecimentosQuery { Formato = "csv", Uf = null };
         var contagem = new List<NumeroEstabelecimentoEstadoDto>
         {
-            new() { CodUf = 35, TotalEstabelecimentos = 459 },
-            new() { CodUf = 33, TotalEstabelecimentos = 163 }
+            new() { NomeUf = "Distrito Federal",
+                Regiao = "Centro-Oeste",
+                SiglaUf = "DF",CodUf = 35, TotalEstabelecimentos = 459 },
+            new() { NomeUf = "Distrito Federal",
+                Regiao = "Centro-Oeste",
+                SiglaUf = "DF",CodUf = 33, TotalEstabelecimentos = 163 }
         };
         var fileBytes = new byte[] { 1, 2, 3, 4 };
 
@@ -116,7 +120,9 @@ public class ExportEstabelecimentosHandlerTest
         var query = new ExportEstabelecimentosQuery { Formato = "xlsx", Uf = "RJ" };
         var contagem = new List<NumeroEstabelecimentoEstadoDto>
         {
-            new() { CodUf = 33, TotalEstabelecimentos = 163 }
+            new() { NomeUf = "Distrito Federal",
+                Regiao = "Centro-Oeste",
+                SiglaUf = "DF",CodUf = 33, TotalEstabelecimentos = 163 }
         };
         var fileBytes = new byte[] { 5, 6, 7, 8 };
 
@@ -188,7 +194,9 @@ public class ExportEstabelecimentosHandlerTest
 
         var contagem = new List<NumeroEstabelecimentoEstadoDto>
         {
-            new() { CodUf = 11, TotalEstabelecimentos = 500 }
+            new() { NomeUf = "Distrito Federal",
+                Regiao = "Centro-Oeste",
+                SiglaUf = "DF",CodUf = 11, TotalEstabelecimentos = 500 }
         };
 
         var populacaoZeroDataList = new List<IbgeUfResponse>

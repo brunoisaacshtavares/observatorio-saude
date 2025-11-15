@@ -12,8 +12,8 @@ public class EstabelecimentoTest
         {
             CodCnes = 1234567,
             DataExtracao = DateTime.Now,
-            Caracteristicas = new CaracteristicaEstabelecimento(),
-            Localizacao = new Localizacao(),
+            Caracteristicas = new CaracteristicaEstabelecimento {CodUnidade = "1"},
+            Localizacao = new Localizacao { CodUnidade = "1234567" },
             Organizacao = new Organizacao(),
             Turno = new Turno(),
             Servico = new Servico()

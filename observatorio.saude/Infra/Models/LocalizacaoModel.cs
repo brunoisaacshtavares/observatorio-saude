@@ -12,7 +12,7 @@ public class LocalizacaoModel
     [Key]
     [Column("cod_unidade")]
     [MaxLength(100)]
-    public string CodUnidade { get; set; }
+    public required string CodUnidade { get; set; }
 
     [Column("cod_cep")] public long? CodCep { get; set; }
 

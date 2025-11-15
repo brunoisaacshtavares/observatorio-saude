@@ -51,7 +51,7 @@ public class OrganizacaoDetalhesDto
 {
     public long? TipoUnidade { get; set; }
     public char? TipoGestao { get; set; }
-    public string DescricaoEsferaAdministrativa { get; set; }
+    public required string DescricaoEsferaAdministrativa { get; set; }
     public long? CodAtividade { get; set; }
 }
 

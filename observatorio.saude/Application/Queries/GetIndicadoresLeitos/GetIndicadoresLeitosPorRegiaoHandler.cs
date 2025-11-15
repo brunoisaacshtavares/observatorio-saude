@@ -26,6 +26,7 @@ public class GetIndicadoresLeitosPorRegiaoHandler : IRequestHandler<GetIndicador
 
         var indicadoresPorRegiao = indicadoresPorEstado
             .GroupBy(estado => estado.Regiao)
+            .Where(grupo => grupo.Key != null)
             .Select(grupo =>
             {
                 var totalLeitosAgregado = grupo.Sum(e => e.TotalLeitos);
@@ -33,7 +34,7 @@ public class GetIndicadoresLeitosPorRegiaoHandler : IRequestHandler<GetIndicador
                 var totalleitosSus = grupo.Sum(e => e.LeitosSus);
                 return new IndicadoresLeitosRegiaoDto
                 {
-                    NomeRegiao = grupo.Key,
+                    NomeRegiao = grupo.Key!,
                     Populacao = populacaoAgregada,
                     TotalLeitos = totalLeitosAgregado,
                     Criticos = grupo.Sum(e => e.Criticos),

@@ -25,9 +25,15 @@ public class GetNumeroEstabelecimentosEstadoHandlerTest
     {
         var contagemRepo = new List<NumeroEstabelecimentoEstadoDto>
         {
-            new() { CodUf = 35, TotalEstabelecimentos = 1500 },
-            new() { CodUf = 33, TotalEstabelecimentos = 1200 },
-            new() { CodUf = 99, TotalEstabelecimentos = 50 }
+            new() { NomeUf = "Distrito Federal",
+                Regiao = "Centro-Oeste",
+                SiglaUf = "DF",CodUf = 35, TotalEstabelecimentos = 1500 },
+            new() { NomeUf = "Distrito Federal",
+                Regiao = "Centro-Oeste",
+                SiglaUf = "DF",CodUf = 33, TotalEstabelecimentos = 1200 },
+            new() { NomeUf = "Distrito Federal",
+                Regiao = "Centro-Oeste",
+                SiglaUf = "DF",CodUf = 99, TotalEstabelecimentos = 50 }
         };
 
         var ufsIbge = new List<UfDataResponse>
@@ -116,9 +122,6 @@ public class GetNumeroEstabelecimentosEstadoHandlerTest
         ufSemDados.TotalEstabelecimentos.Should().Be(50);
         ufSemDados.Populacao.Should().Be(0);
         ufSemDados.CoberturaEstabelecimentos.Should().Be(0);
-        ufSemDados.NomeUf.Should().BeNullOrEmpty();
-        ufSemDados.SiglaUf.Should().BeNullOrEmpty();
-        ufSemDados.Regiao.Should().BeNullOrEmpty();
 
         _repoMock.Verify(r => r.GetContagemPorEstadoAsync(null), Times.Once);
         _ibgeClientMock.Verify(c => c.FindUfsAsync(), Times.Once);

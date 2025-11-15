@@ -41,10 +41,15 @@ public class GetDetalhesLeitosPaginadosHandler(ILeitosRepository leitosRepositor
         var ufMap = ufsData.ToDictionary(uf => uf.Id.ToString(), uf => uf.Sigla);
 
         foreach (var item in pagedResult.Items)
-            if (ufMap.TryGetValue(item.Localizacao.Uf, out var ufSigla))
-                item.Localizacao.Uf = ufSigla;
-            else
-                item.Localizacao.Uf = "Não Informada";
+        {
+            if (item.Localizacao != null)
+            {
+                if (item.Localizacao.Uf != null && ufMap.TryGetValue(item.Localizacao.Uf, out var ufSigla))
+                    item.Localizacao.Uf = ufSigla;
+                else
+                    item.Localizacao.Uf = "Não Informada";
+            }
+        }
 
         return pagedResult;
     }

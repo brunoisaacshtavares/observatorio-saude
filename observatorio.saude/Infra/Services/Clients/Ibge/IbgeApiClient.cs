@@ -25,7 +25,7 @@ public class IbgeApiClient(IConfiguration configuration, HttpClient httpClient) 
             var anoTentar = anoInicial - i;
 
             var urlTemplate = _configuration.GetValue<string>("Ibge:FindPopulacaoUf");
-            var fullUrl = urlTemplate.Replace("{ano}", anoTentar.ToString());
+            var fullUrl = urlTemplate?.Replace("{ano}", anoTentar.ToString());
 
             var httpResponseMessage = await _httpClient.GetAsync(fullUrl);
 

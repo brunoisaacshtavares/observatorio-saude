@@ -12,7 +12,7 @@ public class Localizacao
     /// </summary>
     [Required]
     [Display(Name = "Código da Unidade", Description = "Identificador da unidade de saúde.")]
-    public string CodUnidade { get; set; }
+    public required string CodUnidade { get; set; }
 
     /// <summary>
     ///     Código do CEP do endereço.

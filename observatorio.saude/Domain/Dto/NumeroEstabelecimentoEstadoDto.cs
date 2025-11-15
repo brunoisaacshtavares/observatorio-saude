@@ -17,19 +17,19 @@ public class NumeroEstabelecimentoEstadoDto
     ///     Nome do estado.
     /// </summary>
     [Display(Name = "Nome do Estado", Description = "Nome completo do estado.")]
-    public string NomeUf { get; set; }
+    public string? NomeUf { get; set; }
 
     /// <summary>
     ///     Sigla do estado.
     /// </summary>
     [Display(Name = "Sigla do Estado", Description = "Sigla de duas letras do estado.")]
-    public string SiglaUf { get; set; }
+    public string? SiglaUf { get; set; }
 
     /// <summary>
     ///     Região geográfica do estado.
     /// </summary>
     [Display(Name = "Região", Description = "Região geográfica do estado (e.g., Sudeste, Sul, etc.).")]
-    public string Regiao { get; set; }
+    public string? Regiao { get; set; }
 
     /// <summary>
     ///     Total de estabelecimentos de saúde no estado.

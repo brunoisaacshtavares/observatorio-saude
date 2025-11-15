@@ -12,7 +12,7 @@ public class CaracteristicaEstabelecimento
     /// </summary>
     [Required]
     [Display(Name = "Código da Unidade", Description = "Identificador único da unidade de saúde.")]
-    public string CodUnidade { get; set; }
+    public required string CodUnidade { get; set; }
 
     /// <summary>
     ///     Nome jurídico da unidade.

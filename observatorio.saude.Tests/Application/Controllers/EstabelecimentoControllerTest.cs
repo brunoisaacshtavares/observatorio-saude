@@ -39,8 +39,12 @@ public class EstabelecimentoControllerTest
     {
         var resultadoEsperado = new List<NumeroEstabelecimentoEstadoDto>
         {
-            new() { CodUf = 35, TotalEstabelecimentos = 1500 },
-            new() { CodUf = 33, TotalEstabelecimentos = 1200 }
+            new() { NomeUf = "Distrito Federal",
+                Regiao = "Centro-Oeste",
+                SiglaUf = "DF",CodUf = 35, TotalEstabelecimentos = 1500 },
+            new() { NomeUf = "Distrito Federal",
+                Regiao = "Centro-Oeste",
+                SiglaUf = "DF",CodUf = 33, TotalEstabelecimentos = 1200 }
         };
 
         _mediatorMock
@@ -107,10 +111,12 @@ public class EstabelecimentoControllerTest
     {
         var query = new ExportEstabelecimentosQuery { Formato = "csv" };
         var fileBytes = new byte[] { 1, 2, 3 };
-        var exportResult = new ExportFileResult();
-        exportResult.FileData = fileBytes;
-        exportResult.FileName = "Estabelecimentos.csv";
-        exportResult.ContentType = "text/csv";
+        var exportResult = new ExportFileResult
+        {
+            FileData = fileBytes,
+            FileName = "Estabelecimentos.csv",
+            ContentType = "text/csv"
+        };
 
         _mediatorMock
             .Setup(m => m.Send(query, It.IsAny<CancellationToken>()))
@@ -130,7 +136,12 @@ public class EstabelecimentoControllerTest
     public async Task ExportResumoPorEstado_QuandoNaoTemDados_DeveRetornarNoContent()
     {
         var query = new ExportEstabelecimentosQuery { Formato = "csv" };
-        var exportResult = new ExportFileResult();
+        var exportResult = new ExportFileResult
+        {
+            FileData = Array.Empty<byte>(),
+            FileName = string.Empty,
+            ContentType = string.Empty
+        };
 
         _mediatorMock
             .Setup(m => m.Send(query, It.IsAny<CancellationToken>()))

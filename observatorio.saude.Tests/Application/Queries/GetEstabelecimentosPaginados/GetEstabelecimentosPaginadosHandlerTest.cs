@@ -27,8 +27,8 @@ public class GetEstabelecimentosPaginadosHandlerTest
         {
             CodCnes = 1234567,
             DataExtracao = new DateTime(2025, 09, 08),
-            CaracteristicaEstabelecimento = new CaracteristicaEstabelecimentoModel { NmFantasia = "Hospital de Teste" },
-            Localizacao = new LocalizacaoModel { Bairro = "Bairro dos Testes", CodUf = 35 },
+            CaracteristicaEstabelecimento = new CaracteristicaEstabelecimentoModel { CodUnidade = "1", NmFantasia = "Hospital de Teste" },
+            Localizacao = new LocalizacaoModel { CodUnidade = "1", Bairro = "Bairro dos Testes", CodUf = 35 },
             Organizacao = new OrganizacaoModel { TpGestao = 'M' },
             Turno = new TurnoModel { DscrTurnoAtendimento = "24 HORAS" },
             Servico = new ServicoModel { StCentroCirurgico = true, StFazAtendimentoAmbulatorialSus = false }
@@ -62,13 +62,13 @@ public class GetEstabelecimentosPaginadosHandlerTest
 
         itemMapeado.CodCnes.Should().Be(itemOriginal.CodCnes);
         itemMapeado.DataExtracao.Should().Be(itemOriginal.DataExtracao);
-        itemMapeado.Caracteristicas.NmFantasia.Should().Be(itemOriginal.CaracteristicaEstabelecimento.NmFantasia);
-        itemMapeado.Localizacao.Bairro.Should().Be(itemOriginal.Localizacao.Bairro);
-        itemMapeado.Organizacao.TpGestao.Should().Be(itemOriginal.Organizacao.TpGestao);
-        itemMapeado.Turno.DscrTurnoAtendimento.Should().Be(itemOriginal.Turno.DscrTurnoAtendimento);
-        itemMapeado.Servico.TemCentroCirurgico.Should().Be(itemOriginal.Servico.StCentroCirurgico);
-        itemMapeado.Servico.FazAtendimentoAmbulatorialSus.Should()
-            .Be(itemOriginal.Servico.StFazAtendimentoAmbulatorialSus);
+        itemMapeado.Caracteristicas!.NmFantasia.Should().Be(itemOriginal.CaracteristicaEstabelecimento!.NmFantasia);
+        itemMapeado.Localizacao!.Bairro.Should().Be(itemOriginal.Localizacao!.Bairro);
+        itemMapeado.Organizacao!.TpGestao.Should().Be(itemOriginal.Organizacao!.TpGestao);
+        itemMapeado.Turno!.DscrTurnoAtendimento.Should().Be(itemOriginal.Turno!.DscrTurnoAtendimento);
+        itemMapeado.Servico!.TemCentroCirurgico.Should().Be(itemOriginal.Servico!.StCentroCirurgico);
+        itemMapeado.Servico!.FazAtendimentoAmbulatorialSus.Should()
+            .Be(itemOriginal.Servico!.StFazAtendimentoAmbulatorialSus);
 
         _repositoryMock.Verify(r => r.GetPagedWithDetailsAsync(query.PageNumber, query.PageSize, null), Times.Once);
     }
