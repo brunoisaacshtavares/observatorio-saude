@@ -66,7 +66,19 @@ public class IbgeApiClientTest
             new()
             {
                 Resultados = new List<Resultado>
-                    { new() { Series = new List<Serie> { new() { Localidade = new Localidade { Id = "35" } } } } }
+                {
+                    new()
+                    {
+                        Series = new List<Serie>
+                        {
+                            new()
+                            {
+                                Localidade = new Localidade { Id = "35" },
+                                SerieData = new Dictionary<string, string> { { "2024", "10000" } }
+                            }
+                        }
+                    }
+                }
             }
         };
         SetupMockedResponse(HttpStatusCode.OK, mockResponse);
@@ -74,7 +86,8 @@ public class IbgeApiClientTest
         var result = await _client.FindPopulacaoUfAsync(_currentYear);
 
         result.Should().NotBeNull();
-        result.Dados.Should().HaveCount(1);
+        
+        result.Dados.Should().NotBeNull().And.HaveCount(1);
         result.AnoEncontrado.Should().Be(_currentYear);
 
         _handlerMock.Protected().Verify(
@@ -96,7 +109,8 @@ public class IbgeApiClientTest
         var result = await _client.FindPopulacaoUfAsync(_currentYear);
 
         result.Should().NotBeNull();
-        result.Dados.Should().BeEmpty();
+        
+        result.Dados.Should().NotBeNull().And.BeEmpty();
         result.AnoEncontrado.Should().BeNull();
 
         _handlerMock.Protected().Verify(
@@ -129,7 +143,7 @@ public class IbgeApiClientTest
         var result = await _client.FindPopulacaoUfAsync(_currentYear);
 
         result.Should().NotBeNull();
-        result.Dados.Should().BeEmpty();
+        result.Dados.Should().NotBeNull().And.BeEmpty();
         result.AnoEncontrado.Should().BeNull();
 
         _handlerMock.Protected().Verify(

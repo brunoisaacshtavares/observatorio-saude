@@ -32,9 +32,9 @@ public class ExportEstabelecimentosHandlerTest
     {
         var ufs = new List<UfDataResponse>
         {
-            new() { Id = 35, Sigla = "SP", Nome = "São Paulo", Regiao = new RegiaoResponse { Nome = "Sudeste" } },
-            new() { Id = 33, Sigla = "RJ", Nome = "Rio de Janeiro", Regiao = new RegiaoResponse { Nome = "Sudeste" } },
-            new() { Id = 11, Sigla = "RO", Nome = "Rondônia", Regiao = new RegiaoResponse { Nome = "Norte" } }
+            new() { Id = 35, Sigla = "SP", Nome = "São Paulo", Regiao = new RegiaoResponse { Id = 1, Sigla = "SE", Nome = "Sudeste" } },
+            new() { Id = 33, Sigla = "RJ", Nome = "Rio de Janeiro", Regiao = new RegiaoResponse { Id = 1, Sigla = "SE", Nome = "Sudeste" } },
+            new() { Id = 11, Sigla = "RO", Nome = "Rondônia", Regiao = new RegiaoResponse { Id = 2, Sigla = "N", Nome = "Norte" } }
         };
 
         var populacaoDataList = new List<IbgeUfResponse>
@@ -163,7 +163,6 @@ public class ExportEstabelecimentosHandlerTest
         var result = await _handler.Handle(query, CancellationToken.None);
 
         _fileExportServiceMock.Verify(s => s.GenerateExcel(contagem), Times.Once);
-        // ...
     }
 
     [Fact]

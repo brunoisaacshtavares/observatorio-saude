@@ -54,10 +54,10 @@ public class GetIndicadoresLeitosPorEstadoHandlerTest
     private readonly List<UfDataResponse> _mockUfs = new()
     {
         new UfDataResponse
-            { Id = 35, Sigla = "SP", Nome = "São Paulo", Regiao = new RegiaoResponse { Nome = "Sudeste" } },
+            { Id = 35, Sigla = "SP", Nome = "São Paulo", Regiao = new RegiaoResponse { Id = 1, Sigla = "SE", Nome = "Sudeste" } },
         new UfDataResponse
-            { Id = 33, Sigla = "RJ", Nome = "Rio de Janeiro", Regiao = new RegiaoResponse { Nome = "Sudeste" } },
-        new UfDataResponse { Id = 29, Sigla = "BA", Nome = "Bahia", Regiao = new RegiaoResponse { Nome = "Nordeste" } }
+            { Id = 33, Sigla = "RJ", Nome = "Rio de Janeiro", Regiao = new RegiaoResponse { Id = 1, Sigla = "SE", Nome = "Sudeste" } },
+        new UfDataResponse { Id = 29, Sigla = "BA", Nome = "Bahia", Regiao = new RegiaoResponse { Id = 3, Sigla = "NE", Nome = "Nordeste" } }
     };
 
     public GetIndicadoresLeitosPorEstadoHandlerTest()

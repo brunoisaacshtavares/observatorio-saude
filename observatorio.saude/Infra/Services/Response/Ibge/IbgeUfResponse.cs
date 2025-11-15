@@ -1,24 +1,6 @@
 using System.Text.Json.Serialization;
 
 /// <summary>
-///     Representa o nível de agregação dos dados (e.g., Unidade da Federação).
-/// </summary>
-public class Nivel
-{
-    /// <summary>
-    ///     Identificador do nível de agregação.
-    /// </summary>
-    [JsonPropertyName("id")]
-    public string Id { get; set; }
-
-    /// <summary>
-    ///     Nome do nível de agregação.
-    /// </summary>
-    [JsonPropertyName("nome")]
-    public string Nome { get; set; }
-}
-
-/// <summary>
 ///     Representa uma localidade geográfica (e.g., estado) com seu identificador e nome.
 /// </summary>
 public class Localidade
@@ -27,19 +9,7 @@ public class Localidade
     ///     Identificador da localidade.
     /// </summary>
     [JsonPropertyName("id")]
-    public string Id { get; set; }
-
-    /// <summary>
-    ///     Nível de agregação da localidade.
-    /// </summary>
-    [JsonPropertyName("nivel")]
-    public Nivel Nivel { get; set; }
-
-    /// <summary>
-    ///     Nome da localidade.
-    /// </summary>
-    [JsonPropertyName("nome")]
-    public string Nome { get; set; }
+    public required string Id { get; set; }
 }
 
 /// <summary>
@@ -51,13 +21,13 @@ public class Serie
     ///     A localidade à qual a série de dados se refere.
     /// </summary>
     [JsonPropertyName("localidade")]
-    public Localidade Localidade { get; set; }
+    public required Localidade Localidade { get; set; }
 
     /// <summary>
     ///     Um dicionário contendo os dados da série, onde a chave é o ano e o valor é o dado correspondente.
     /// </summary>
     [JsonPropertyName("serie")]
-    public Dictionary<string, string> SerieData { get; set; }
+    public required Dictionary<string, string> SerieData { get; set; }
 }
 
 /// <summary>
@@ -66,16 +36,10 @@ public class Serie
 public class Resultado
 {
     /// <summary>
-    ///     Lista de classificações aplicadas na consulta.
-    /// </summary>
-    [JsonPropertyName("classificacoes")]
-    public List<object> Classificacoes { get; set; }
-
-    /// <summary>
     ///     Lista de séries de dados contidas neste resultado.
     /// </summary>
     [JsonPropertyName("series")]
-    public List<Serie> Series { get; set; }
+    public required List<Serie> Series { get; set; }
 }
 
 /// <summary>
@@ -84,28 +48,10 @@ public class Resultado
 public class IbgeUfResponse
 {
     /// <summary>
-    ///     Identificador da variável consultada.
-    /// </summary>
-    [JsonPropertyName("id")]
-    public string Id { get; set; }
-
-    /// <summary>
-    ///     Nome da variável consultada.
-    /// </summary>
-    [JsonPropertyName("variavel")]
-    public string Variavel { get; set; }
-
-    /// <summary>
-    ///     Unidade de medida da variável.
-    /// </summary>
-    [JsonPropertyName("unidade")]
-    public string Unidade { get; set; }
-
-    /// <summary>
     ///     Lista de resultados contendo as séries de dados.
     /// </summary>
     [JsonPropertyName("resultados")]
-    public List<Resultado> Resultados { get; set; }
+    public required List<Resultado> Resultados { get; set; }
 }
 
 /// <summary>
@@ -116,22 +62,22 @@ public class UfDataResponse
     /// <summary>
     ///     Código numérico de identificação da UF.
     /// </summary>
-    public long Id { get; set; }
+    public required long Id { get; set; }
 
     /// <summary>
     ///     Sigla de duas letras da UF (e.g., "SP", "RJ").
     /// </summary>
-    public string Sigla { get; set; }
+    public required string Sigla { get; set; }
 
     /// <summary>
     ///     Nome completo da UF (e.g., "São Paulo", "Rio de Janeiro").
     /// </summary>
-    public string Nome { get; set; }
+    public required string Nome { get; set; }
 
     /// <summary>
     ///     A região geográfica à qual a UF pertence.
     /// </summary>
-    public RegiaoResponse Regiao { get; set; }
+    public required RegiaoResponse Regiao { get; set; }
 }
 
 /// <summary>
@@ -142,17 +88,17 @@ public class RegiaoResponse
     /// <summary>
     ///     Código numérico de identificação da região.
     /// </summary>
-    public int Id { get; set; }
+    public required int Id { get; set; }
 
     /// <summary>
     ///     Sigla da região (e.g., "SE", "SUL").
     /// </summary>
-    public string Sigla { get; set; }
+    public required string Sigla { get; set; }
 
     /// <summary>
     ///     Nome completo da região (e.g., "Sudeste", "Sul").
     /// </summary>
-    public string Nome { get; set; }
+    public required string Nome { get; set; }
 }
 
 /// <summary>

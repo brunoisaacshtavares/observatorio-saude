@@ -17,10 +17,10 @@ public class StreamEstabelecimentosDetalhadosHandlerTest
     private readonly List<UfDataResponse> _mockUfs = new()
     {
         new UfDataResponse
-            { Id = 35, Sigla = "SP", Nome = "São Paulo", Regiao = new RegiaoResponse { Nome = "Sudeste" } },
+            { Id = 35, Sigla = "SP", Nome = "São Paulo", Regiao = new RegiaoResponse { Id = 1, Sigla = "SE", Nome = "Sudeste" } },
         new UfDataResponse
-            { Id = 33, Sigla = "RJ", Nome = "Rio de Janeiro", Regiao = new RegiaoResponse { Nome = "Sudeste" } },
-        new UfDataResponse { Id = 11, Sigla = "RO", Nome = "Rondônia", Regiao = new RegiaoResponse { Nome = "Norte" } }
+            { Id = 33, Sigla = "RJ", Nome = "Rio de Janeiro", Regiao = new RegiaoResponse { Id = 1, Sigla = "SE", Nome = "Sudeste" } },
+        new UfDataResponse { Id = 11, Sigla = "RO", Nome = "Rondônia", Regiao = new RegiaoResponse { Id = 2, Sigla = "N", Nome = "Norte" } }
     };
 
     public StreamEstabelecimentosDetalhadosHandlerTest()
