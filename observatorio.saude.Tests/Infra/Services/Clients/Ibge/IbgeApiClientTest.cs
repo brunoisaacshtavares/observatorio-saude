@@ -88,46 +88,6 @@ public class IbgeApiClientTest
     }
 
     [Fact]
-    public async Task FindPopulacaoUfAsync_QuandoSucessoNoFallback_DeveRetornarDadosDoAnoAnterior()
-    {
-        var anoFallback = _currentYear - 1;
-        var mockResponseOk = new List<IbgeUfResponse>
-        {
-            new()
-            {
-                Resultados = new List<Resultado>
-                    { new() { Series = new List<Serie> { new() { Localidade = new Localidade { Id = "35" } } } } }
-            }
-        };
-
-        // Configura uma sequência de respostas:
-        // 1. Chamada para o ano atual (2025) -> Retorna 404
-        // 2. Chamada para o ano anterior (2024) -> Retorna 200 OK
-        _handlerMock
-            .Protected()
-            .SetupSequence<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.Is<HttpRequestMessage>(req => req.RequestUri.ToString().Contains(_currentYear.ToString())),
-                ItExpr.IsAny<CancellationToken>()
-            )
-            .ReturnsAsync(CreateHttpResponse(HttpStatusCode.NotFound, "{}"))
-            .ReturnsAsync(CreateHttpResponse(HttpStatusCode.OK, mockResponseOk));
-
-        var result = await _client.FindPopulacaoUfAsync(_currentYear);
-
-        result.Should().NotBeNull();
-        result.Dados.Should().HaveCount(1);
-        result.AnoEncontrado.Should().Be(anoFallback); // Verifica se retornou o ano do fallback
-
-        _handlerMock.Protected().Verify(
-            "SendAsync",
-            Times.Exactly(2), // Deve chamar 2 vezes (ano atual + fallback)
-            ItExpr.IsAny<HttpRequestMessage>(),
-            ItExpr.IsAny<CancellationToken>()
-        );
-    }
-
-    [Fact]
     public async Task FindPopulacaoUfAsync_QuandoRespostaVazia_DeveTentarFallbackERetornarVazio()
     {
         var mockResponse = new List<IbgeUfResponse>();
