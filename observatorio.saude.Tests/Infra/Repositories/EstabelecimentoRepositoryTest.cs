@@ -97,7 +97,9 @@ public class EstabelecimentoRepositoryTest : IDisposable
                 {
                     CodUnidade = "U1", CodUf = 35, Latitude = -23.5M, Longitude = -46.6M, Endereco = "Rua A",
                     Numero = 1, Bairro = "B1"
-                }
+                },
+                CaracteristicaEstabelecimento = new CaracteristicaEstabelecimentoModel
+                    { CodUnidade = "U1", NmFantasia = "Fantasia 1" }
             },
             new()
             {
@@ -106,7 +108,9 @@ public class EstabelecimentoRepositoryTest : IDisposable
                 {
                     CodUnidade = "U2", CodUf = 35, Latitude = -24.5M, Longitude = -47.6M, Endereco = "Rua B",
                     Numero = 2, Bairro = "B2"
-                }
+                },
+                CaracteristicaEstabelecimento = new CaracteristicaEstabelecimentoModel
+                    { CodUnidade = "U2", NmFantasia = "Fantasia 2" }
             },
             new()
             {
@@ -115,7 +119,9 @@ public class EstabelecimentoRepositoryTest : IDisposable
                 {
                     CodUnidade = "U3", CodUf = 33, Latitude = -23.6M, Longitude = -46.5M, Endereco = "Rua C",
                     Numero = 3, Bairro = "B3"
-                }
+                },
+                CaracteristicaEstabelecimento = new CaracteristicaEstabelecimentoModel
+                    { CodUnidade = "U3", NmFantasia = "Fantasia 3" }
             },
             new()
             {
@@ -124,13 +130,11 @@ public class EstabelecimentoRepositoryTest : IDisposable
                 {
                     CodUnidade = "U4", CodUf = 33, Latitude = null, Longitude = null, Endereco = "Rua D", Numero = 4,
                     Bairro = "B4"
-                }
+                },
+                CaracteristicaEstabelecimento = new CaracteristicaEstabelecimentoModel
+                    { CodUnidade = "U4", NmFantasia = "Fantasia 4" }
             }
         };
-
-        foreach (var e in estabelecimentos)
-            e.CaracteristicaEstabelecimento = new CaracteristicaEstabelecimentoModel
-                { CodUnidade = e.CodUnidade, NmFantasia = $"Fantasia {e.CodCnes}" };
 
         await _context.EstabelecimentoModel.AddRangeAsync(estabelecimentos);
         await _context.SaveChangesAsync();
@@ -165,7 +169,7 @@ public class EstabelecimentoRepositoryTest : IDisposable
             {
                 CodCnes = 6, CodUnidade = "U6", Localizacao = new LocalizacaoModel { CodUnidade = "U6", CodUf = null }
             },
-            new() { CodCnes = 7, CodUnidade = "U7", Localizacao = null }
+            new() { CodCnes = 7, CodUnidade = "U7", Localizacao = new LocalizacaoModel { CodUnidade = "U6", CodUf = null } }
         };
         await _context.EstabelecimentoModel.AddRangeAsync(estabelecimentos);
         await _context.SaveChangesAsync();

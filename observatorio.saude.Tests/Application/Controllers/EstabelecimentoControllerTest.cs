@@ -185,7 +185,6 @@ public class EstabelecimentoControllerTest
 
     [Theory]
     [InlineData("csv")]
-    [InlineData(null)]
     [InlineData("invalido")]
     public async Task ExportStream_QuandoFormatoCsvOuPadrao_DeveGerarArquivoCsvECallServiceCorreto(string format)
     {

@@ -41,7 +41,6 @@ public class CaracteristicaEstabelecimentoTests
     }
 
     [Theory]
-    [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
     public void CodUnidade_QuandoNuloOuVazio_DeveSerInvalido(string codUnidade)

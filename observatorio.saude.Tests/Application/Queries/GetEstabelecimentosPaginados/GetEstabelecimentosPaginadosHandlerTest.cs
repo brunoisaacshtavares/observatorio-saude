@@ -29,7 +29,7 @@ public class GetEstabelecimentosPaginadosHandlerTest
             DataExtracao = new DateTime(2025, 09, 08),
             CaracteristicaEstabelecimento = new CaracteristicaEstabelecimentoModel { CodUnidade = "1", NmFantasia = "Hospital de Teste" },
             Localizacao = new LocalizacaoModel { CodUnidade = "1", Bairro = "Bairro dos Testes", CodUf = 35 },
-            Organizacao = new OrganizacaoModel { TpGestao = 'M' },
+            Organizacao = new OrganizacaoModel { DscrEsferaAdministrativa = "1", TpGestao = 'M' },
             Turno = new TurnoModel { DscrTurnoAtendimento = "24 HORAS" },
             Servico = new ServicoModel { StCentroCirurgico = true, StFazAtendimentoAmbulatorialSus = false }
         };

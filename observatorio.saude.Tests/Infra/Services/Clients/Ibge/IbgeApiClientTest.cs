@@ -94,7 +94,7 @@ public class IbgeApiClientTest
             "SendAsync",
             Times.Once(),
             ItExpr.Is<HttpRequestMessage>(req =>
-                req.RequestUri.ToString() == $"http://api.ibge.gov.br/populacao/{_currentYear}"
+                req.RequestUri!.ToString() == $"http://api.ibge.gov.br/populacao/{_currentYear}"
             ),
             ItExpr.IsAny<CancellationToken>()
         );

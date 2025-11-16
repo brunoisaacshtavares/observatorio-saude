@@ -103,21 +103,32 @@ public class FileExportServiceTest
         using var spreadsheetDocument = SpreadsheetDocument.Open(outputStream, false);
 
         spreadsheetDocument.WorkbookPart.Should().NotBeNull();
-        var workbookPart = spreadsheetDocument.WorkbookPart;
+        var workbookPart = spreadsheetDocument.WorkbookPart!;
 
-        var sheet = workbookPart.Workbook.Sheets.First().Should().NotBeNull().And.BeOfType<Sheet>().Subject;
+        workbookPart.Workbook.Should().NotBeNull();
+        workbookPart.Workbook.Sheets.Should().NotBeNull();
+        
+        var sheet = workbookPart.Workbook.Sheets!.First().Should().NotBeNull().And.BeOfType<Sheet>().Subject;
+        sheet.Id.Should().NotBeNull();
 
         var worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id!);
+        worksheetPart.Should().NotBeNull();
+        
         var sheetData = worksheetPart.Worksheet.Elements<SheetData>().First();
+        sheetData.Should().NotBeNull();
 
         var headerRow = sheetData.Elements<Row>().First();
+        headerRow.Should().NotBeNull();
         headerRow.Elements<Cell>().ElementAt(0).InnerText.Should().Contain("ID do Registro");
 
         var dataRow1 = sheetData.Elements<Row>().ElementAt(1);
+        dataRow1.Should().NotBeNull();
 
-        dataRow1.Elements<Cell>().ElementAt(0).DataType.Value.Should().Be(CellValues.Number);
+        dataRow1.Elements<Cell>().ElementAt(0).DataType.Should().NotBeNull();
+        dataRow1.Elements<Cell>().ElementAt(0).DataType!.Value.Should().Be(CellValues.Number);
 
-        dataRow1.Elements<Cell>().ElementAt(1).DataType.Value.Should().Be(CellValues.String);
+        dataRow1.Elements<Cell>().ElementAt(1).DataType.Should().NotBeNull();
+        dataRow1.Elements<Cell>().ElementAt(1).DataType!.Value.Should().Be(CellValues.String);
     }
 }
 

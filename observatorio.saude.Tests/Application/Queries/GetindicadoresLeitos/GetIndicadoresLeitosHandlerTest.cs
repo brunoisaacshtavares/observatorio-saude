@@ -24,7 +24,7 @@ public class GetIndicadoresLeitosHandlerTest
 
         _leitoRepositoryMock
             .Setup(r => r.GetLeitosAgregadosAsync(It.IsAny<int?>(), null, null))
-            .ReturnsAsync((LeitosAgregadosDto)null);
+            .ReturnsAsync((LeitosAgregadosDto?)null);
 
         var result = await _handler.Handle(query, CancellationToken.None);
 

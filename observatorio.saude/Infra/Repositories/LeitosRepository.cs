@@ -67,7 +67,7 @@ public class LeitosRepository : ILeitosRepository
             join estabelecimento in _context.EstabelecimentoModel.Include(e => e.Localizacao) on leito.CodCnes
                 equals estabelecimento.CodCnes
             where estabelecimento.Localizacao != null && estabelecimento.Localizacao.CodUf.HasValue
-            select new { Leito = leito, Uf = estabelecimento.Localizacao.CodUf.Value };
+            select new { Leito = leito, Uf = estabelecimento.Localizacao!.CodUf!.Value };
 
         if (codUfs != null && codUfs.Any()) queryComUf = queryComUf.Where(x => codUfs.Contains(x.Uf));
 
@@ -355,7 +355,7 @@ public class LeitosRepository : ILeitosRepository
                 Turno = new TurnoAtendimentoDto
                 {
                     CodTurnoAtendimento = x.Estabelecimento.CodTurnoAtendimento,
-                    DscrTurnoAtendimento = x.Turno.DscrTurnoAtendimento
+                    DscrTurnoAtendimento = x.Turno != null ? x.Turno.DscrTurnoAtendimento : null
                 }
             })
             .ToListAsync(cancellationToken);

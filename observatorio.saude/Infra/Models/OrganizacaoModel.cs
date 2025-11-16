@@ -18,7 +18,7 @@ public class OrganizacaoModel
 
     [Column("dscr_esfera_administrativa")]
     [MaxLength(50)]
-    public string? DscrEsferaAdministrativa { get; set; }
+    public required string DscrEsferaAdministrativa { get; set; }
 
     [Column("cod_natureza_jur")] public long? CodNaturezaJur { get; set; }
 

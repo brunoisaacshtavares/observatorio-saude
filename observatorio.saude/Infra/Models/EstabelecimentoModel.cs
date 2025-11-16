@@ -23,7 +23,7 @@ public class EstabelecimentoModel
     [ForeignKey("CodUnidade")]
     public virtual CaracteristicaEstabelecimentoModel? CaracteristicaEstabelecimento { get; set; }
 
-    [ForeignKey("CodUnidade")] public virtual LocalizacaoModel? Localizacao { get; set; }
+    [ForeignKey("CodUnidade")] public required LocalizacaoModel Localizacao { get; set; }
 
     [ForeignKey("CodCnes")] public virtual OrganizacaoModel? Organizacao { get; set; }
 

@@ -130,10 +130,10 @@ public class FileExportService : IFileExportService
                 var sheetData = new SheetData();
                 worksheetPart.Worksheet = new Worksheet(sheetData);
 
-                var sheets = spreadsheetDocument.WorkbookPart.Workbook.AppendChild(new Sheets());
+                var sheets = workbookPart.Workbook.AppendChild(new Sheets());
                 var sheet = new Sheet
                 {
-                    Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(worksheetPart), SheetId = 1,
+                    Id = workbookPart.GetIdOfPart(worksheetPart), SheetId = 1,
                     Name = typeof(T).Name.Replace("Dto", "")
                 };
                 sheets.Append(sheet);
@@ -142,7 +142,7 @@ public class FileExportService : IFileExportService
                 foreach (var prop in props)
                 {
                     var cell = new Cell(
-                        new InlineString(new Text(prop.GetCustomAttribute<DisplayAttribute>()?.Name ?? prop.Name)))
+                        new InlineString(new Text(prop.GetCustomAttribute<DisplayAttribute>()!.Name ?? prop.Name)))
                     {
                         DataType = CellValues.InlineString
                     };
@@ -179,7 +179,7 @@ public class FileExportService : IFileExportService
                                 case TypeCode.Single:
                                     cell.DataType = CellValues.Number;
                                     cell.CellValue =
-                                        new CellValue(Convert.ToString(value, CultureInfo.InvariantCulture));
+                                        new CellValue(Convert.ToString(value, CultureInfo.InvariantCulture) ?? "");
                                     break;
                                 default:
                                     cell.DataType = CellValues.String;
