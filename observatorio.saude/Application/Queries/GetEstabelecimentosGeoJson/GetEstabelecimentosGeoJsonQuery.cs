@@ -36,5 +36,5 @@ public class GetEstabelecimentosGeoJsonQuery : IRequest<GeoJsonFeatureCollection
     /// <summary>
     ///     The zoom level, which influences the number of features returned.
     /// </summary>
-    public int Zoom { get; set; }
+    public required int Zoom { get; set; }
 }

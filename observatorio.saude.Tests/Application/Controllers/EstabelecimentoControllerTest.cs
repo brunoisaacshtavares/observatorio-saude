@@ -212,7 +212,7 @@ public class EstabelecimentoControllerTest
     [Fact]
     public async Task GetGeoJson_QuandoChamado_DeveRetornarOkComGeoJsonFeatureCollection()
     {
-        var query = new GetEstabelecimentosGeoJsonQuery { Uf = "DF" };
+        var query = new GetEstabelecimentosGeoJsonQuery { Uf = "DF", Zoom = 1};
         var resultadoEsperado = new GeoJsonFeatureCollection(new List<GeoJsonFeature>());
 
         _mediatorMock

@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text.Json;
 using observatorio.saude.Application.Services.Clients;
+using observatorio.saude.Infra.Services.Response.Ibge;
 
 namespace observatorio.saude.Infra.Services.Clients.Ibge;
 

@@ -5,6 +5,7 @@ using observatorio.saude.Application.Services.Clients;
 using observatorio.saude.Domain.Interface;
 using observatorio.saude.Domain.Utils;
 using observatorio.saude.Infra.Models;
+using observatorio.saude.Infra.Services.Response.Ibge;
 
 namespace observatorio.saude.tests.Application.Queries.GetEstabelecimentosPaginados;
 

@@ -1,3 +1,5 @@
+using observatorio.saude.Infra.Services.Response.Ibge;
+
 namespace observatorio.saude.Application.Services.Clients;
 
 public interface IIbgeApiClient

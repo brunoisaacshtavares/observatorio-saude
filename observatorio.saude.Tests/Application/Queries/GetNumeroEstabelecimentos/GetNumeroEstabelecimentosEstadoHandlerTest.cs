@@ -4,6 +4,7 @@ using observatorio.saude.Application.Queries.GetNumeroEstabelecimentos;
 using observatorio.saude.Application.Services.Clients;
 using observatorio.saude.Domain.Dto;
 using observatorio.saude.Domain.Interface;
+using observatorio.saude.Infra.Services.Response.Ibge;
 
 namespace observatorio.saude.tests.Application.Queries.GetNumeroEstabelecimentos;
 

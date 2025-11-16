@@ -1,5 +1,7 @@
 using System.Text.Json.Serialization;
 
+namespace observatorio.saude.Infra.Services.Response.Ibge;
+
 /// <summary>
 ///     Representa uma localidade geográfica (e.g., estado) com seu identificador e nome.
 /// </summary>

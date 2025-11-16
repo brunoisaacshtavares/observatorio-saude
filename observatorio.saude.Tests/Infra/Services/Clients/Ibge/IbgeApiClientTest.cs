@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Moq;
 using Moq.Protected;
 using observatorio.saude.Infra.Services.Clients.Ibge;
+using observatorio.saude.Infra.Services.Response.Ibge;
 
 namespace observatorio.saude.Tests.Infra.Services.Clients.Ibge;
 

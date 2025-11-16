@@ -85,4 +85,4 @@ if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName.Contains(
 
 app.UseAuthorization();
 app.MapControllers();
-app.Run();
+await app.RunAsync();

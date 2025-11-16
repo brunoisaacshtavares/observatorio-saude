@@ -5,6 +5,7 @@ using observatorio.saude.Application.Services.Clients;
 using observatorio.saude.Domain.Dto;
 using observatorio.saude.Domain.Interface;
 using observatorio.saude.Domain.Utils;
+using observatorio.saude.Infra.Services.Response.Ibge;
 
 namespace observatorio.saude.tests.Application.Queries.GetLeitosPaginados;
 
@@ -163,35 +164,5 @@ public class GetLeitosPaginadosHandlerTest
         item4.LocalizacaoUf.Should().Be("Não Informada");
 
         _ibgeApiClientMock.Verify(c => c.FindUfsAsync(), Times.AtLeastOnce);
-    }
-
-    [Theory]
-    [InlineData(100, 30)]
-    [InlineData(3, 1)]
-    [InlineData(10, 4)]
-    public async Task Handle_DeveArredondarPorcentagemDeOcupacaoCorretamente(
-        int totalLeitos, int leitosSus)
-    {
-        var query = new GetLeitosPaginadosQuery { Uf = null };
-        var mockItems = new List<LeitosHospitalarDto>
-        {
-            new()
-            {
-                TotalLeitos = totalLeitos,
-                LeitosSus = leitosSus,
-                LocalizacaoUf = "35"
-            }
-        };
-        var mockResult = new PaginatedResult<LeitosHospitalarDto>(mockItems, 1, 1, 10);
-
-        _leitosRepositoryMock
-            .Setup(r => r.GetPagedLeitosAsync(
-                It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<long?>(),
-                It.IsAny<int?>(), null, null, null, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(mockResult);
-
-        var result = await _handler.Handle(query, CancellationToken.None);
-
-        var item = result.Items.Single();
     }
 }
